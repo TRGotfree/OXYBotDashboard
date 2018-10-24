@@ -21,6 +21,8 @@ bld/
 [Bb]in/
 [Oo]bj/
 [Ll]og/
+.vscode/*
+/.vscode/*
 
 # Visual Studio 2015 cache/options directory
 .vs/
@@ -261,5 +263,5 @@ __pycache__/
 *.pyc
 
 #MyFiles
-appsettings.json
-appsettings.Development.json
+/OxyBotAdmin/*.json
+/OxyBotAdmin/*.json
