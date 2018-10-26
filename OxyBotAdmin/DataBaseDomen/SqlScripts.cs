@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace OxyBotAdmin.DataBaseDomen
+﻿namespace OxyBotAdmin.DataBaseDomen
 {
     public class SqlScripts
     {
@@ -17,5 +12,6 @@ namespace OxyBotAdmin.DataBaseDomen
         public readonly static string GetDrugStores = "dbo.getDrugStores";
         public readonly static string InsertDrugStore = "dbo.insertDrugStore";
         public readonly static string UpdateDrugStore = "dbo.updateDrugStore";
+        public readonly static string GetDistricts = "dbo.getDistricts";
     }
 }

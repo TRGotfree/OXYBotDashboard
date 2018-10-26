@@ -23,6 +23,5 @@ namespace OxyBotAdmin.Services
             this.DBController = dBController;
         }
 
-
     }
 }

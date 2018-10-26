@@ -41,5 +41,10 @@ namespace OxyBotAdmin.Services
         {
             return new DrugStoreDBController(getConnectionString, logger, configuration);
         }
+
+        public DistrictDBController GetDistrictDBController()
+        {
+            return new DistrictDBController(getConnectionString, logger, configuration);
+        }
     }
 }

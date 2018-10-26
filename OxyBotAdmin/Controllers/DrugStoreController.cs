@@ -52,7 +52,7 @@ namespace OxyBotAdmin.Controllers
             catch (Exception ex)
             {
                 result = StatusCode(500, sharedLocalizer["InternalServerError"]);
-                logger.LogError(ex.StackTrace);
+                logger.LogError(ex);
             }
             return result;
         }
@@ -78,7 +78,7 @@ namespace OxyBotAdmin.Controllers
             }
             catch (Exception ex)
             {
-                logger.LogError(ex.StackTrace);
+                logger.LogError(ex);
                 result = StatusCode(500, sharedLocalizer["InternalServerError"]);
             }
             return result;
@@ -105,16 +105,10 @@ namespace OxyBotAdmin.Controllers
             }
             catch (Exception ex)
             {
-                logger.LogError(ex.StackTrace);
+                logger.LogError(ex);
                 result = StatusCode(500, sharedLocalizer["InternalServerError"]);
             }
             return result;
         }
-
-        //// DELETE: api/ApiWithActions/5
-        //[HttpDelete("{id}")]
-        //public void Delete(int id)
-        //{
-        //}
     }
 }

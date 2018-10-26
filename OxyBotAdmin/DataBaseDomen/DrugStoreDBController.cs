@@ -65,7 +65,7 @@ namespace OxyBotAdmin.DataBaseDomen
             }
             catch (Exception ex)
             {
-                logger.LogError($"{ex.Message} {ex.StackTrace}");
+                logger.LogError(ex);
                 throw ex;
             }
 
@@ -109,7 +109,7 @@ namespace OxyBotAdmin.DataBaseDomen
                         catch (Exception ex)
                         {
                             transaction.Rollback();
-                            logger.LogError(ex.StackTrace);
+                            logger.LogError(ex);
                             throw ex;
                         }
                     }
@@ -118,7 +118,7 @@ namespace OxyBotAdmin.DataBaseDomen
             }
             catch (Exception ex)
             {
-                logger.LogError(ex.StackTrace);
+                logger.LogError(ex);
                 throw ex;
             }
         }
@@ -162,7 +162,7 @@ namespace OxyBotAdmin.DataBaseDomen
                         catch (Exception ex)
                         {
                             transaction.Rollback();
-                            logger.LogError(ex.StackTrace);
+                            logger.LogError(ex);
                             throw ex;
                         }
                     }
@@ -170,7 +170,7 @@ namespace OxyBotAdmin.DataBaseDomen
             }
             catch (Exception ex)
             {
-                logger.LogError(ex.StackTrace);
+                logger.LogError(ex);
                 throw ex;
             }
         }

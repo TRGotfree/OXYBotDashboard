@@ -15,5 +15,7 @@ namespace OxyBotAdmin.Services
         AdvertActionsDBController GetAdvertActionsDBController();
 
         DrugStoreDBController GetDrugStoreDBController();
+
+        DistrictDBController GetDistrictDBController();
     }
 }

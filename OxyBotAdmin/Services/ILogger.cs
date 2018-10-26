@@ -7,7 +7,7 @@ namespace OxyBotAdmin.Services
 {
     public interface ILogger
     {
-        void LogError(string errText);
+        void LogError(Exception ex);
 
         void LogInfo(string infoText);
     }

@@ -31,14 +31,7 @@ namespace OxyBotAdmin
         public IConfiguration Configuration { get; }
 
         public void ConfigureServices(IServiceCollection services)
-        {
-            //services.Configure<CookiePolicyOptions>(options =>
-            //{
-            //    options.CheckConsentNeeded = context => true;
-            //    options.MinimumSameSitePolicy = SameSiteMode.None;
-
-            //});
-
+        {        
             services.AddLocalization(options => options.ResourcesPath = "Resources");
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -87,8 +80,6 @@ namespace OxyBotAdmin
                 options.SupportedCultures = supportedCultres;
                 options.SupportedUICultures = supportedCultres;
             });
-
-
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
@@ -108,7 +99,6 @@ namespace OxyBotAdmin
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-            //app.UseCookiePolicy();
             app.UseAuthentication();
 
             app.UseMvc(routes =>

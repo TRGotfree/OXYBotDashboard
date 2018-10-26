@@ -10,9 +10,9 @@ namespace OxyBotAdmin.Services
     {
         private Logger logger = LogManager.GetCurrentClassLogger();
 
-        public void LogError(string errText)
+        public void LogError(Exception ex)
         {
-            logger.Error(errText);
+            logger.Error($"Текст ошибки: {ex.Message} StackTrace: {ex.StackTrace}");
         }
 
         public void LogInfo(string infoText)
