@@ -57,8 +57,6 @@ namespace OxyBotAdmin.Controllers
                         var responseData = new
                         {
                             token = new JwtSecurityTokenHandler().WriteToken(jwtoken)
-                            //,
-                            //username = userIdentityClaim.Name
                         };
                         res = Ok(responseData);
                     }
@@ -66,7 +64,7 @@ namespace OxyBotAdmin.Controllers
             }
             catch (Exception ex)
             {
-                logger.LogError(ex.StackTrace);
+                logger.LogError(ex);
                 res = StatusCode(500);
             }
 

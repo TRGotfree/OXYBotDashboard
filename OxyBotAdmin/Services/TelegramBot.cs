@@ -33,7 +33,7 @@ namespace OxyBotAdmin.Services
                 }
                 catch (Exception ex)
                 {
-                    logger.LogError(ex.StackTrace);
+                    logger.LogError(ex);
                     result = false;
                 }
             }
@@ -52,7 +52,7 @@ namespace OxyBotAdmin.Services
                     }
                     catch (Exception ex)
                     {
-                        logger.LogError(ex.StackTrace);
+                        logger.LogError(ex);
                     }
                 }
             }
@@ -70,7 +70,7 @@ namespace OxyBotAdmin.Services
                     }
                     catch (Exception ex)
                     {
-                        logger.LogError(ex.StackTrace);
+                        logger.LogError(ex);
                     }
                 }
             }

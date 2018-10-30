@@ -38,7 +38,7 @@ namespace OxyBotAdmin.Controllers
 
                 var data = new
                 {
-                    districts = _districts
+                    districts = _districts.Select(d => d.Name).ToArray()
                 };
 
                 result = Ok(data);

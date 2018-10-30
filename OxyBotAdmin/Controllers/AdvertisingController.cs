@@ -53,7 +53,7 @@ namespace OxyBotAdmin.Controllers
             }
             catch (Exception ex)
             {
-                logger.LogError(ex.StackTrace);
+                logger.LogError(ex);
                 result = StatusCode(500, sharedLocalizer["InternalServerError"]);
             }
             return result;
@@ -86,7 +86,7 @@ namespace OxyBotAdmin.Controllers
             }
             catch (Exception ex)
             {
-                logger.LogError(ex.StackTrace);
+                logger.LogError(ex);
                 result = StatusCode(500, sharedLocalizer["InternalServerError"]);
             }
 
@@ -120,7 +120,7 @@ namespace OxyBotAdmin.Controllers
             }
             catch (Exception ex)
             {
-                logger.LogError(ex.StackTrace);
+                logger.LogError(ex);
                 result = StatusCode(500, sharedLocalizer["InternalServerError"]);
             }
 
@@ -149,7 +149,7 @@ namespace OxyBotAdmin.Controllers
             }
             catch (Exception ex)
             {
-                logger.LogError(ex.StackTrace);
+                logger.LogError(ex);
                 throw ex;
             }
             parseResult = dateTimeTuple;

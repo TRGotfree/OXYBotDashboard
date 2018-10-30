@@ -38,6 +38,7 @@
                 </tr>
             </tbody>
         </table>
+
         <div class="pag-container">
           <b-v-pagination class="pag" size="md" :total-rows="drugStoreTotalCount" :per-page="dataRowsPerPage" v-model="currentPage"></b-v-pagination>            
         </div>
@@ -65,12 +66,19 @@
                 </div>
                 <div class="form-group row">
                   <label for="drugStore-phone" class="col-3 col-form-label">Телефон</label>
-                  <div class="col-4">
+                  <div class="col-3">
                     <input type="text" class="form-control" placeholder="Телефон" id="drugStore-phone" v-model="selectedDrugStore.phone"/>
                   </div>                  
                   <label for="drugStore-district" class="col-2 col-form-label">Район</label>
-                  <div class="col-3">
-                    <input type="text" class="form-control" placeholder="Телефон" id="drugStore-district" v-model="selectedDrugStore.district"/>
+                  <div class="col-4">
+                   <div class="dropdown">
+                      <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                       Район/Город
+                      </button>
+                      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        <a v-for="distr in districts" :key="distr.name" class="dropdown-item" href="#">{{distr.name}}</a>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
@@ -95,9 +103,12 @@
     </main>
 </div>
 </template>
+
 <script>
+
 const getDrugStoresUrl = "/api/drugstore?beginPage=";
 const updInsertDrugStoreUrl = "/api/drugstore";
+const getDistricts = "/api/district";
 import axios from "axios";
 import ErrorAlert from "../Alerts/errorAlert.vue";
 import SuccessAlert from "../Alerts/successAlert.vue";
@@ -142,7 +153,7 @@ let validateDrugStoreFields = function(drugStore) {
         validationResult.isValid = true;
         validationResult.msg = "";
       }
-  } 
+    }
   } catch (error) {
     validationResult.isValid = false;
     validationResult.msg = ru.dataNotSaved;
@@ -160,6 +171,7 @@ export default {
     Loading,
     MessageModalWindow
   },
+  
   data: function() {
     return {
       drugStores: [],
@@ -175,10 +187,41 @@ export default {
         headerText: "Внимание!",
         message2Show: "",
         timeOut2Show: 2000
-      }
+      },
+      districts: []
     };
   },
+
   methods: {
+    getDistricts: function() {
+      let thisComp = this;
+      try {
+        axios
+          .get(getDistricts, {
+            headers: authorizationHeader(sessionStorage.getItem("userToken"))
+          })
+          .then(function(res) {
+            if (res.status === 200) {
+              thisComp.districts = res.data.districts;
+            } else {
+              thisComp.showMsgModalWindow(
+                true,
+                ru.attention,
+                res.toString(),
+                null
+              );
+              thisComp.isLoading = false;
+            }
+          })
+          .catch(function(error) {
+            thisComp.showMsgModalWindow(true, ru.error, error.toString(), null);
+            thisComp.isLoading = false;
+          });
+      } catch (error) {
+        thisComp.showMsgModalWindow(true, ru.error, error.toString(), null);
+        thisComp.isLoading = false;
+      }
+    },
     getDrugStores: function(beginPage, endPage) {
       let thisComp = this;
       axios
@@ -209,7 +252,7 @@ export default {
     },
     saveDrugStore: function(drugStore, event) {
       let thisComp = this;
-      
+
       console.log("DrugStoreId is: " + drugStore.drugStoreId);
       console.log("DrugStoreStats is: " + drugStore.status);
 
@@ -218,7 +261,7 @@ export default {
           let ds = drugStore;
 
           console.log(drugStore.drugStoreId);
-          
+
           axios
             .post(updInsertDrugStoreUrl, ds, {
               headers: authorizationHeader(sessionStorage.getItem("userToken"))
@@ -306,9 +349,12 @@ export default {
       this.msgModalWindow.message2Show = msgText;
     }
   },
+
   mounted: function() {
     this.getDrugStores(1, 15);
+    this.getDistricts();
   },
+
   watch: {
     currentPage: function(pageIndex) {
       let lastRow = this.currentPage * this.dataRowsPerPage;
@@ -318,6 +364,7 @@ export default {
   }
 };
 </script>
+
 <style>
 .pag-container {
   text-align: center;

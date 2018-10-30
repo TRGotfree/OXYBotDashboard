@@ -55,7 +55,7 @@ namespace OxyBotAdmin.DataBaseDomen
             }
             catch (Exception ex)
             {
-                logger.LogError(ex.StackTrace);
+                logger.LogError(ex);
                 tgUsers = new List<TelegramUser>(0);
             }
             return tgUsers;
@@ -100,7 +100,7 @@ namespace OxyBotAdmin.DataBaseDomen
             }
             catch (Exception ex)
             {
-                logger.LogError(ex.StackTrace);
+                logger.LogError(ex);
                 tgUsers = new List<TelegramUserData>(0);
             }
             return tgUsers;

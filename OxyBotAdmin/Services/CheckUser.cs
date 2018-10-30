@@ -36,7 +36,7 @@ namespace OxyBotAdmin.Services
             }
             catch (Exception ex)
             {
-                logger.LogError(ex.StackTrace);
+                logger.LogError(ex);
             }
 
             return checkResult;
@@ -51,7 +51,7 @@ namespace OxyBotAdmin.Services
             }
             catch (Exception ex)
             {
-                logger.LogError(ex.StackTrace);
+                logger.LogError(ex);
             }
             return botAdmin;
         }

@@ -50,7 +50,7 @@ namespace OxyBotAdmin.DataBaseDomen
             }
             catch (Exception ex)
             {
-                logger.LogError(ex.StackTrace);
+                logger.LogError(ex);
                 throw ex;
             }
             return botAdmin;
@@ -76,7 +76,7 @@ namespace OxyBotAdmin.DataBaseDomen
             }
             catch (Exception ex)
             {
-                logger.LogError(ex.StackTrace);
+                logger.LogError(ex);
                 throw ex;
             }
             return checkResult;

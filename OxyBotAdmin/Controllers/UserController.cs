@@ -53,7 +53,7 @@ namespace OxyBotAdmin.Controllers
             }
             catch (Exception ex)
             {
-                logger.LogError(ex.StackTrace);
+                logger.LogError(ex);
                 result = StatusCode(500);
             }
 
@@ -90,7 +90,7 @@ namespace OxyBotAdmin.Controllers
             }
             catch (Exception ex)
             {
-                logger.LogError(ex.StackTrace);
+                logger.LogError(ex);
                 result = StatusCode(500);
             }
             return result;
