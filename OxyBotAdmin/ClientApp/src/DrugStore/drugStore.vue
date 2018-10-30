@@ -47,50 +47,50 @@
             <h4 slot="header">{{selectedDrugStore.drugStoreName}}</h4>
             <form slot="body">
                 <div class="form-group row">                   
-                  <label for="drugStore-name" class="col-3 col-form-label">Название</label>
+                  <label for="drugStore-name" class="col-3 col-form-label text-right">Название</label>
                   <div class="col-9">
                     <input type="text" class="form-control" v-model="selectedDrugStore.drugStoreName" id="drugStore-name" placeholder="Название аптеки">
                   </div>  
                 </div>   
               <div class="form-group row"> 
-                <label for="drugStore-shortname" class="col-3 col-form-label">Краткое название</label>
+                <label for="drugStore-shortname" class="col-3 col-form-label text-right">Краткое название</label>
                 <div class="col-9">
                   <input type="text" class="form-control" v-model="selectedDrugStore.shortName" id="drugStore-shortname" placeholder="Краткое название">
                 </div>
               </div>
                 <div class="form-group row">
-                  <label for="drugStore-orientir" class="col-3 col-form-label">Ориентир</label>
+                  <label for="drugStore-orientir" class="col-3 col-form-label text-right">Ориентир</label>
                   <div class="col-9">
                     <input type="text" class="form-control" id="drugStore-orientir" v-model="selectedDrugStore.orientir">
                   </div>                  
                 </div>
                 <div class="form-group row">
-                  <label for="drugStore-phone" class="col-3 col-form-label">Телефон</label>
+                  <label for="drugStore-phone" class="col-3 col-form-label text-right">Телефон</label>
                   <div class="col-3">
                     <input type="text" class="form-control" placeholder="Телефон" id="drugStore-phone" v-model="selectedDrugStore.phone"/>
                   </div>                  
-                  <label for="drugStore-district" class="col-2 col-form-label">Район</label>
-                  <div class="col-4">
-                   <div class="dropdown">
-                      <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                       Район/Город
-                      </button>
-                      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                        <a v-for="distr in districts" :key="distr.name" class="dropdown-item" href="#">{{distr.name}}</a>
-                      </div>
+                  
+                  <label for="drugStore-worktime" class="col-3 col-form-label text-right">Режим работы</label>
+                  <div class="col-3">
+                    <input type="text" class="form-control" placeholder="Режим работы" id="drugStore-worktime" v-model="selectedDrugStore.workTime">
+                  </div>
+                  
+                </div>
+
+                <div class="form-group row">
+                  <label for="dropdownMenuButton" class="col-3 col-form-label text-right">Город/Район</label>
+                  <div class="col-9 dropdown">
+                    <button class="btn btn-default dropdown-toggle text-left drop-down-btn" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                      {{selectedDistrict}}    
+                    </button>
+                    <div class="dropdown-menu scrollable-menu" aria-labelledby="dropdownMenuButton">
+                        <a v-for="distr in districts" :key="distr" class="dropdown-item" href="#" v-on:click="selectedDistrict=distr">{{distr}}</a>
                     </div>
                   </div>
                 </div>
 
-                <div class="form-group row">
-                  <label for="drugStore-worktime" class="col-3 col-form-label">Режим работы</label>
-                  <div class="col-9">
-                    <input type="text" class="form-control" placeholder="Режим работы" id="drugStore-worktime" v-model="selectedDrugStore.workTime">
-                  </div>
-                </div>
-
                  <div class="form-group row">
-                  <label for="drugStore-address" class="col-3 col-form-label">Адрес</label>
+                  <label for="drugStore-address" class="col-3 col-form-label text-right">Адрес</label>
                   <div class="col-9">
                     <input type="text" class="form-control" placeholder="Адрес" id="drugStore-address" v-model="selectedDrugStore.address">
                   </div>
@@ -188,7 +188,8 @@ export default {
         message2Show: "",
         timeOut2Show: 2000
       },
-      districts: []
+      districts: [],
+      selectedDistrict: "Выберите город/район"
     };
   },
 
@@ -375,6 +376,18 @@ export default {
 .create-drugStore-btn {
   float: right;
   margin: 0 20pt 20pt 0;
+}
+.scrollable-menu {
+    height: auto;
+    max-height: 200px;
+    overflow-x: hidden;
+    width: 100%;
+    text-align: left;   
+}
+.drop-down-btn{
+  width: 100%;
+  background-color: white;
+  border: solid #CED4DA 1px;
 }
 </style>
 
