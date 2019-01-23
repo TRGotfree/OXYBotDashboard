@@ -66,6 +66,7 @@ namespace OxyBotAdmin.Controllers
             {
                 logger.LogError(ex);
                 res = StatusCode(500);
+                throw ex;
             }
 
             return res;

@@ -47,6 +47,7 @@ namespace OxyBotAdmin.Controllers
             {
                 result = StatusCode(500, sharedLocalizer["InternalServerError"]);
                 logger.LogError(ex);
+                throw ex;
             }
             return result;
         }

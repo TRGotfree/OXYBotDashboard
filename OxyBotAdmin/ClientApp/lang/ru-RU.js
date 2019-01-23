@@ -7,7 +7,7 @@ export const ru = {
         imgNotChoosed: "Изображение не выбрано",
         imgNotUploaded: "Изображение не загружено на сервер",
         imgLoadedSuccessfully: "Изображение успешно загружено",
-        someFieldsAreEmptyOrNotValid: "Заполните все поля для сохранения рекламной акции!",
+        someFieldsAreEmptyOrNotValid: "Заполните все поля для сохранения данных!",
         dataNotSaved: "Не удалось сохранить данные!",
         actionDataSaved: "Данные по рекламной акции успешно сохранены!",
         dataNotSavedTryAgain: "Данные не сохранены, попробуйте еще раз!",

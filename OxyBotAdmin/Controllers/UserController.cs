@@ -55,6 +55,7 @@ namespace OxyBotAdmin.Controllers
             {
                 logger.LogError(ex);
                 result = StatusCode(500);
+                throw ex;
             }
 
             return result;
@@ -92,6 +93,7 @@ namespace OxyBotAdmin.Controllers
             {
                 logger.LogError(ex);
                 result = StatusCode(500);
+                throw ex;
             }
             return result;
         }

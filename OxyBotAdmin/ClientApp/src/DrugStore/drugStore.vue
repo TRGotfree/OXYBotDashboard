@@ -134,7 +134,7 @@ let validateDrugStoreFields = function(drugStore) {
         drugStore.address.length > 0 &&
         drugStore.phone.length > 0 &&
         drugStore.workTime.length > 0 &&
-        drugStore.orietir.length > 0 &&
+        drugStore.orientir.length > 0 &&
         drugStore.district.length > 0 &&
         drugStore.shortName.length > 0
       ) {
@@ -297,6 +297,7 @@ export default {
             });
         } else if (drugStore.id > 0) {
           let ds = drugStore;
+          console.log("Updating drug store");
           axios
             .put(updInsertDrugStoreUrl, ds, {
               headers: authorizationHeader(sessionStorage.getItem("userToken"))
@@ -326,6 +327,7 @@ export default {
         }
       } else {
         let validatorMsg = validateDrugStoreFields(drugStore).msg;
+        console.log(validatorMsg);
         thisComp.showMsgModalWindow(true, ru.attention, validatorMsg, null);
       }
     },
