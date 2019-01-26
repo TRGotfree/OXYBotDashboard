@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
+using OxyBotAdmin.Services;
 
 namespace OxyBotAdmin.Controllers
 {
@@ -12,12 +14,55 @@ namespace OxyBotAdmin.Controllers
     [ApiController]
     public class RequestController : ControllerBase
     {
-        // GET: api/Request
-        [HttpGet]
-        [Authorize]
-        public JsonResult Get()
+
+        private ILogger logger;
+        private BaseService baseService;
+        private IStringLocalizer<AppData.SharedResource> sharedLocalizer;
+
+        public RequestController(BaseService _baseService, IStringLocalizer<AppData.SharedResource> _localizer)
         {
-            return new JsonResult("");
+            logger = _baseService.Logger;
+            baseService = _baseService;
+            sharedLocalizer = _localizer;
+        }
+
+
+        // GET: api/Request
+        [Authorize]
+        [HttpGet]
+        [Route("all")]
+        public IActionResult All([FromQuery]int beginPage, [FromQuery]int endPage)
+        {
+            IActionResult result = StatusCode(400);
+            try
+            {
+                if (beginPage > 0 && endPage > 0)
+                {
+                    var tgUsers = baseService.DBController.GetTGUsersConroller().GetTelegramBotUsers(beginPage, endPage);
+                    if (tgUsers != null)
+                    {
+                        int totalUsersCount = tgUsers.FirstOrDefault() == null ? 0 : tgUsers.FirstOrDefault().TotalUserCount;
+                        var data = new
+                        {
+                            botUsers = tgUsers,
+                            botUsersCount = totalUsersCount
+                        };
+                        result = Ok(data);
+                    }
+                    else
+                    {
+                        result = StatusCode(500);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex);
+                result = StatusCode(500);
+                throw ex;
+            }
+
+            return result;
         }
 
         // GET: api/Request/5
