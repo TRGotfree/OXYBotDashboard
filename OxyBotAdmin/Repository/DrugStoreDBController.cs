@@ -8,7 +8,7 @@ using Microsoft.Extensions.Configuration;
 using OxyBotAdmin.Models;
 using OxyBotAdmin.Services;
 
-namespace OxyBotAdmin.DataBaseDomen
+namespace OxyBotAdmin.Repository
 {
     public class DrugStoreDBController : IDataBaseDomenController
     {

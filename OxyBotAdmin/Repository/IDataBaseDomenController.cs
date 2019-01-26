@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using OxyBotAdmin.Services;
 
-namespace OxyBotAdmin.DataBaseDomen
+namespace OxyBotAdmin.Repository
 {
     public interface IDataBaseDomenController
     {

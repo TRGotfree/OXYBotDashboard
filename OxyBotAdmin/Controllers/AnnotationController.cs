@@ -12,20 +12,22 @@ namespace OxyBotAdmin.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class RequestController : ControllerBase
+    public class AnnotationController : ControllerBase
     {
+
         private ILogger logger;
         private BaseService baseService;
         private IStringLocalizer<AppData.SharedResource> sharedLocalizer;
 
-        public RequestController(BaseService _baseService, IStringLocalizer<AppData.SharedResource> _localizer)
+        public AnnotationController(BaseService _baseService, IStringLocalizer<AppData.SharedResource> _localizer)
         {
             logger = _baseService.Logger;
             baseService = _baseService;
             sharedLocalizer = _localizer;
         }
 
-        // GET: api/Request
+
+        // GET: api/Annotation
         [Authorize]
         [HttpGet]
         public IActionResult Get([FromQuery]int beginPage, [FromQuery]int endPage)
@@ -35,14 +37,14 @@ namespace OxyBotAdmin.Controllers
             {
                 if (beginPage > 0 && endPage > 0)
                 {
-                    var userRequests = baseService.DBController.GetUserRequestsDBController().GetRequests(beginPage, endPage);
-                    if (userRequests != null)
+                    var annotationsRes = baseService.DBController.GetGoodAnnotations().GetAnnotations(beginPage, endPage);
+                    if (annotationsRes != null)
                     {
-                        int totalUserRequest = userRequests.FirstOrDefault() == null ? 0 : userRequests.FirstOrDefault().TotalCount;
+                        int annotationCount = annotationsRes.FirstOrDefault() == null ? 0 : annotationsRes.FirstOrDefault().TotalCountOfAnnotations;
                         var data = new
                         {
-                            requests = userRequests,
-                            requestTotalCount = totalUserRequest
+                            annotations = annotationsRes,
+                            totalAnnotationCount = annotationCount
                         };
                         result = Ok(data);
                     }
@@ -61,29 +63,29 @@ namespace OxyBotAdmin.Controllers
             return result;
         }
 
-        //// GET: api/Request/5
-        //[HttpGet("{id}", Name = "Get")]
-        //public string Get(int id)
-        //{
-        //    return "value";
-        //}
+        // GET: api/Annotation/5
+        [HttpGet("{id}", Name = "Get")]
+        public string Get(int id)
+        {
+            return "value";
+        }
 
-        //// POST: api/Request
-        //[HttpPost]
-        //public void Post([FromBody] string value)
-        //{
-        //}
+        // POST: api/Annotation
+        [HttpPost]
+        public void Post([FromBody] string value)
+        {
+        }
 
-        //// PUT: api/Request/5
-        //[HttpPut("{id}")]
-        //public void Put(int id, [FromBody] string value)
-        //{
-        //}
+        // PUT: api/Annotation/5
+        [HttpPut("{id}")]
+        public void Put(int id, [FromBody] string value)
+        {
+        }
 
-        //// DELETE: api/ApiWithActions/5
-        //[HttpDelete("{id}")]
-        //public void Delete(int id)
-        //{
-        //}
+        // DELETE: api/ApiWithActions/5
+        [HttpDelete("{id}")]
+        public void Delete(int id)
+        {
+        }
     }
 }

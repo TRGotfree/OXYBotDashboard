@@ -4,8 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using OxyBotAdmin.Models;
-using OxyBotAdmin.DataBaseDomen;
 using Microsoft.Extensions.Configuration;
+using OxyBotAdmin.Repository;
 
 namespace OxyBotAdmin.Services
 {
@@ -45,6 +45,16 @@ namespace OxyBotAdmin.Services
         public DistrictDBController GetDistrictDBController()
         {
             return new DistrictDBController(getConnectionString, logger, configuration);
+        }
+
+        public UserRequestsDBController GetUserRequestsDBController()
+        {
+            return new UserRequestsDBController(getConnectionString, logger, configuration);
+        }
+
+        public GoodAnnotationsDbController GetGoodAnnotations()
+        {
+            return new GoodAnnotationsDbController(getConnectionString, logger, configuration);
         }
     }
 }

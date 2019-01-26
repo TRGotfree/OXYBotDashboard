@@ -13,6 +13,7 @@ namespace OxyBotAdmin.Models
         public string UserName { get; set; }
         public string UserFirstName { get; set; }
         public string UserLastName { get; set; }
-        public DateTime MessageDateTime { get; set; }
+        public string RequestDateTime { get; set; }
+        public int TotalCount { get; set; }
     }
 }

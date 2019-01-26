@@ -8,7 +8,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace OxyBotAdmin.DataBaseDomen
+namespace OxyBotAdmin.Repository
 {
     public class AdvertActionsDBController : IDataBaseDomenController
     {

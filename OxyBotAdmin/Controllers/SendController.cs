@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using OxyBotAdmin.AppData;
-using OxyBotAdmin.DataBaseDomen;
 using OxyBotAdmin.Models;
 using OxyBotAdmin.Services;
 

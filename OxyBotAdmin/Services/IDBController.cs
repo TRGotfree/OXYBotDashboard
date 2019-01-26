@@ -1,4 +1,4 @@
-﻿using OxyBotAdmin.DataBaseDomen;
+﻿using OxyBotAdmin.Repository;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,5 +17,9 @@ namespace OxyBotAdmin.Services
         DrugStoreDBController GetDrugStoreDBController();
 
         DistrictDBController GetDistrictDBController();
+
+        UserRequestsDBController GetUserRequestsDBController();
+
+        GoodAnnotationsDbController GetGoodAnnotations();
     }
 }

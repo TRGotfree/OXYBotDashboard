@@ -5,7 +5,6 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using NLog;
-using OxyBotAdmin.DataBaseDomen;
 using OxyBotAdmin.Models;
 
 namespace OxyBotAdmin.Services

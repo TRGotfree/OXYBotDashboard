@@ -7,7 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Data;
 
-namespace OxyBotAdmin.DataBaseDomen
+namespace OxyBotAdmin.Repository
 {
     public class LoginDbController :IDataBaseDomenController
     {

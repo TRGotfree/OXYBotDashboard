@@ -8,22 +8,22 @@ using Microsoft.Extensions.Configuration;
 using OxyBotAdmin.Models;
 using OxyBotAdmin.Services;
 
-namespace OxyBotAdmin.DataBaseDomen
+namespace OxyBotAdmin.Repository
 {
-    public class UserReuestsController
+    public class UserRequestsDBController
     {
         private readonly string connectionString;
         private readonly ILogger logger;
         private readonly int CommandTimeout;
 
-        public UserReuestsController(IGetConnectionString getConnectionString, ILogger _logger, IConfiguration configuration)
+        public UserRequestsDBController(IGetConnectionString getConnectionString, ILogger _logger, IConfiguration configuration)
         {
             connectionString = getConnectionString.GetConnString();
             logger = _logger;
             CommandTimeout = configuration.GetValue<int>("CommandTimeOut");
         }
 
-        public IEnumerable<UserRequest> GetActions(int beginPage, int endPage)
+        public IEnumerable<UserRequest> GetRequests(int beginPage, int endPage)
         {
             List<UserRequest> result = new List<UserRequest>(0);
             try
@@ -31,7 +31,7 @@ namespace OxyBotAdmin.DataBaseDomen
                 using (SqlConnection connection = new SqlConnection(connectionString))
                 {
                     connection.Open();
-                    using (SqlCommand command = new SqlCommand(SqlScripts.GetAdvertisingActions, connection))
+                    using (SqlCommand command = new SqlCommand(SqlScripts.GetRequests, connection))
                     {
                         command.CommandType = CommandType.StoredProcedure;
                         command.CommandTimeout = CommandTimeout;
@@ -45,14 +45,15 @@ namespace OxyBotAdmin.DataBaseDomen
                             {
                                 userRequest = new UserRequest();
 
-                                userRequest.RequestId = reader.GetInt64(0);
-                                userRequest.RequestText = reader.GetString(1);
-                                userRequest.ChatId = reader.GetInt64(2);
-                                userRequest.UserName = reader.GetString(3);
-                                userRequest.UserFirstName = reader.GetString(4);
-                                userRequest.UserLastName = reader.GetString(5);
-                                userRequest.MessageDateTime = reader.GetDateTime(6);
-                                
+                                userRequest.RequestId = reader.GetInt64(1);
+                                userRequest.RequestText = reader.GetString(2).Length > 50 ? reader.GetString(2).Substring(0, 50) : reader.GetString(2);
+                                userRequest.ChatId = reader.GetInt64(3);
+                                userRequest.UserName = reader.GetString(4);
+                                userRequest.UserFirstName = reader.GetString(5);
+                                userRequest.UserLastName = reader.GetString(6);
+                                userRequest.RequestDateTime = reader.GetDateTime(7).ToString("dd.MM.yyyy HH:mm");
+                                userRequest.TotalCount = reader.GetInt32(8);
+
                                 result.Add(userRequest);
                             }
                         }

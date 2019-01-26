@@ -12,6 +12,8 @@ import SendImage from "./SendImage2Users/sendImage.vue";
 import Users from "./Users/users.vue";
 import Actions from "./Actions/actons.vue";
 import DrugStore from "./DrugStore/drugStore.vue";
+import UserRequest from "./UserRequests/requests.vue";
+import Annotation from "./Annotations/annotations.vue";
 
 Vue.use(BootstrapVue);
 Vue.use(VueRouter);
@@ -43,6 +45,14 @@ const routes = [{
   {
     path: "/api/drugstore",
     component: DrugStore
+  },
+  {
+    path: "/api/request",
+    component: UserRequest
+  },
+  {
+    path: "/api/annotation",
+    component: Annotation
   }
 ];
 
