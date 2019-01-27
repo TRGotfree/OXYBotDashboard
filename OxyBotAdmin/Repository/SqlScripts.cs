@@ -27,5 +27,9 @@
         public static string GetRequests => "dbo.getUserRequest";
 
         public static string GetAnnotations => "dbo.getGoodAnnotation";
+
+        public static string GetAnnotationById => "dbo.getGoodAnnotationById";
+
+        public static string UpdateAnnotation => "dbo.updateAnnotation";
     }
 }

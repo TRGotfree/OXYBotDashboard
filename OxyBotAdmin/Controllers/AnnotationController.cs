@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
+using OxyBotAdmin.Models;
 using OxyBotAdmin.Services;
 
 namespace OxyBotAdmin.Controllers
@@ -64,10 +65,30 @@ namespace OxyBotAdmin.Controllers
         }
 
         // GET: api/Annotation/5
+        [Authorize]
         [HttpGet("{id}", Name = "Get")]
-        public string Get(int id)
+        public IActionResult Get(int id)
         {
-            return "value";
+            IActionResult result = StatusCode(400);
+            try
+            {
+                if (id > 0)
+                {
+                    var annot = baseService.DBController.GetGoodAnnotations().GetAnnotation(id);
+                    var data = new
+                    {
+                        annotation = annot
+                    };
+
+                    result = Ok(data);
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex);
+                result = StatusCode(500);
+            }
+            return result;
         }
 
         // POST: api/Annotation
@@ -76,10 +97,30 @@ namespace OxyBotAdmin.Controllers
         {
         }
 
-        // PUT: api/Annotation/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        // PUT: api/Annotation
+        [Authorize]
+        [HttpPut]
+        public IActionResult Put([FromBody]GoodAnnotation annotation)
         {
+            IActionResult result = StatusCode(400, sharedLocalizer["BadRequest"]);
+            try
+            {
+                if (annotation != null && annotation.AnnotationId > 0)
+                {
+                    if (ModelState.IsValid)
+                    {
+                        baseService.DBController.GetGoodAnnotations().UpdateAnnotation(annotation);
+                        result = Ok();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex);
+                result = StatusCode(500, sharedLocalizer["InternalServerError"]);
+            }
+
+            return result;
         }
 
         // DELETE: api/ApiWithActions/5

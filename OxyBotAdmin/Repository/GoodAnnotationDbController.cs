@@ -46,13 +46,13 @@ namespace OxyBotAdmin.Repository
                                 annotation = new GoodAnnotation();
 
                                 annotation.AnnotationId = reader.GetInt32(0);
-                                annotation.DrugName = reader.GetString(1).Length > 50 ? reader.GetString(1).Substring(0, 50) : reader.GetString(1);
-                                annotation.Producer = reader.GetString(2).Length > 50 ? reader.GetString(2).Substring(0, 50) : reader.GetString(2);
-                                annotation.UsingWay = reader.GetString(3).Length > 50 ? reader.GetString(3).Substring(0, 50) : reader.GetString(3);
-                                annotation.ForWhatIsUse = reader.GetString(4).Length > 50 ? reader.GetString(4).Substring(0, 50) : reader.GetString(4);
-                                annotation.SpecialInstructions = reader.GetString(5).Length > 50 ? reader.GetString(5).Substring(0, 50) : reader.GetString(5);
-                                annotation.ContraIndicators = reader.GetString(6).Length > 50 ? reader.GetString(6).Substring(0, 50) : reader.GetString(6);
-                                annotation.SideEffects = reader.GetString(7).Length > 50 ? reader.GetString(7).Substring(0, 50) : reader.GetString(7);
+                                annotation.DrugName = reader.GetString(1);
+                                annotation.Producer = reader.GetString(2);
+                                annotation.UsingWay = reader.GetString(3);
+                                annotation.ForWhatIsUse = reader.GetString(4);
+                                annotation.SpecialInstructions = reader.GetString(5);
+                                annotation.ContraIndicators = reader.GetString(6);
+                                annotation.SideEffects = reader.GetString(7);
                                 annotation.IsImageExists = reader.GetInt32(8) > 0;
                                 annotation.TotalCountOfAnnotations = reader.GetInt32(9);
 
@@ -70,6 +70,88 @@ namespace OxyBotAdmin.Repository
             return result;
         }
 
+        public GoodAnnotation GetAnnotation(int id)
+        {
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
+                    connection.Open();
+                    using (SqlCommand command = new SqlCommand(SqlScripts.GetAnnotationById, connection))
+                    {
+                        command.CommandType = CommandType.StoredProcedure;
+                        command.CommandTimeout = CommandTimeout;
+                        command.Parameters.Add("@id", SqlDbType.Int).Value = id;
+
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            GoodAnnotation annotation = new GoodAnnotation();
+                            while (reader.Read())
+                            {
+                                annotation.AnnotationId = reader.GetInt32(0);
+                                annotation.DrugName = reader.GetString(1);
+                                annotation.Producer = reader.GetString(2);
+                                annotation.UsingWay = reader.GetString(3);
+                                annotation.ForWhatIsUse = reader.GetString(4);
+                                annotation.SpecialInstructions = reader.GetString(5);
+                                annotation.ContraIndicators = reader.GetString(6);
+                                annotation.SideEffects = reader.GetString(7);
+                                annotation.IsImageExists = reader.GetInt32(8) > 0;
+                            }
+                            return annotation;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex);
+                throw ex;
+            }
+        }
+
+        public void UpdateAnnotation(GoodAnnotation annotation)
+        {
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
+                    connection.Open();
+                    using (SqlCommand command = new SqlCommand(SqlScripts.UpdateAnnotation, connection))
+                    {
+                        using (SqlTransaction transaction = connection.BeginTransaction())
+                        {
+                            try
+                            {        
+                                command.CommandType = CommandType.StoredProcedure;
+                                command.CommandTimeout = CommandTimeout;
+                                command.Transaction = transaction;
+                                command.Parameters.Add("@id", SqlDbType.Int).Value = annotation.AnnotationId;
+                                command.Parameters.Add("@usingWay", SqlDbType.NVarChar).Value = annotation.UsingWay;
+                                command.Parameters.Add("@forWhatIsUse", SqlDbType.NVarChar).Value = annotation.ForWhatIsUse;
+                                command.Parameters.Add("@specialInstructions", SqlDbType.NVarChar).Value = annotation.SpecialInstructions;
+                                command.Parameters.Add("@contraindicators", SqlDbType.NVarChar).Value = annotation.ContraIndicators;
+                                command.Parameters.Add("@sideEffects", SqlDbType.NVarChar).Value = annotation.SideEffects;
+
+                                command.ExecuteNonQuery();
+                                transaction.Commit();
+                            }
+                            catch (Exception ex)
+                            {
+                                transaction.Rollback();
+                                logger.LogError(ex);
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex);
+                throw ex;
+            }
+        }
 
     }
+
 }
