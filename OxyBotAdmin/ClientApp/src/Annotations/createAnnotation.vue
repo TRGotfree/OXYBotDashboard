@@ -2,40 +2,38 @@
   <div>
     <header-navbar></header-navbar>
     <!-- <loading v-bind:isLoading="isLoading"></loading> -->
-
-     <main>
-      <div>
+      <div class="create-annotation">
         <b-form>
-          <b-form-group
-            id="goodsGroup"
-            label="Email address:"
-            label-for="goodId"
+          <b-form-group label="ID товара:" label-for="goodId"
             description="Это идентификатор для связи справочника бота и Аналитики">
             <b-form-input id="goodId" type="number" required placeholder="ID товара"></b-form-input>
+          </b-form-group>
+          <b-form-group label="Название товара" label-for="goodName">
             <b-form-input id="goodName" type="text" required placeholder="Название товара"></b-form-input>
-            <b-form-input
-              id="producer"
-              type="text"
-              placeholder="Производитель">
-            </b-form-input>
           </b-form-group>
-          <b-form-group id="exampleInputGroup2" label="Способ применения" label-for="exampleInput2">
-            <b-form-textarea
-              id="exampleInput2"
-              type="text"
-              required
-              placeholder="Enter name">
-            </b-form-textarea>
+          <b-form-group label="Производитель" label-for="producer">
+            <b-form-input id="producer" type="text" placeholder="Производитель"></b-form-input>
           </b-form-group>
-          <b-form-group id="exampleInputGroup3" label="Food:" label-for="exampleInput3">
-            <b-form-select id="exampleInput3" required></b-form-select>
+          <b-form-group label="Способ применения" label-for="usingWay">
+            <b-form-textarea id="usingWay" rows="5" placeholder="Способ применения"></b-form-textarea>
           </b-form-group>
-            <b-button type="submit" variant="primary">Submit</b-button>
-            <b-button type="reset" variant="danger">Reset</b-button>
+          <b-form-group label="Предназначение" label-for="forWhatIsUse">
+            <b-form-textarea id="forWhatIsUse" rows="3" placeholder="Предназначение"></b-form-textarea>
+          </b-form-group>
+          <b-form-group label="Спец. указания" label-for="specialInstructions">
+            <b-form-textarea id="specialInstructions" rows="3" placeholder="Спец. указания"></b-form-textarea>
+          </b-form-group>
+          <b-form-group label="Противопоказания" label-for="contraindicators">
+            <b-form-textarea id="contraindicators" rows="3" placeholder="Противопоказания"></b-form-textarea>
+          </b-form-group>
+          <b-form-group label="Побочные эффекты" label-for="sideEffects">
+            <b-form-textarea id="sideEffects" rows="3" placeholder="Побочные эффекты"></b-form-textarea>
+          </b-form-group> 
+            <b-button variant="primary">Загрузить фото товара</b-button>
+            <b-button type="submit" variant="danger">Сохранить</b-button>
         </b-form>
       </div>
       <message-modal-window v-bind="msgModalWindow" v-on:ok="msgModalWindow.isShow=false"></message-modal-window>
-    </main>
   </div>
 </template>
 <script>
@@ -90,7 +88,7 @@ export default {
     Loading,
     MessageModalWindow
   }
-  //,
+//,
 //   data: function() {
 //     return {
 //       annotations: [],
@@ -301,6 +299,11 @@ export default {
 }
 .pag {
   display: inline-flex;
+}
+.create-annotation{
+  width: 70%;
+  margin: auto;
+  margin-top: 1rem;
 }
 .create-annotation-btn {
   float: right;
