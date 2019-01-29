@@ -92,10 +92,33 @@ namespace OxyBotAdmin.Controllers
         }
 
         // POST: api/Annotation
+        [Authorize]
         [HttpPost]
-        public void Post([FromBody] string value)
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> Post([FromForm] IFormCollection data)
         {
+            var res = StatusCode(404);
+            try
+            {
+                if (data != null && data.ContainsKey("annotation"))
+                {
+                    var t = true;
+          
+                }
+                else
+                {
+                    res = StatusCode(400);
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex);
+                res = StatusCode(500);
+                throw ex;
+            }
+            return res;
         }
+
 
         // PUT: api/Annotation
         [Authorize]
