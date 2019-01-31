@@ -78,8 +78,11 @@ namespace OxyBotAdmin.Controllers
                     if (tgUsers != null && data.Files[0] != null)
                     {
                         var stream = data.Files[0].OpenReadStream();
-                        await bot.SendImage2All(tgUsers.Select(u => u.ChatId).ToArray(), stream, caption4Msg);
-                        res = Ok();
+                        if (stream.Length <= 25000000)
+                        {
+                            await bot.SendImage2All(tgUsers.Select(u => u.ChatId).ToArray(), stream, caption4Msg);
+                            res = Ok();
+                        }
                     }
                     else
                     {
@@ -100,24 +103,7 @@ namespace OxyBotAdmin.Controllers
             return res;
         }
         
-        //public IActionResult About()
-        //{
-        //    ViewData["Message"] = "Your application description page.";
-
-        //    return View();
-        //}
-
-        //public IActionResult Contact()
-        //{
-        //    ViewData["Message"] = "Your contact page.";
-
-        //    return View();
-        //}
-
-        //public IActionResult Privacy()
-        //{
-        //    return View();
-        //}
+       
 
         //[ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         //public IActionResult Error()

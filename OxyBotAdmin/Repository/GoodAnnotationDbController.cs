@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -140,6 +141,92 @@ namespace OxyBotAdmin.Repository
                             {
                                 transaction.Rollback();
                                 logger.LogError(ex);
+                                throw ex;
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex);
+                throw ex;
+            }
+        }
+
+        public async Task InsertOrUpdateAnnotation(GoodAnnotation annotation)
+        {
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
+                    await connection.OpenAsync();
+                    using (SqlCommand command = new SqlCommand(SqlScripts.InsertOrUpdateAnnotation, connection))
+                    {
+                        using (SqlTransaction transaction = connection.BeginTransaction())
+                        {
+                            try
+                            {
+                                command.CommandType = CommandType.StoredProcedure;
+                                command.CommandTimeout = CommandTimeout;
+                                command.Transaction = transaction;
+                                command.Parameters.Add("@annotationId", SqlDbType.Int).Value = annotation.AnnotationId;
+                                command.Parameters.Add("@drugName", SqlDbType.NVarChar, 255).Value = annotation.DrugName;
+                                command.Parameters.Add("@producer", SqlDbType.NVarChar, 255).Value = annotation.Producer;
+                                command.Parameters.Add("@usingWay", SqlDbType.NVarChar).Value = annotation.UsingWay;
+                                command.Parameters.Add("@forWhatIsUse", SqlDbType.NVarChar).Value = annotation.ForWhatIsUse;
+                                command.Parameters.Add("@specialInstructions", SqlDbType.NVarChar).Value = annotation.SpecialInstructions;
+                                command.Parameters.Add("@contraindicators", SqlDbType.NVarChar).Value = annotation.ContraIndicators;
+                                command.Parameters.Add("@sideEffects", SqlDbType.NVarChar).Value = annotation.SideEffects;
+
+                                await command.ExecuteNonQueryAsync();
+                                transaction.Commit();
+                            }
+                            catch (Exception ex)
+                            {
+                                transaction.Rollback();
+                                logger.LogError(ex);
+                                throw ex;
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex);
+                throw ex;
+            }
+        }
+
+        public async Task InsertAnnotationPhoto(int annotationId, string fileName, Stream stream)
+        {
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
+                    await connection.OpenAsync();
+                    using (SqlCommand command = new SqlCommand(SqlScripts.UpdateOrInsertAnnotationImage, connection))
+                    {
+                        using (SqlTransaction transaction = connection.BeginTransaction())
+                        {
+                            try
+                            {
+                                command.CommandType = CommandType.StoredProcedure;
+                                command.CommandTimeout = CommandTimeout;
+                                command.Transaction = transaction;
+                                command.Parameters.Add("@annotationId", SqlDbType.Int).Value = annotationId;
+                                command.Parameters.Add("@image", SqlDbType.VarBinary).Value = stream;
+                                command.Parameters.Add("@fileName", SqlDbType.NVarChar, 300).Value = fileName;
+                                
+                                await command.ExecuteNonQueryAsync();
+                                transaction.Commit();
+                            }
+                            catch (Exception ex)
+                            {
+                                transaction.Rollback();
+                                logger.LogError(ex);
+                                throw ex;
                             }
                         }
                     }

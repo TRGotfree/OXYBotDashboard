@@ -31,5 +31,9 @@
         public static string GetAnnotationById => "dbo.getGoodAnnotationById";
 
         public static string UpdateAnnotation => "dbo.updateAnnotation";
+
+        public static string InsertOrUpdateAnnotation => "dbo.insertOrUpdateAnnotation";
+
+        public static string UpdateOrInsertAnnotationImage => "dbo.insertOrUpdateAnnotationImage";
     }
 }

@@ -3,7 +3,7 @@
     <header-navbar></header-navbar>
     <!-- <loading v-bind:isLoading="isLoading"></loading> -->
     <div class="create-annotation">
-      <b-form>
+      <!-- <b-form> -->
         <b-form-group label="ID товара:" label-for="goodId" description="Это идентификатор для связи справочника бота и Аналитики">
           <b-form-input id="goodId" type="number" required placeholder="ID товара" v-model="annotation.annotationId"></b-form-input>
         </b-form-group>
@@ -35,14 +35,17 @@
         </b-form-group>
         <b-form-group label="Побочные эффекты" label-for="sideEffects">
           <b-form-textarea id="sideEffects" rows="3" placeholder="Побочные эффекты" v-model="annotation.sideEffects"></b-form-textarea>
-          <b-button variant="primary" type="file" v-on:change="imageSelected">Загрузить фото товара</b-button>
-        <div v-if="img_src.length > 0">
-            <success-alert v-bind:message-from-server="imageChoosed"></success-alert>
-        </div>
+        </b-form-group>
+        <b-form-group v-bind:label="imageChoosed" v-bind:style="imageLabelStyle">
+          <div class="btn-group">
+            <button class="btn btn-primary" v-on:click="chooseImg">Выбрать изображение</button>
+          </div>
+          <input ref="input_img" type="file" v-on:change="imageSelected" style="display: none">
         </b-form-group>
         
-        <b-button variant="danger" v-on:click="saveAnnotation(annotation)">Сохранить</b-button>
-      </b-form>
+        <div class="submit-btn">
+          <b-button variant="danger" v-on:click="saveAnnotation(annotation)">Сохранить данные по аннотации</b-button>
+        </div>
     </div>
     <message-modal-window v-bind="msgModalWindow" v-on:ok="msgModalWindow.isShow=false"></message-modal-window>
   </div>
@@ -117,25 +120,8 @@ export default {
         message2Show: "",
         timeOut2Show: 2000
       },
-      imageChoosed: "Изображение выбрано"    
-      //       annotations: [],
-      //       selectedAnnotation: null,
-      //       showModal: false,
-      //       messageFromServer: "",
-      //       isLoading: true,
-      //       currentPage: 1,
-      //       dataRowsPerPage: 15,
-      //       annotationsTotalCount: 0,
-      //       showAlert: false,
-      //       msgModalWindow: {
-      //         isShow: false,
-      //         headerText: "Внимание!",
-      //         message2Show: "",
-      //         timeOut2Show: 2000
-      //       },
-      //       textForEdit: "",
-      //       editAnnotationPropertyText: "",
-      //       editProperty: {}
+      imageChoosed: "Изображение не выбрано",
+      imageLabelStyle: "color:red"
     };
   },
   methods: {
@@ -150,8 +136,10 @@ export default {
             formData.append("file", this.selectedImg);
         }
 
-        formData.append("goodAnnotation", goodAnnotation);
-        
+        for(let key in goodAnnotation) {
+          formData.append(key, goodAnnotation[key]);
+        }
+
         axios
           .post(updateInsertAnnotation, formData, {
             headers: formDataHeader(sessionStorage.getItem("userToken")),
@@ -206,197 +194,29 @@ export default {
       this.selectedImg = e.target.files[0];
       this.img_src = URL.createObjectURL(this.selectedImg);
     },
-    //     getAnnotations: function(beginPage, endPage) {
-    //       let thisComp = this;
-    //       axios
-    //         .get(getAnnotationUrl + beginPage + "&" + "endPage=" + endPage, {
-    //           headers: authorizationHeader(sessionStorage.getItem("userToken")),
-    //           onDownloadProgress: function(loadingEvent) {
-    //             if (loadingEvent.loaded !== loadingEvent.total) {
-    //               thisComp.isLoading = true;
-    //             } else {
-    //               thisComp.isLoading = false;
-    //             }
-    //           }
-    //         })
-    //         .then(function(res) {
-    //           if (res && res.status === 200) {
-    //             thisComp.annotations = res.data.annotations;
-    //             thisComp.annotationsTotalCount = res.data.totalAnnotationCount;
-    //             thisComp.isLoading = false;
-    //           } else {
-    //             thisComp.showMsgModalWindow(
-    //               true,
-    //               ru.attention,
-    //               "Не удалось получить данные с севрвера. Статус: " + res.status,
-    //               null
-    //             );
-    //             thisComp.isLoading = false;
-    //           }
-    //         })
-    //         .catch(function(error) {
-    //           thisComp.showMsgModalWindow(
-    //             true,
-    //             ru.error,
-    //             "Произошла ошибка при получении данных с сервера",
-    //             null
-    //           );
-    //           thisComp.isLoading = false;
-    //         });
-    //     },
-
-    //     updateAnnotation: function(annotation) {
-    //       let thisComp = this;
-    //       this.showModal = !this.showModal;
-
-    //       axios
-    //         .put(updateInsertAnnotation, annotation, {
-    //           headers: authorizationHeader(sessionStorage.getItem("userToken"))
-    //         })
-    //         .then(function(res) {
-    //           if (res.status === 200) {
-    //             thisComp.showMsgModalWindow(
-    //               true,
-    //               ru.attention,
-    //               "Данные по аннотации сохранены",
-    //               2000
-    //             );
-    //           } else {
-    //             thisComp.showMsgModalWindow(true, ru.attention, res.value, null);
-    //           }
-    //         })
-    //         .catch(function(error) {
-    //           thisComp.showModal = false;
-    //           thisComp.showMsgModalWindow(
-    //             true,
-    //             ru.error,
-    //             ru.dataNotSavedTryAgain,
-    //             null
-    //           );
-    //         });
-    //     },
-    //     createannotation: function() {
-    //       this.selectedAnnotation = {
-    //         annotationId: 0,
-    //         nameOfannotation: "Новая акция",
-    //         formattedDateBegin: "",
-    //         formattedDateEnd: "",
-    //         advertisingTextShort: "Новая акция",
-    //         commandText: "/newannotation"
-    //       };
-    //       this.showModal = true;
-    //     },
     showMsgModalWindow: function(isShow, headerText, msgText, timeOut) {
       this.msgModalWindow.timeOut2Show = timeOut;
       this.msgModalWindow.isShow = isShow;
       this.msgModalWindow.headerText = headerText;
       this.msgModalWindow.message2Show = msgText;
     }
-    //     getCertainAnnotation: function(annotation) {
-    //       let thisComp = this;
-    //       axios
-    //         .get(getCertainAnnotationUrl + annotation.annotationId, {
-    //           headers: authorizationHeader(sessionStorage.getItem("userToken")),
-    //           onDownloadProgress: function(loadingEvent) {
-    //             if (loadingEvent.loaded !== loadingEvent.total) {
-    //               thisComp.isLoading = true;
-    //             } else {
-    //               thisComp.isLoading = false;
-    //             }
-    //           }
-    //         })
-    //         .then(function(res) {
-    //           if (res && res.status === 200) {
-    //             thisComp.selectedAnnotation = res.data.annotation;
-    //             thisComp.isLoading = false;
-    //             thisComp.showModal = true;
-    //           } else {
-    //             thisComp.showMsgModalWindow(
-    //               true,
-    //               ru.attention,
-    //               "Не удалось получить данные с севрвера. Статус: " + res.status,
-    //               null
-    //             );
-    //             thisComp.isLoading = false;
-    //           }
-    //         })
-    //         .catch(function(error) {
-    //           thisComp.showMsgModalWindow(true, ru.error, error.toString(), null);
-    //           thisComp.isLoading = false;
-    //         });
-    //     },
-    //     editAnnotation: function(annotationForEdit, annotationPropertyNameForEdit) {
-    //       switch (annotationPropertyNameForEdit) {
-    //         case "usingWay":
-    //           this.selectedAnnotation = annotationForEdit;
-    //           this.editAnnotationPropertyText = "Способ применения:";
-    //           this.textForEdit = annotationForEdit.usingWay;
-    //           this.editProperty = "usingWay";
-    //           this.showModal = true;
-
-    //           break;
-    //         case "forWhatIsUse":
-    //           this.selectedAnnotation = annotationForEdit;
-    //           this.editAnnotationPropertyText = "Предназначение";
-    //           this.textForEdit = annotationForEdit.forWhatIsUse;
-    //           this.editProperty = "forWhatIsUse";
-    //           this.showModal = true;
-
-    //           break;
-    //         case "specialInstructions":
-    //           this.selectedAnnotation = annotationForEdit;
-    //           this.editAnnotationPropertyText = "Спец. указания";
-    //           this.textForEdit = annotationForEdit.specialInstructions;
-    //           this.editProperty = "specialInstructions";
-    //           this.showModal = true;
-    //           break;
-    //         case "contraIndicators":
-    //           this.selectedAnnotation = annotationForEdit;
-    //           this.editAnnotationPropertyText = "Противопоказания";
-    //           this.textForEdit = annotationForEdit.specialInstructions;
-    //           this.editProperty = "contraIndicators";
-    //           this.showModal = true;
-    //           break;
-
-    //         case "sideEffects":
-    //           this.selectedAnnotation = annotationForEdit;
-    //           this.editAnnotationPropertyText = "Побочные эффекты";
-    //           this.textForEdit = annotationForEdit.sideEffects;
-    //           this.editProperty = "sideEffects";
-    //           this.showModal = true;
-    //           break;
-    //         case "isImageExists":
-    //           this.selectedAnnotation = annotationForEdit;
-    //           this.editAnnotationPropertyText = "Изображение товара";
-
-    //           //TO-DO: реализовать показ формы с изображением
-
-    //           break;
-    //       }
+  },
+  watch: {
+    img_src: function(imageSrc) {
+      if (imageSrc && imageSrc.length > 0) {
+        this.imageChoosed = "Изображение товара выбрано";
+        this.imageLabelStyle = "color:#33bc2e;"
+      }    
+    }
   }
-  //   mounted: function() {
-  //     this.getAnnotations(1, 15);
-  //   },
-  //   watch: {
-  //     currentPage: function(pageIndex) {
-  //       let lastRow = this.currentPage * this.dataRowsPerPage;
-  //       let firstRow = lastRow - this.dataRowsPerPage + 1;
-  //       this.getAnnotations(firstRow, lastRow);
-  //     }
-  //   }
 };
 </script>
 <style>
-.pag-container {
-  text-align: center;
-}
-.pag {
-  display: inline-flex;
-}
 .create-annotation {
   width: 70%;
   margin: auto;
   margin-top: 1rem;
+  margin-bottom: 1rem;
 }
 .create-annotation-btn {
   float: right;
@@ -405,5 +225,11 @@ export default {
 .done {
   color: darkgray;
 }
+
+.submit-btn{
+  margin: auto;
+  text-align: center;
+}
+
 </style>
 

@@ -58,7 +58,7 @@
               </a>
             </td>
             <td>
-              <a href="#" v-on:click="editAnnotation(annotation, 'isImageExists')">
+              <a href="#" v-on:click="selectedAnnotation=annotation;chooseImg()">
                 <i v-if="annotation.isImageExists" class="material-icons done_all">done_all</i>
                 <i v-else class="material-icons done">done</i>
               </a>
@@ -71,11 +71,12 @@
            class="pag" size="md" :total-rows="annotationsTotalCount" :per-page="dataRowsPerPage" v-model="currentPage">
         </b-v-pagination>
       </div>
-
-      <modal-window v-if="showModal" v-on:ok="updateAnnotation(selectedAnnotation)" v-on:cancel="showModal=false">
+       <input ref="input_img" type="file" v-on:change="imageSelected" style="display: none">
+    </main>
+    <modal-window v-if="showModal" v-on:ok="updateAnnotation(selectedAnnotation)" v-on:cancel="showModal=false">
         <h4 slot="header">
-          Товар: {{selectedAnnotation.drugName}}.<br>
-          Производитель: {{selectedAnnotation.producer}}
+        Товар: {{selectedAnnotation.drugName}}<br>
+        Производитель: {{selectedAnnotation.producer}}
         </h4>
         <form slot="body">
           <div class="form-group row">
@@ -88,7 +89,6 @@
         <span slot="okBtn">Сохранить</span>
       </modal-window>
       <message-modal-window v-bind="msgModalWindow" v-on:ok="msgModalWindow.isShow=false"></message-modal-window>
-    </main>
   </div>
 </template>
 <script>
@@ -101,7 +101,7 @@ import SuccessAlert from "../Alerts/successAlert.vue";
 import { ru } from "../../lang/ru-RU.js";
 import HeaderNavbar from "../HeaderNavbar/header.vue";
 import { authorizationHeader } from "../../helper.js";
-import { jsonHeader } from "../../helper.js";
+import { jsonHeader, formDataHeader } from "../../helper.js";
 import BVPagination from "bootstrap-vue/es/components/pagination/pagination";
 import ModalWindow from "../ModalWindow/ModalWindow.vue";
 import Loading from "../Loading/loading.vue";
@@ -156,7 +156,9 @@ export default {
       },
       textForEdit: "",
       editAnnotationPropertyText: "",
-      editProperty: {}
+      editProperty: {},
+      selectedImg: {},
+      img_src: "",
     };
   },
   methods: {
@@ -198,7 +200,6 @@ export default {
           thisComp.isLoading = false;
         });
     },
-
     updateAnnotation: function(annotation) {
       
       let thisComp = this;
@@ -320,15 +321,66 @@ export default {
           this.editProperty = "sideEffects";
           this.showModal = true;
           break;
-        case "isImageExists":
-          this.selectedAnnotation = annotationForEdit;
-          this.editAnnotationPropertyText = "Изображение товара";
-
-          //TO-DO: реализовать показ формы с изображением
-
-          break;
       }
-    }
+    },
+    chooseImg: function(event) {
+      this.$refs.input_img.click();
+    },
+    imageSelected: function(e) {
+      
+      if (!e.target.files || e.target.files.length === 0 || !e.target.files[0]) {
+        return;
+      }
+      let thisComp = this;
+      this.selectedImg = e.target.files[0];
+      this.img_src = URL.createObjectURL(this.selectedImg);
+
+      let goodAnnotation = this.selectedAnnotation;
+
+      var formData = new FormData();
+        if (this.selectedImg && this.selectedImg.name) {
+            var fileName = this.selectedImg.name;
+            formData.append("file", this.selectedImg);
+        }
+
+        formData.append("annotationId", goodAnnotation["annotationId"]);
+        
+        thisComp.showMsgModalWindow(true, ru.attention, "Фото загружается на сервер подождите...", null);
+
+        axios
+          .post("/api/annotation/image", formData, {
+            headers: formDataHeader(sessionStorage.getItem("userToken")),
+            onUploadProgress: function(uploadEvent) {        
+              
+              let percent = Math.round((uploadEvent.loaded / uploadEvent.total) * 100);
+                             
+              if (percent >= 100) {
+                thisComp.msgModalWindow.isShow = false;
+              };            
+            }
+          })
+          .then(function(res) {
+            if (res.status === 200) {             
+              thisComp.showMsgModalWindow(true, ru.attention, "Данные успешно сохранены!", 2000);          
+           } else {
+              thisComp.showMsgModalWindow(
+                true,
+                ru.attention,
+                ru.dataNotSavedTryAgain,
+                null
+              );
+            }
+          })
+          .catch(function(error) {
+            thisComp.showMsgModalWindow(
+              true,
+              ru.error,
+              ru.dataNotSavedTryAgain,
+              null
+            );
+          });
+
+    },
   },
   mounted: function() {
     this.getAnnotations(1, 15);
