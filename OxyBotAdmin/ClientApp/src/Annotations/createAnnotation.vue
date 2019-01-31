@@ -35,8 +35,12 @@
         </b-form-group>
         <b-form-group label="Побочные эффекты" label-for="sideEffects">
           <b-form-textarea id="sideEffects" rows="3" placeholder="Побочные эффекты" v-model="annotation.sideEffects"></b-form-textarea>
+          <b-button variant="primary" type="file" v-on:change="imageSelected">Загрузить фото товара</b-button>
+        <div v-if="img_src.length > 0">
+            <success-alert v-bind:message-from-server="imageChoosed"></success-alert>
+        </div>
         </b-form-group>
-        <b-button variant="primary" type="file" v-on:change="imageSelected">Загрузить фото товара</b-button>
+        
         <b-button variant="danger" v-on:click="saveAnnotation(annotation)">Сохранить</b-button>
       </b-form>
     </div>
@@ -60,8 +64,9 @@ import BFormRow from "bootstrap-vue/es/components/form/form-row";
 import ModalWindow from "../ModalWindow/ModalWindow.vue";
 import Loading from "../Loading/loading.vue";
 import MessageModalWindow from "../MessageModalWindow/messageModalWindow.vue";
+import { formDataHeader } from "../../helper.js";
 
-let validateannotationsFields = function(annotation) {
+let validateAnnotationsFields = function(annotation) {
   let res = true;
   if (annotation) {
     if (annotation.annotationId < 0 || annotation.drugName.length === 0) {
@@ -98,18 +103,21 @@ export default {
         specialInstructions: "",
         contraIndicators: "",
         sideEffects: "",
-        selectedImg: {},
-        img_src: ""
+        isImageExists: true,
+        totalCountOfAnnotations: 0
       },
       showAlert: false,
       showSuccess: false,
       messageFromServer: "",
+      selectedImg: {},
+      img_src: "",
       msgModalWindow: {
         isShow: false,
         headerText: "Внимание!",
         message2Show: "",
         timeOut2Show: 2000
-      }    
+      },
+      imageChoosed: "Изображение выбрано"    
       //       annotations: [],
       //       selectedAnnotation: null,
       //       showModal: false,
@@ -131,22 +139,22 @@ export default {
     };
   },
   methods: {
-    saveAnnotation: function(annotation) {
+    saveAnnotation: function(goodAnnotation) {
       const thisComp = this;
 
-      if (this.validateannotationsFields(annotation)) {
+      if (validateAnnotationsFields(goodAnnotation)) {
 
         var formData = new FormData();
-        if (annotation.selectedImg && annotation.selectedImg.name) {
-            var fileName = annotation.selectedImg.name;
-            formData.append("file", annotation.selectedImg);
+        if (this.selectedImg && this.selectedImg.name) {
+            var fileName = this.selectedImg.name;
+            formData.append("file", this.selectedImg);
         }
-     
-        formData.append("annotation", annotation);
 
+        formData.append("goodAnnotation", goodAnnotation);
+        
         axios
-          .post(updateInsertAnnotation, annotation, {
-            headers: authorizationHeader(sessionStorage.getItem("userToken")),
+          .post(updateInsertAnnotation, formData, {
+            headers: formDataHeader(sessionStorage.getItem("userToken")),
             onUploadProgress: function(uploadEvent) {
               thisComp.showAlert = true;  
               let percent = Math.round((uploadEvent.loaded / uploadEvent.total) * 100);

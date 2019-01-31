@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Globalization;
 using Microsoft.Extensions.Options;
+using System.IO;
 
 namespace OxyBotAdmin
 {
@@ -99,6 +100,14 @@ namespace OxyBotAdmin
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
+
+            //app.UseStaticFiles(new StaticFileOptions()
+            //{
+            //    FileProvider = new PhysicalFileResult(Path.Combine(Directory.GetCurrentDirectory(), "ClientApp"))
+
+
+            //});
+
             app.UseAuthentication();
 
             app.UseMvc(routes =>

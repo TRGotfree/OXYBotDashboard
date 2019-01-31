@@ -92,18 +92,16 @@ namespace OxyBotAdmin.Controllers
         }
 
         // POST: api/Annotation
-        [Authorize]
-        [HttpPost]
-        [Consumes("multipart/form-data")]
-        public async Task<IActionResult> Post([FromForm] IFormCollection data)
+        [HttpPost, Authorize]
+        public async Task<IActionResult> Post([FromBody] GoodAnnotation goodAnnotation)
         {
             var res = StatusCode(404);
             try
             {
-                if (data != null && data.ContainsKey("annotation"))
+                if (goodAnnotation != null)
                 {
-                    var t = true;
-          
+                   
+
                 }
                 else
                 {
