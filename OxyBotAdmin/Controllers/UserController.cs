@@ -27,9 +27,10 @@ namespace OxyBotAdmin.Controllers
         [Authorize]
         [HttpGet]
         [Route("all")]
-        public IActionResult All([FromQuery]int beginPage, [FromQuery]int endPage)
+        public IActionResult Get([FromQuery]int beginPage, [FromQuery]int endPage)
         {
             IActionResult result = StatusCode(400);
+
             try
             {
                 if (beginPage > 0 && endPage > 0)
@@ -61,20 +62,40 @@ namespace OxyBotAdmin.Controllers
             return result;
         }
 
-        //// GET: api/User/5
-        //[HttpGet("{id}", Name = "Get")]
-        //public string Get(int id)
-        //{
-        //    return "value";
-        //}
+        [Authorize]
+        [HttpGet]
+        public IActionResult Get()
+        {
+            IActionResult result = StatusCode(400);
+            try
+            {
+                var tgUsers = dBController.GetTGUsersConroller().GetTelegramBotUsers(1, 15);
+                if (tgUsers != null)
+                {
+                    int totalUsersCount = tgUsers.FirstOrDefault() == null ? 0 : tgUsers.FirstOrDefault().TotalUserCount;
+                    var data = new
+                    {
+                        botUsers = tgUsers,
+                        botUsersCount = totalUsersCount
+                    };
+                    result = Ok(data);
+                }
+                else
+                {
+                    result = StatusCode(500);
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex);
+                result = StatusCode(500);
+                throw ex;
+            }
 
-        //// POST: api/User
-        //[HttpPost]
-        //public void Post([FromBody] string value)
-        //{
-        //}
+            return result;
+        }
 
-        //[Authorize]
+        [Authorize]
         [HttpPut("{chatId}")]
         [Consumes("application/json")]
         public async Task<IActionResult> Put([FromBody]string message, long chatId)
@@ -98,10 +119,6 @@ namespace OxyBotAdmin.Controllers
             return result;
         }
 
-        //// DELETE: api/ApiWithActions/5
-        //[HttpDelete("{id}")]
-        //public void Delete(int id)
-        //{
-        //}
+
     }
 }

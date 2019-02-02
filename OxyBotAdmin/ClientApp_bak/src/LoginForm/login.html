@@ -1,0 +1,13 @@
+<div class="text-center login-form-body" v-cloak>
+    <form class="form-signin">
+        <img class="mb-4" src="/images/logo.png" alt="OxyMedLogo" width="125" height="72.75">
+        <h1 class="h4 mb-3 font-weight-normal">Введите логин и пароль</h1>
+        <label for="inputEmail" class="sr-only">Введите логин</label>
+        <input type="email" id="inputEmail" class="form-control" v-model="botAdmin.login" placeholder="Логин" required autofocus>
+        <label for="inputPassword" class="sr-only">Введите пароль</label>
+        <input type="password" id="inputPassword" class="form-control" v-model="botAdmin.password" placeholder="Пароль" required>
+        <button class="btn btn-lg btn-primary btn-block" type="submit" v-on:click.prevent="checkAuth">Войти</button>
+        <div v-if="error" class="alert alert-danger" role="alert" style="margin: 10pt, 0pt, 10pt, 0pt">{{messageFromServer}}</div>    
+        <p class="mt-5 mb-3 text-muted">&copy; 2017-2018</p>
+    </form>
+</div>

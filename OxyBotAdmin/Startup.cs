@@ -112,11 +112,15 @@ namespace OxyBotAdmin
 
             app.UseMvc(routes =>
             {
-                routes.MapRoute(
-                    name: "default",
-                    template: "{controller=Login}/{action=Auth}/{id?}");
-                routes.MapRoute("default_api", "api/{controller=Send}/{action=Msg}/{id?}");
+                routes.MapRoute(name: "default", template: "{controller=Login}/{action=Auth}/{id?}");
+                routes.MapRoute("default_api", "api/{controller}/{action}/{id?}");
                 routes.MapRoute("api", "api/{controller}/{id?}");
+            });
+
+            app.Run(async (context) =>
+            {
+                context.Response.ContentType = "text/html";
+                await context.Response.SendFileAsync(Path.Combine(env.WebRootPath, "index.html"));
             });
 
         }

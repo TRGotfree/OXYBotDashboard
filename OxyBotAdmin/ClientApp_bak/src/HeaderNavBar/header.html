@@ -1,0 +1,34 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <a class="navbar-brand" href="#">OxyMed</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="OxyMedBot">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+  
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item">
+           <router-link to="/api/send/msg" class="nav-link"><span>Рассылка сообщения</span></router-link>
+        </li>
+       
+        <li class="nav-item">
+          <router-link to="/api/send/img" class="nav-link"><span >Рассылка изображения</span></router-link>
+        </li>
+
+        <li class="nav-item"> 
+          <router-link to="/api/user" class="nav-link"><span>Список пользователей</span></router-link>
+        </li>
+
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" id="navbarDropdown" role="button"  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+           <span>Доп. опции</span>
+          </a>
+          <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <router-link to="/api/advertising" class="dropdown-item">Акции и скидки</router-link>
+            <router-link to="/api/drugstore" class="dropdown-item">Редактировать данные аптек</router-link>
+            <router-link to="/api/request" class="dropdown-item">Запросы пользователей</router-link>
+            <router-link to="/api/annotation" class="dropdown-item">Аннотации</router-link>
+          </div>
+        </li>
+      </ul>      
+    </div>
+  </nav>

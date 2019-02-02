@@ -10,6 +10,8 @@ using OxyBotAdmin.Services;
 using OxyBotAdmin.AppData;
 using Microsoft.AspNetCore.Authorization;
 using System.IdentityModel.Tokens.Jwt;
+using Microsoft.AspNetCore.Hosting;
+using System.IO;
 
 namespace OxyBotAdmin.Controllers
 {
@@ -19,20 +21,24 @@ namespace OxyBotAdmin.Controllers
         private readonly ICheckUser checkUser;
         private readonly IWorkWithHash workWithHash;
         private readonly ILogger logger;
- 
+        private readonly IHostingEnvironment env;
 
-        public LoginController(BaseService baseService, ICheckUser _checkUser, IWorkWithHash _workWithHash)
+
+
+        public LoginController(BaseService baseService, ICheckUser _checkUser, IWorkWithHash _workWithHash, IHostingEnvironment env)
         {
             checkUser = _checkUser;
             workWithHash = _workWithHash;
             logger = baseService.Logger;
+            this.env = env;
         }
 
         [AllowAnonymous]
         [HttpGet]
-        public ActionResult Auth()
+        public async void Auth()
         {
-            return View();
+            Response.ContentType = "text/html";
+            await Response.SendFileAsync(Path.Combine(env.WebRootPath, "index.html"));
         }
 
         [AllowAnonymous]
