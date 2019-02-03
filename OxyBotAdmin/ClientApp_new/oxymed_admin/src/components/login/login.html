@@ -1,0 +1,19 @@
+<div class="form-body">
+    
+    <b-form id="bForm" @submit="onSubmit">
+        <img id="img-logo" src="../../assets/logo.png" alt="OxyMedLogo" width="125" height="72.75">
+        <b-form-group label="Ваш логин" label-for="loginInput">
+            <b-form-input id="loginInput" required type="text" v-model="login">
+
+            </b-form-input>
+        </b-form-group>
+        <b-form-group label="Ваш пароль" label-for="passInput">
+            <b-form-input id="passInput" required type="password" v-model="pass">        
+            </b-form-input>
+        </b-form-group>
+        <b-alert variant="danger" dismissible :show="showAlert" @dismissed="showAlert = !showAlert">
+            {{message}} 
+        </b-alert>
+    </b-form>
+    <b-button id="submit-button" type="submit" v-on:click="onSubmit" variant="primary">Войти</b-button>
+</div>

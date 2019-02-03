@@ -1,0 +1,37 @@
+.form-body{
+    margin: auto;
+    width: 25%;
+    margin-top: 10%;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    /* 
+    display: flex;
+    justify-content: center;
+    display: -ms-flexbox;
+    display: -webkit-box;
+    align-items: center;
+    -ms-flex-align: center;
+    -ms-flex-pack: center;
+    -webkit-box-align: center;
+    
+    -webkit-box-pack: center;
+    
+    padding-top: 100px;
+    padding-bottom: 40px;
+    background-color: white; */
+}
+
+#bForm{
+    margin: 5% 5% 5% 5%;
+}
+
+.b-form-group{
+    text-align: left;
+}
+#submit-button{
+    width: 40%;
+    margin-bottom: 3%;
+}
+
+#img-logo{
+    margin-top: 5%;
+}

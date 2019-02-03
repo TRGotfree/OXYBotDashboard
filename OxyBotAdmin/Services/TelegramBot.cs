@@ -21,23 +21,20 @@ namespace OxyBotAdmin.Services
             telegramBot = new TelegramBotClient(configuration["BotToken"]);
         }
 
-        public async Task<bool> SendMessage(long userChatId, string message)
+        public async void SendMessage(long userChatId, string message)
         {
-            var result = false;
             if (userChatId > 0 && !string.IsNullOrEmpty(message) && !string.IsNullOrWhiteSpace(message))
             {
                 try
                 {
                     await telegramBot.SendTextMessageAsync(userChatId, message, Telegram.Bot.Types.Enums.ParseMode.Html);
-                    result = true;
                 }
                 catch (Exception ex)
                 {
                     logger.LogError(ex);
-                    result = false;
+                    throw ex;
                 }
             }
-            return result;
         }
 
         public async Task SendMessage2All(long[] usersChatId, string message)
@@ -60,13 +57,27 @@ namespace OxyBotAdmin.Services
 
         public async Task SendImage2All(long[] usersChatId, Stream stream, string msg)
         {
+            string sendedImageFileId = string.Empty;
             if (usersChatId != null && stream != null)
             {
                 for (int i = 0; i < usersChatId.Length; i++)
                 {
                     try
                     {
-                        await telegramBot.SendPhotoAsync(usersChatId[i], stream, msg, Telegram.Bot.Types.Enums.ParseMode.Html);
+                        if (string.IsNullOrEmpty(sendedImageFileId))
+                        {
+                            var sendedImage = await telegramBot.SendPhotoAsync(usersChatId[i], stream, msg, Telegram.Bot.Types.Enums.ParseMode.Html);
+
+                            if (sendedImage != null && sendedImage.Photo != null && sendedImage.Photo.Length > 0)
+                            {
+                                var maxSized = sendedImage.Photo.OrderBy(p => p.FileSize).FirstOrDefault();
+                                sendedImageFileId = maxSized.FileId;
+                            }
+                        }
+                        else
+                        {
+                            await telegramBot.SendPhotoAsync(usersChatId[i], sendedImageFileId, msg, Telegram.Bot.Types.Enums.ParseMode.Html);
+                        }
                     }
                     catch (Exception ex)
                     {

@@ -37,8 +37,16 @@ namespace OxyBotAdmin.Controllers
         [HttpGet]
         public async void Auth()
         {
-            Response.ContentType = "text/html";
-            await Response.SendFileAsync(Path.Combine(env.WebRootPath, "index.html"));
+            try
+            {
+                Response.ContentType = "text/html";
+                await Response.SendFileAsync(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "index.html"));
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex);
+            }
+           
         }
 
         [AllowAnonymous]

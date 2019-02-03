@@ -5,9 +5,9 @@
     <UserSecretsId>16fdb777-7e50-4da0-bc70-fce117c729de</UserSecretsId>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Content Remove="wwwroot\index.html" />
-  </ItemGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+  </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.App" />
@@ -20,10 +20,6 @@
 
   <ItemGroup>
     <Folder Include="ClientApp\css\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="wwwroot\index.html" />
   </ItemGroup>
 
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">

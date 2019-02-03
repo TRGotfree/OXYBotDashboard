@@ -253,16 +253,9 @@ export default {
     },
     saveDrugStore: function(drugStore, event) {
       let thisComp = this;
-
-      console.log("DrugStoreId is: " + drugStore.drugStoreId);
-      console.log("DrugStoreStats is: " + drugStore.status);
-
       if (drugStore && validateDrugStoreFields(drugStore).isValid === true) {
         if (drugStore.drugStoreId == 0) {
           let ds = drugStore;
-
-          console.log(drugStore.drugStoreId);
-
           axios
             .post(updInsertDrugStoreUrl, ds, {
               headers: authorizationHeader(sessionStorage.getItem("userToken"))
@@ -297,7 +290,7 @@ export default {
             });
         } else if (drugStore.id > 0) {
           let ds = drugStore;
-          console.log("Updating drug store");
+
           axios
             .put(updInsertDrugStoreUrl, ds, {
               headers: authorizationHeader(sessionStorage.getItem("userToken"))
@@ -327,7 +320,6 @@ export default {
         }
       } else {
         let validatorMsg = validateDrugStoreFields(drugStore).msg;
-        console.log(validatorMsg);
         thisComp.showMsgModalWindow(true, ru.attention, validatorMsg, null);
       }
     },

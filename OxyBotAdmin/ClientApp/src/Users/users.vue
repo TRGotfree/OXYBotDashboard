@@ -41,6 +41,7 @@
           <div class="pag-container">
             <b-v-pagination class="pag" size="md" :total-rows="botUsersCount" :per-page="dataRowsPerPage" v-model="currentPage"></b-v-pagination>
           </div>
+      <message-modal-window v-bind="msgModalWindow" v-on:ok="msgModalWindow.isShow=false"></message-modal-window>    
     </main>
 
 </div>
@@ -48,7 +49,7 @@
 <script>
 const getUsersUrl = "/api/user/all?beginPage=";
 const sendMessage = "/api/user/";
- 
+import Vue from "vue"; 
 import axios from "axios";
 import ErrorAlert from "../Alerts/errorAlert.vue";
 import SuccessAlert from "../Alerts/successAlert.vue";
@@ -60,12 +61,7 @@ import BVPagination from "bootstrap-vue/es/components/pagination/pagination";
 import ModalWindow from "../ModalWindow/ModalWindow.vue";
 import Loading from "../Loading/loading.vue";
 const userToken = sessionStorage.getItem("userToken");
-// axios.interceptors.request.use(function(config){
-//     if (userToken) {
-//       config.headers.Authorization = userToken;
-//       return config;
-//     }
-// });
+import MessageModalWindow from "../MessageModalWindow/messageModalWindow.vue";
 
 export default {
   components: {
@@ -74,7 +70,8 @@ export default {
     SuccessAlert,
     BVPagination,
     ModalWindow,
-    Loading
+    Loading,
+    MessageModalWindow
   },
   data: function() {
     return {
@@ -86,14 +83,21 @@ export default {
       dataRowsPerPage: 15,
       telegramUser: null,
       message4Send: "",
-      messageFromServer: ""
+      messageFromServer: "",
+      msgModalWindow: {
+        isShow: false,
+        headerText: "Внимание!",
+        message2Show: "",
+        timeOut2Show: 2000
+      },
     };
   },
   methods: {
     getDataByPage: function(beginPage, endPage) {
       let thisComp = this;
-      axios
+      Vue.axios
         .get(getUsersUrl + beginPage + "&" + "endPage=" + endPage, {
+          headers: authorizationHeader(sessionStorage.getItem("userToken")),
           onDownloadProgress: function(loadingEvent) {
             if (loadingEvent.loaded !== loadingEvent.total) {
               thisComp.isLoading = true;
@@ -125,40 +129,44 @@ export default {
         let message = thisComp.message4Send;
         axios
           .put(
-            sendMessage + thisComp.telegramUser.chatId,
-            JSON.stringify(message),
-            {
+            sendMessage + thisComp.telegramUser.chatId, {
               headers: jsonHeader(sessionStorage.getItem("userToken"))
-            }
+            } 
           )
           .then(function(res) {
             if (res.status === 200) {
               thisComponent.messageFromServer = res.message;
             } else if (res.status === 401) {
-              // setTimeout(() => {
-              //   thisComponent.messageFromServer = ru.notAuthorized;
-              //   thisComponent.alert = thisComponent.ErrorAlert;
-              //   thisComponent.showAlert = true;
-              // }, 3000);
-              // alert = {};
+              thisComp.showMsgModalWindow(
+                true,
+                ru.attention,
+                "Cообщение не отправлено!",
+                null
+              );
             }
           })
           .catch(function(err) {
-            // alert = thisComponent.ErrorAlert;
-            // thisComponent.showAlert = true;
-            // thisComponent.messageFromServer = ru.errorHappend;
+            thisComp.showMsgModalWindow(
+                true,
+                ru.attention,
+                "Произошла ошибка при отправке сообщения!",
+                null
+              );
           });
       }
+    },
+    showMsgModalWindow: function(isShow, headerText, msgText, timeOut) {
+      this.msgModalWindow.timeOut2Show = timeOut;
+      this.msgModalWindow.isShow = isShow;
+      this.msgModalWindow.headerText = headerText;
+      this.msgModalWindow.message2Show = msgText;
     }
   },
   mounted: function () {
      let thisComp = this;
-      axios
+      Vue.axios
         .get("/api/user", {
           onDownloadProgress: function(loadingEvent) {
-           
-            console.log("Загружаю данные по пользователям...");
-
             if (loadingEvent.loaded !== loadingEvent.total) {
               thisComp.isLoading = true;
             } else {
@@ -179,7 +187,6 @@ export default {
   },
   watch: {
     currentPage: function(pageIndex) {
-      console.log("Выполняю загрузку страницы!!!");
       let lastRow = this.currentPage * this.dataRowsPerPage;
       let firstRow = lastRow - this.dataRowsPerPage + 1;
       this.getDataByPage(firstRow, lastRow);

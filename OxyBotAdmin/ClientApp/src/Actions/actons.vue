@@ -166,12 +166,12 @@ export default {
             thisComp.actionsTotalCount = res.data.totalCount;
             thisComp.isLoading = false;
           } else {
-            thisComp.showMsgModalWindow(true, ru.attention, res, null);
+            thisComp.showMsgModalWindow(true, ru.attention, "Данные по акциям не загружены!", null);
             thisComp.isLoading = false;
           }
         })
         .catch(function(error) {
-          thisComp.showMsgModalWindow(true, ru.error, error, null);
+          thisComp.showMsgModalWindow(true, ru.error, "Произошла ошибка!", null);
           thisComp.isLoading = false;
         });
     },
@@ -237,7 +237,7 @@ export default {
             })
             .catch(function(error) {
               thisComp.showModal = false;
-              thisComp.showMsgModalWindow(true, ru.error, error, null);
+              thisComp.showMsgModalWindow(true, ru.error, ru.errorHappend, null);
             });
         }
       } else {

@@ -1,0 +1,8 @@
+<h1>{{headerLabel}}</h1>
+<div>
+    <b-form-group label="Введите текст ообщения">
+        <b-from-textarea :rows="7" :max-rows="10" v-model="message4Send" placeholder="Введите текст для рассылки" style="border-color: #0275D8">
+        </b-from-textarea>
+    </b-form-group>
+    <b-button variant="danger" v-on:click="sendMsg2AllUsers"></b-button>
+</div>

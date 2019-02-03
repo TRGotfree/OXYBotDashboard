@@ -2,17 +2,17 @@
   <router-view></router-view>
 </template>
 <script>
-import axios from "axios";
-
+import Vue from 'vue';
 export default {
 
   created: function() {
-    this.$on("userAuthorised", function(res) {   
+    this.$on("userAuthorised", function(res) {  
+
       sessionStorage.setItem("userToken", res.data.token);
 
-      axios.interceptors.request.use(function(config){
-        if (userToken) {
-          config.headers.Authorization = userToken;
+      Vue.axios.interceptors.request.use(function(config){
+        if (res.data.token) {
+          config.headers["Authorization"] = "Bearer " + res.data.token;
           return config;
         }
       });

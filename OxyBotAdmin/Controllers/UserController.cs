@@ -89,7 +89,6 @@ namespace OxyBotAdmin.Controllers
             {
                 logger.LogError(ex);
                 result = StatusCode(500);
-                throw ex;
             }
 
             return result;
@@ -106,7 +105,7 @@ namespace OxyBotAdmin.Controllers
             {
                 if (chatId > 0 && !string.IsNullOrEmpty(message) && !string.IsNullOrWhiteSpace(message))
                 {
-                    await bot.SendMessage(chatId, message);
+                    bot.SendMessage(chatId, message);
                     result = Ok();
                 }
             }
@@ -114,7 +113,6 @@ namespace OxyBotAdmin.Controllers
             {
                 logger.LogError(ex);
                 result = StatusCode(500);
-                throw ex;
             }
             return result;
         }
