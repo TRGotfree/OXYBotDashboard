@@ -98,16 +98,8 @@ namespace OxyBotAdmin
             var localizationOptions = app.ApplicationServices.GetService<IOptions<RequestLocalizationOptions>>();
             app.UseRequestLocalization(localizationOptions.Value);
 
- 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-
-            //app.UseStaticFiles(new StaticFileOptions()
-            //{
-            //    FileProvider = new PhysicalFileResult(Path.Combine(Directory.GetCurrentDirectory(), "ClientApp"))
-
-
-            //});
 
             app.UseAuthentication();
 

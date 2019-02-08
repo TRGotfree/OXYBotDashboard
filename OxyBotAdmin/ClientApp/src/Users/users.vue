@@ -51,8 +51,6 @@ const getUsersUrl = "/api/user/all?beginPage=";
 const sendMessage = "/api/user/";
 import Vue from "vue"; 
 import axios from "axios";
-import ErrorAlert from "../Alerts/errorAlert.vue";
-import SuccessAlert from "../Alerts/successAlert.vue";
 import { ru } from "../../lang/ru-RU.js";
 import HeaderNavbar from "../HeaderNavbar/header.vue";
 import { authorizationHeader } from "../../helper.js";
@@ -66,8 +64,6 @@ import MessageModalWindow from "../MessageModalWindow/messageModalWindow.vue";
 export default {
   components: {
     HeaderNavbar,
-    ErrorAlert,
-    SuccessAlert,
     BVPagination,
     ModalWindow,
     Loading,
@@ -127,15 +123,20 @@ export default {
         thisComp.telegramUser.chatId > 0
       ) {
         let message = thisComp.message4Send;
-        axios
+        Vue.axios
           .put(
-            sendMessage + thisComp.telegramUser.chatId, {
+            sendMessage + thisComp.telegramUser.chatId, JSON.stringify(message), {
               headers: jsonHeader(sessionStorage.getItem("userToken"))
             } 
           )
           .then(function(res) {
             if (res.status === 200) {
-              thisComponent.messageFromServer = res.message;
+              thisComp.showMsgModalWindow(
+                true,
+                ru.attention,
+                "Cообщение успешно отправлено!",
+                null
+              );
             } else if (res.status === 401) {
               thisComp.showMsgModalWindow(
                 true,

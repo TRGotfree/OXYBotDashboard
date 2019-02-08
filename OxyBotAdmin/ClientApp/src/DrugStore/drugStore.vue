@@ -110,8 +110,6 @@ const getDrugStoresUrl = "/api/drugstore?beginPage=";
 const updInsertDrugStoreUrl = "/api/drugstore";
 const getDistricts = "/api/district";
 import axios from "axios";
-import ErrorAlert from "../Alerts/errorAlert.vue";
-import SuccessAlert from "../Alerts/successAlert.vue";
 import { ru } from "../../lang/ru-RU.js";
 import HeaderNavbar from "../HeaderNavbar/header.vue";
 import { authorizationHeader } from "../../helper.js";
@@ -164,8 +162,6 @@ let validateDrugStoreFields = function(drugStore) {
 export default {
   components: {
     HeaderNavbar,
-    ErrorAlert,
-    SuccessAlert,
     BVPagination,
     ModalWindow,
     Loading,

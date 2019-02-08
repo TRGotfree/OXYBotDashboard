@@ -7,10 +7,10 @@
               <img ref="img-4-send" v-bind:src="img_src" class="img-fluid" alt="Выберите изображение">
               <textarea rows="3" v-model="message4Img" placeholder="Введите текст к картинке"></textarea>           
             <div v-if="showAlert">
-              <error-alert v-bind:message-from-server="messageFromServer"></error-alert>
+              <error-alert v-bind:message="messageFromServer"></error-alert>
             </div>
             <div v-else-if="showSuccess">
-              <success-alert v-bind:message-from-server="messageFromServer"></success-alert>
+              <success-alert v-bind:message="messageFromServer"></success-alert>
             </div>
             <div style="margin-top: 10pt">
               <div class="btn-group">
@@ -27,7 +27,7 @@
 </template>
 <script>
 const url = "/api/send/img";
-import axios from "axios";
+import Vue from 'vue';
 import ErrorAlert from "../Alerts/errorAlert.vue";
 import SuccessAlert from "../Alerts/successAlert.vue";
 import { ru } from "../../lang/ru-RU.js";
@@ -79,19 +79,25 @@ export default {
       var fileName = this.selectedImg.name;
       formData.append("file", this.selectedImg);
       formData.append("message", this.message4Img);
-      axios
+      Vue.axios
         .post(url, formData, {
           headers: formDataHeader(sessionStorage.getItem("userToken")),
           onUploadProgress: function(uploadEvent) {
-            thisComp.messageFromServer =
+            thisComp.showAlert = true;
+            thisComp.messageFromServer = "Загрузка изображения на сервер: " +
               Math.round((uploadEvent.loaded / uploadEvent.total) * 100) + "%";
+            if (Math.round((uploadEvent.loaded / uploadEvent.total) * 100) >= 100) {
+              thisComp.messageFromServer = "Рассылка изображения пользователям...";
+            }   
           }
         })
         .then(function(res) {
           if (res && res.status === 200) {
+            thisComp.showAlert = false;
             thisComp.showSuccess = true;
             thisComp.messageFromServer = ru.imgLoadedSuccessfully;
-            thisComp.img_src = "/etc/" + fileName;
+            thisComp.img_src = "https://mdbootstrap.com/img/Photos/Others/placeholder-avatar.jpg";
+            thisComp.message4Img = "";
           } else {
             thisComp.showAlert = true;
             thisComp.messageFromServer = ru.imgNotUploaded;

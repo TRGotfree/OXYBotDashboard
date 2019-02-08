@@ -95,7 +95,7 @@
 const getAnnotationUrl = "/api/annotation?beginPage=";
 const getCertainAnnotationUrl = "/api/annotation/";
 const updateInsertAnnotation = "/api/annotation";
-import axios from "axios";
+import Vue from 'vue';
 import ErrorAlert from "../Alerts/errorAlert.vue";
 import SuccessAlert from "../Alerts/successAlert.vue";
 import { ru } from "../../lang/ru-RU.js";
@@ -164,7 +164,7 @@ export default {
   methods: {
     getAnnotations: function(beginPage, endPage) {
       let thisComp = this;
-      axios
+      Vue.axios
         .get(getAnnotationUrl + beginPage + "&" + "endPage=" + endPage, {
           headers: authorizationHeader(sessionStorage.getItem("userToken")),
           onDownloadProgress: function(loadingEvent) {
@@ -205,7 +205,7 @@ export default {
       let thisComp = this;
       this.showModal = !this.showModal;
 
-      axios
+      Vue.axios
         .put(updateInsertAnnotation, annotation, {
           headers: authorizationHeader(sessionStorage.getItem("userToken"))
         })
@@ -250,7 +250,7 @@ export default {
     },
     getCertainAnnotation: function(annotation) {
       let thisComp = this;
-      axios
+      Vue.axios
         .get(getCertainAnnotationUrl + annotation.annotationId, {
           headers: authorizationHeader(sessionStorage.getItem("userToken")),
           onDownloadProgress: function(loadingEvent) {
@@ -347,7 +347,7 @@ export default {
         
         thisComp.showMsgModalWindow(true, ru.attention, "Фото загружается на сервер подождите...", null);
 
-        axios
+        Vue.axios
           .post("/api/annotation/image", formData, {
             headers: formDataHeader(sessionStorage.getItem("userToken")),
             onUploadProgress: function(uploadEvent) {        

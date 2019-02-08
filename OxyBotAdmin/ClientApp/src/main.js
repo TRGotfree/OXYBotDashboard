@@ -18,7 +18,8 @@ import Annotation from "./Annotations/annotations.vue";
 import CreateAnnotation from "./Annotations/createAnnotation.vue";
 
 const config = {
-  baseURL: "/"
+  baseURL: "/",
+  timeout: 1000 * 60 * 60 * 3
 }
 
 const _axios = axios.create(config);

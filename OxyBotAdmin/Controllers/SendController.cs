@@ -45,8 +45,10 @@ namespace OxyBotAdmin.Controllers
                 {
                     var tgUsers = dBController.GetTGUsersConroller().GetTelegramBotUsers();
 
+                    //var tgUsers = new long[] { 59725585 };
+
                     if (tgUsers != null)
-                        await bot.SendMessage2All(tgUsers.Select(u => u.ChatId).ToArray(), message);
+                        await bot.SendMessage2All(tgUsers.Select(chat=>chat.ChatId).ToArray(), message);
 
                     res = Ok();
                 }
@@ -71,8 +73,10 @@ namespace OxyBotAdmin.Controllers
             try
             {
                 if (data != null && data.Files != null && data.Files.Count > 0)
-                {                 
+                {
                     var tgUsers = dBController.GetTGUsersConroller().GetTelegramBotUsers();
+                    //var tgUsers = new long[] { 59725585 };
+
                     string caption4Msg = data.ContainsKey("message") ? data["message"].ToString() : string.Empty;
 
                     if (tgUsers != null && data.Files[0] != null)
@@ -80,7 +84,7 @@ namespace OxyBotAdmin.Controllers
                         var stream = data.Files[0].OpenReadStream();
                         if (stream.Length <= 25000000)
                         {
-                            await bot.SendImage2All(tgUsers.Select(u => u.ChatId).ToArray(), stream, caption4Msg);
+                            await bot.SendImage2All(tgUsers.Select(chat=>chat.ChatId).ToArray(), stream, caption4Msg);
                             res = Ok();
                         }
                     }

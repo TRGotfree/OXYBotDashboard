@@ -39,8 +39,6 @@
 const getRequestsUrl = "/api/request?beginPage=";
 const updateInsertRequest = "/api/request";
 import axios from "axios";
-import ErrorAlert from "../Alerts/errorAlert.vue";
-import SuccessAlert from "../Alerts/successAlert.vue";
 import { ru } from "../../lang/ru-RU.js";
 import HeaderNavbar from "../HeaderNavbar/header.vue";
 import { authorizationHeader } from "../../helper.js";
@@ -73,8 +71,6 @@ let validateActionsFields = function(request) {
 export default {
   components: {
     HeaderNavbar,
-    ErrorAlert,
-    SuccessAlert,
     BVPagination,
     ModalWindow,
     Loading,

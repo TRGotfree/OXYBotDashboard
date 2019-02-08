@@ -52,7 +52,7 @@
 </template>
 <script>
 const updateInsertAnnotation = "/api/annotation";
-import axios from "axios";
+import Vue from "vue";
 import ErrorAlert from "../Alerts/errorAlert.vue";
 import SuccessAlert from "../Alerts/successAlert.vue";
 import { ru } from "../../lang/ru-RU.js";
@@ -140,7 +140,7 @@ export default {
           formData.append(key, goodAnnotation[key]);
         }
 
-        axios
+        Vue.axios
           .post(updateInsertAnnotation, formData, {
             headers: formDataHeader(sessionStorage.getItem("userToken")),
             onUploadProgress: function(uploadEvent) {
