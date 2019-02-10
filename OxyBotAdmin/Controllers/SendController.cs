@@ -84,7 +84,7 @@ namespace OxyBotAdmin.Controllers
                         var stream = data.Files[0].OpenReadStream();
                         if (stream.Length <= 25000000)
                         {
-                            await bot.SendImage2All(tgUsers.Select(chat=>chat.ChatId).ToArray(), stream, caption4Msg);
+                            await bot.SendImage2All(tgUsers.Select(u=>u.ChatId).ToArray(), stream, data.Files[0].FileName, caption4Msg);
                             res = Ok();
                         }
                     }

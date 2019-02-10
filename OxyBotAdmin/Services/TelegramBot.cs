@@ -55,7 +55,7 @@ namespace OxyBotAdmin.Services
             }
         }
 
-        public async Task SendImage2All(long[] usersChatId, Stream stream, string msg)
+        public async Task SendImage2All(long[] usersChatId, Stream stream, string fileName, string msg)
         {
             string sendedImageFileId = string.Empty;
             if (usersChatId != null && stream != null)
@@ -66,7 +66,9 @@ namespace OxyBotAdmin.Services
                     {
                         if (string.IsNullOrEmpty(sendedImageFileId))
                         {
-                            var sendedImage = await telegramBot.SendPhotoAsync(usersChatId[i], stream, msg, Telegram.Bot.Types.Enums.ParseMode.Html);
+                            var inputOnlineFile = new Telegram.Bot.Types.InputFiles.InputOnlineFile(stream, fileName);
+
+                            var sendedImage = await telegramBot.SendPhotoAsync(59725585, inputOnlineFile, msg, Telegram.Bot.Types.Enums.ParseMode.Html);
 
                             if (sendedImage != null && sendedImage.Photo != null && sendedImage.Photo.Length > 0)
                             {
@@ -76,6 +78,7 @@ namespace OxyBotAdmin.Services
                         }
                         else
                         {
+                            var inputOnlinePhoto = new Telegram.Bot.Types.InputFiles.InputOnlineFile(sendedImageFileId);
                             await telegramBot.SendPhotoAsync(usersChatId[i], sendedImageFileId, msg, Telegram.Bot.Types.Enums.ParseMode.Html);
                         }
                     }

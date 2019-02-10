@@ -27,7 +27,7 @@
 </template>
 <script>
 const url = "/api/send/img";
-import Vue from 'vue';
+import axios from 'axios';
 import ErrorAlert from "../Alerts/errorAlert.vue";
 import SuccessAlert from "../Alerts/successAlert.vue";
 import { ru } from "../../lang/ru-RU.js";
@@ -69,17 +69,25 @@ export default {
     },
 
     sendImage: function() {
+      
       if (!this.selectedImg) {
         thisComp.showAlert = true;
         thisComp.messageFromServer = ru.imgNotChoosed;
         return;
       }
+
+      if (this.message4Img && this.message4Img.length > 1024) {
+        thisComp.showAlert = true;
+        thisComp.messageFromServer = "Текст к картинке не может одержать более 1024 символов!";
+        return;      
+      }
+
       let thisComp = this;
       var formData = new FormData();
       var fileName = this.selectedImg.name;
       formData.append("file", this.selectedImg);
       formData.append("message", this.message4Img);
-      Vue.axios
+      axios
         .post(url, formData, {
           headers: formDataHeader(sessionStorage.getItem("userToken")),
           onUploadProgress: function(uploadEvent) {

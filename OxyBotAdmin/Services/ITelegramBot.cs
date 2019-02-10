@@ -12,6 +12,6 @@ namespace OxyBotAdmin.Services
 
         void SendMessage(long userChatId, string message);
 
-        Task SendImage2All(long[] usersChatId, Stream stream, string msg);
+        Task SendImage2All(long[] usersChatId, Stream stream, string fileName, string msg);
     }
 }
