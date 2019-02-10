@@ -1,5 +1,7 @@
+<b-container>
+<b-row >
+<b-col md="4">
 <div class="form-body">
-    
     <b-form id="bForm" @submit="onSubmit">
         <img id="img-logo" src="../../assets/logo.png" alt="OxyMedLogo" width="125" height="72.75">
         <b-form-group label="Ваш логин" label-for="loginInput">
@@ -17,3 +19,6 @@
     </b-form>
     <b-button id="submit-button" type="submit" v-on:click="onSubmit" variant="primary">Войти</b-button>
 </div>
+</b-col>      
+</b-row>
+</b-container>
