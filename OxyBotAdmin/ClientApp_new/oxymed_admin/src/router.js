@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-// import Home from './views/Home.vue'
-import Login from './components/login/Login.vue'
+import Login from './components/Login/Login.vue'
+import SendMessage2Users from './components/SendMessage/SendMessage.vue'
 
 Vue.use(Router)
 
@@ -15,6 +15,11 @@ export default new Router({
       component: Login
     },
     {
+      path: "/api/send/msg",
+      name: "sendMessageToUsers",
+      component: SendMessage2Users
+    },
+    {
       path: '/about',
       name: 'about',
       // route level code-splitting
@@ -22,5 +27,7 @@ export default new Router({
       // which is lazy-loaded when the route is visited.
       component: () => import(/* webpackChunkName: "about" */ './views/About.vue')
     }
-  ]
+  ],
+  linkActiveClass: "active",
+  linkExactActiveClass: "active"
 })
