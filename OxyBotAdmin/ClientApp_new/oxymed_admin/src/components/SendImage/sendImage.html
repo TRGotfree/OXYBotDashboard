@@ -1,0 +1,39 @@
+<div>
+    <nav-bar></nav-bar>
+    <b-container>
+        <h2>{{headerLabel}}</h2>
+        <b-form-group>
+            <b-row>
+                <b-col md="6" offset-md="3">
+                    <b-img ref="img-4-send" v-bind:src="img_src" fluid alt="Выберите изображение" />
+                </b-col>
+            </b-row>
+        </b-form-group>
+        <b-form-group>
+            <b-row>
+                <b-col md="6" offset-md="3">
+                    <b-form-textarea :rows="3" :max-rows="5" v-model="message4Img" placeholder="Введите текст к картинке не более 1024 символов"></b-form-textarea>
+                    <b-alert variant="danger" dismissible :show="showAlert" @dismissed="showAlert = !showAlert">
+                        {{messageFromServer}}
+                    </b-alert>
+                    <b-alert variant="success" dismissible :show="showSuccess" @dismissed="showSuccess = !showSuccess">
+                        {{messageFromServer}}
+                    </b-alert>
+                </b-col>
+            </b-row>
+        </b-form-group>
+        <b-form-group style="text-align: center">
+            <b-row>
+                <b-col md="6" offset-md="3">
+                    <b-btn-group style="margin-right: 5px">
+                        <b-button variant="primary" v-on:click="chooseImg">Выбрать изображение</b-button>
+                    </b-btn-group>
+                    <input ref="input_img" type="file" v-on:change="imageSelected" style="display: none">
+                    <b-btn-group style="margin-left: 5px">
+                        <b-button v-if="showSendBtn" variant="danger" v-on:click="sendImage">Отправить изображение</b-button>
+                    </b-btn-group>
+                </b-col>
+            </b-row>
+        </b-form-group>
+    </b-container>
+</div>

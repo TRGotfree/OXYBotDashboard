@@ -17,7 +17,7 @@
                 <button class="btn btn-primary" v-on:click="chooseImg">Выбрать изображение</button>
               </div>
               <input ref="input_img" type="file" v-on:change="imageSelected" style="display: none">
-              <div v-if="showSendBtn === true" class="btn-group">
+              <div v-if="showSendBtn" class="btn-group">
                 <button class="btn btn-danger" v-on:click="sendImage">Отправить изображение</button>
               </div>
             </div>

@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import Login from './components/Login/Login.vue'
 import SendMessage2Users from './components/SendMessage/SendMessage.vue'
+import SendImageToUsers from './components/SendImage/SendImage.vue';
 
 Vue.use(Router)
 
@@ -18,6 +19,11 @@ export default new Router({
       path: "/api/send/msg",
       name: "sendMessageToUsers",
       component: SendMessage2Users
+    },
+    {
+      path: "/api/send/img",
+      name: "sendImage",
+      component: SendImageToUsers
     },
     {
       path: '/about',
