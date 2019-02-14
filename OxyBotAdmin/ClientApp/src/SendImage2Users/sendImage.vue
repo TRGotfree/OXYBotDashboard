@@ -26,13 +26,16 @@
     </div>
 </template>
 <script>
+
 const url = "/api/send/img";
+
 import axios from 'axios';
 import ErrorAlert from "../Alerts/errorAlert.vue";
 import SuccessAlert from "../Alerts/successAlert.vue";
 import { ru } from "../../lang/ru-RU.js";
 import HeaderNavbar from "../HeaderNavbar/header.vue";
 import { formDataHeader } from "../../helper.js";
+
 export default {
   components: {
     HeaderNavbar,
@@ -87,6 +90,7 @@ export default {
       var fileName = this.selectedImg.name;
       formData.append("file", this.selectedImg);
       formData.append("message", this.message4Img);
+      this.showSendBtn = false;
       axios
         .post(url, formData, {
           headers: formDataHeader(sessionStorage.getItem("userToken")),
@@ -95,7 +99,7 @@ export default {
             thisComp.messageFromServer = "Загрузка изображения на сервер: " +
               Math.round((uploadEvent.loaded / uploadEvent.total) * 100) + "%";
             if (Math.round((uploadEvent.loaded / uploadEvent.total) * 100) >= 100) {
-              thisComp.messageFromServer = "Рассылка изображения пользователям...";
+              thisComp.messageFromServer = "Идет рассылка изображения пользователям, подождите...";
             }   
           }
         })
@@ -106,10 +110,13 @@ export default {
             thisComp.messageFromServer = ru.imgLoadedSuccessfully;
             thisComp.img_src = "https://mdbootstrap.com/img/Photos/Others/placeholder-avatar.jpg";
             thisComp.message4Img = "";
+            thisComp.showSendBtn = false;
+            thisComp.selectedImg = null;
           } else {
             thisComp.showAlert = true;
             thisComp.messageFromServer = ru.imgNotUploaded;
-          }
+            thisComp.showSendBtn = true;
+          }   
         })
         .catch(function(error) {
           if (error.response && error.response.data) {
@@ -119,6 +126,7 @@ export default {
             thisComp.messageFromServer = ru.imgNotUploaded;
             thisComp.showAlert = true;
           }
+          thisComp.showSendBtn = true;
         });
     }
   },
@@ -126,6 +134,8 @@ export default {
     showSendBtn: function() {
       if (this.selectedImg) {
         return true;
+      }else{
+        return false;
       }
     }
   }
