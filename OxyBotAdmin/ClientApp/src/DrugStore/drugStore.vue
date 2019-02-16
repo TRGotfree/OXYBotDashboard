@@ -37,7 +37,7 @@
                     </td>
                 </tr>
             </tbody>
-        </table>
+      </table>
 
         <div class="pag-container">
           <b-v-pagination class="pag" size="md" :total-rows="drugStoreTotalCount" :per-page="dataRowsPerPage" v-model="currentPage"></b-v-pagination>            
@@ -46,18 +46,18 @@
         <modal-window v-if="showModal" v-on:ok="saveDrugStore(selectedDrugStore)" v-on:cancel="showModal=false">
             <h4 slot="header">{{selectedDrugStore.drugStoreName}}</h4>
             <form slot="body">
-                <div class="form-group row">                   
+                <div class="form-group row">
+                  <label for="drugStore-id" class="col-3 col-form-label text-right">Id аптеки из "Аналитики"</label>
+                  <div class="col-9">
+                    <input type="number" class="form-control" v-model="selectedDrugStore.drugStoreId" id="drugStore-id">
+                  </div> 
+                </div>
+                <div class="form-group row">                                   
                   <label for="drugStore-name" class="col-3 col-form-label text-right">Название</label>
                   <div class="col-9">
                     <input type="text" class="form-control" v-model="selectedDrugStore.drugStoreName" id="drugStore-name" placeholder="Название аптеки">
                   </div>  
-                </div>   
-              <div class="form-group row"> 
-                <label for="drugStore-shortname" class="col-3 col-form-label text-right">Краткое название</label>
-                <div class="col-9">
-                  <input type="text" class="form-control" v-model="selectedDrugStore.shortName" id="drugStore-shortname" placeholder="Краткое название">
                 </div>
-              </div>
                 <div class="form-group row">
                   <label for="drugStore-orientir" class="col-3 col-form-label text-right">Ориентир</label>
                   <div class="col-9">
@@ -81,10 +81,10 @@
                   <label for="dropdownMenuButton" class="col-3 col-form-label text-right">Город/Район</label>
                   <div class="col-9 dropdown">
                     <button class="btn btn-default dropdown-toggle text-left drop-down-btn" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                      {{selectedDistrict}}    
+                      {{selectedDrugStore.district}}    
                     </button>
                     <div class="dropdown-menu scrollable-menu" aria-labelledby="dropdownMenuButton">
-                        <a v-for="distr in districts" :key="distr" class="dropdown-item" href="#" v-on:click="selectedDistrict=distr">{{distr}}</a>
+                        <a v-for="distr in districts" :key="distr" class="dropdown-item" href="#" v-on:click="selectedDrugStore.district=distr">{{distr}}</a>
                     </div>
                   </div>
                 </div>
@@ -109,7 +109,7 @@
 const getDrugStoresUrl = "/api/drugstore?beginPage=";
 const updInsertDrugStoreUrl = "/api/drugstore";
 const getDistricts = "/api/district";
-import axios from "axios";
+import Vue from "vue";
 import { ru } from "../../lang/ru-RU.js";
 import HeaderNavbar from "../HeaderNavbar/header.vue";
 import { authorizationHeader } from "../../helper.js";
@@ -119,45 +119,7 @@ import ModalWindow from "../ModalWindow/ModalWindow.vue";
 import Loading from "../Loading/loading.vue";
 import MessageModalWindow from "../MessageModalWindow/messageModalWindow.vue";
 
-let validateDrugStoreFields = function(drugStore) {
-  let validationResult = {
-    isValid: false,
-    msg: ru.someFieldsAreEmptyOrNotValid
-  };
-  try {
-    if (drugStore) {
-      if (
-        drugStore.id >= 0 &&
-        drugStore.drugStoreName.length > 0 &&
-        drugStore.address.length > 0 &&
-        drugStore.phone.length > 0 &&
-        drugStore.workTime.length > 0 &&
-        drugStore.orientir.length > 0 &&
-        drugStore.district.length > 0 &&
-        drugStore.shortName.length > 0
-      ) {
-        if (drugStore.district.match(/^\/[a-z_]+$/) === false) {
-          validationResul.isValid = false;
-          validationResult.msg = ru.districtFormatIsNotValid;
-          return validationResult;
-        }
-
-        if (drugStore.shortName.match(/^\D+\s№\d+$/) === false) {
-          validationResul.isValid = false;
-          validationResult.msg = ru.drugStoreShortNameIsNotValid;
-          return validationResult;
-        }
-
-        validationResult.isValid = true;
-        validationResult.msg = "";
-      }
-    }
-  } catch (error) {
-    validationResult.isValid = false;
-    validationResult.msg = ru.dataNotSaved;
-  }
-  return validationResult;
-};
+const validationOK = "OK";
 
 export default {
   components: {
@@ -170,6 +132,17 @@ export default {
   
   data: function() {
     return {
+      selectedDrugStore: {
+        id: 0,
+        drugStoreId: 0,
+        drugStoreName: "",
+        address: "",
+        phone: "",
+        workTime: "07:00-24:00",
+        district: "/mirabad",
+        shortName: "",
+        status: true
+      },
       drugStores: [],
       showModal: false,
       messageFromServer: "",
@@ -190,13 +163,44 @@ export default {
   },
 
   methods: {
+    validateFields: function(drugStore){
+      let validationResultMsg = "OK";
+      try {
+     
+        if (!drugStore)
+           validationResultMsg = "Что то пошло не так! Не удалось определить объект аптеки!"
+        
+        if (!drugStore.drugStoreId || drugStore.drugStoreId === 0)
+           validationResultMsg = "Укажите id аптеки из \"Аналитики\", оно нужно для синхронизации остатков товара!";
+
+        if (!drugStore.drugStoreName || !drugStore.drugStoreName.match(/^Аптека №\d+|^Аптека№\d+|Аптека №\s\d+|^Аптека №\d+\W\d+/gm))
+           validationResultMsg = "Укажите правильное название аптеки оно должно начинаться на слово \"Аптека\" и содержать номер аптеки! К примеру \"Аптека №1\""; 
+
+        if (!drugStore.address || !drugStore.address.trim())
+          validationResultMsg = "Укажите адрес аптеки!";
+
+        if (!drugStore.workTime || !drugStore.workTime.trim())
+          validationResultMsg = "Укажите режим работы аптеки!";
+        
+        if(!drugStore.phone || !drugStore.phone.trim())
+           validationResultMsg = "Укажите телефон аптеки!";
+
+        if (!drugStore.orientir || !drugStore.orientir.trim())
+          validationResultMsg = "Укажите ориентир аптеки!";
+        
+        if (!drugStore.district || !drugStore.district.trim() || this.districts.indexOf(drugStore.district) < 0)
+          validationResultMsg = "Выберите район из списка!";
+        
+      } catch (error) {
+          validationResultMsg = "Не удалось проверить соответствие заполненных Вами данных!";
+      }
+      return validationResultMsg;
+    },
     getDistricts: function() {
       let thisComp = this;
       try {
-        axios
-          .get(getDistricts, {
-            headers: authorizationHeader(sessionStorage.getItem("userToken"))
-          })
+        Vue.axios
+          .get(getDistricts)
           .then(function(res) {
             if (res.status === 200) {
               thisComp.districts = res.data.districts;
@@ -221,9 +225,8 @@ export default {
     },
     getDrugStores: function(beginPage, endPage) {
       let thisComp = this;
-      axios
+      Vue.axios
         .get(getDrugStoresUrl + beginPage + "&" + "endPage=" + endPage, {
-          headers: authorizationHeader(sessionStorage.getItem("userToken")),
           onDownloadProgress: function(loadingEvent) {
             if (loadingEvent.loaded !== loadingEvent.total) {
               thisComp.isLoading = true;
@@ -249,74 +252,34 @@ export default {
     },
     saveDrugStore: function(drugStore, event) {
       let thisComp = this;
-      if (drugStore && validateDrugStoreFields(drugStore).isValid === true) {
-        if (drugStore.drugStoreId == 0) {
+      try {
+      
+      if (this.validateFields(drugStore) === validationOK) {
           let ds = drugStore;
-          axios
-            .post(updInsertDrugStoreUrl, ds, {
-              headers: authorizationHeader(sessionStorage.getItem("userToken"))
-            })
+          drugStore.shortName = drugStore.drugStoreName.match(/^Аптека №\d+|^Аптека№\d+|Аптека №\s\d+|^Аптека №\d+\W\d+/gm)[0];
+
+          Vue.axios
+            .post(updInsertDrugStoreUrl, ds)
             .then(function(res) {
               if (res.status === 200) {
                 thisComp.showModal = false;
-                thisComp.showMsgModalWindow(
-                  true,
-                  ru.attention,
-                  ru.drugStoreSavedSuccessfully,
-                  2000
-                );
+                thisComp.showMsgModalWindow(true, ru.attention, ru.drugStoreSavedSuccessfully, 2000);
                 thisComp.drugStores.push(ds);
                 thisComp.showModal = false;
+                thisComp.getDrugStores(1, 15);
               } else {
-                thisComp.showMsgModalWindow(
-                  true,
-                  ru.attention,
-                  res.value,
-                  null
-                );
+                thisComp.showMsgModalWindow(true, ru.attention, res.value, null);
               }
             })
             .catch(function(error) {
-              thisComp.showMsgModalWindow(
-                true,
-                ru.error,
-                ru.dataNotSavedTryAgain,
-                null
-              );
+              thisComp.showMsgModalWindow(true, ru.error, ru.dataNotSavedTryAgain, null);
             });
-        } else if (drugStore.id > 0) {
-          let ds = drugStore;
-
-          axios
-            .put(updInsertDrugStoreUrl, ds, {
-              headers: authorizationHeader(sessionStorage.getItem("userToken"))
-            })
-            .then(function(res) {
-              if (res.status === 200) {
-                thisComp.showModal = false;
-                thisComp.showMsgModalWindow(
-                  true,
-                  ru.attention,
-                  ru.drugStoreSavedSuccessfully,
-                  2000
-                );
-                thisComp.showModal = false;
-              } else {
-                thisComp.showMsgModalWindow(true, ru.attention, res, null);
-              }
-            })
-            .catch(function(error) {
-              thisComp.showMsgModalWindow(
-                true,
-                ru.error,
-                error.toString(),
-                null
-              );
-            });
-        }
       } else {
-        let validatorMsg = validateDrugStoreFields(drugStore).msg;
+        let validatorMsg = thisComp.validateFields(drugStore);
         thisComp.showMsgModalWindow(true, ru.attention, validatorMsg, null);
+      }     
+      } catch (error) {
+         thisComp.showMsgModalWindow(true, ru.attention, "Произошла ошибка при сохранении данных!", null);   
       }
     },
     createDrugStore: function() {

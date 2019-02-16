@@ -10,9 +10,11 @@ namespace OxyBotAdmin.Models
     {
         public uint Id { get; set; }
 
+        [Range(1, 10000, ErrorMessage = "Укажите Id аптеки из \"Аналитики\"")]
         public uint DrugStoreId { get; set; }
 
         [Required(AllowEmptyStrings = false)]
+        //[RegularExpression(@"^Аптека №\d+\s\W+|^Аптека№\d+\W+|^Аптека №\s\d+\W+", ErrorMessage = "Название аптеки должно содержать слово Аптека и № аптеки")]
         public string DrugStoreName { get; set; }
 
         public string Address { get; set; }
@@ -28,9 +30,10 @@ namespace OxyBotAdmin.Models
         public string Orientir { get; set; }
 
         [Required(AllowEmptyStrings = false)]
-        [RegularExpression(@"^\/[a-z_]+$")]
         public string District { get; set; }
 
+        [Required]
+        //[RegularExpression(@"^Аптека №\d+$|^Аптека№\d+$|Аптека №\s\d+$")]
         public string ShortName { get; set; }
 
         public int DrugStoreTotalCount { get; set; }

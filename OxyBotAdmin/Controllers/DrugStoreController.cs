@@ -70,7 +70,7 @@ namespace OxyBotAdmin.Controllers
                 {
                     if (ModelState.IsValid)
                     {
-                        baseService.DBController.GetDrugStoreDBController().InsertDrugStore(drugStore);
+                        baseService.DBController.GetDrugStoreDBController().InsertOrUpdateDrugStore(drugStore);
                         result = Ok();
                     }
                     else
@@ -81,7 +81,6 @@ namespace OxyBotAdmin.Controllers
             {
                 logger.LogError(ex);
                 result = StatusCode(500, sharedLocalizer["InternalServerError"]);
-                throw ex;
             }
             return result;
         }

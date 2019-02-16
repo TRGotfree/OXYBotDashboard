@@ -72,7 +72,7 @@ namespace OxyBotAdmin.Repository
             return listResult;
         }
 
-        public void InsertDrugStore(DrugStore drugStore)
+        public void InsertOrUpdateDrugStore(DrugStore drugStore)
         {
             try
             {
@@ -87,12 +87,13 @@ namespace OxyBotAdmin.Repository
                     {
                         try
                         {
-                            using (SqlCommand command = new SqlCommand(SqlScripts.InsertDrugStore, connection))
+                            using (SqlCommand command = new SqlCommand(SqlScripts.InsertOrUpdateDrugStore, connection))
                             {
                                 command.CommandType = CommandType.StoredProcedure;
                                 command.CommandTimeout = CommandTimeout;
                                 command.Transaction = transaction;
 
+                                command.Parameters.Add("@id", SqlDbType.Int).Value = drugStore.DrugStoreId;
                                 command.Parameters.Add("@name", SqlDbType.NVarChar, 75).Value = drugStore.DrugStoreName;
                                 command.Parameters.Add("@address", SqlDbType.NVarChar, 100).Value = drugStore.Address;
                                 command.Parameters.Add("@status", SqlDbType.Bit).Value = drugStore.Status;

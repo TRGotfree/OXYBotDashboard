@@ -18,7 +18,7 @@
 
         public static string GetDrugStores => "dbo.getDrugStores";
 
-        public static string InsertDrugStore => "dbo.insertDrugStore";
+        public static string InsertOrUpdateDrugStore => "dbo.insertOrUpdateDrugStore";
 
         public static string UpdateDrugStore => "dbo.updateDrugStore";
 
