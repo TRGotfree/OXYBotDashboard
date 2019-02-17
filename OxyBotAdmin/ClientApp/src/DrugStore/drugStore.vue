@@ -255,23 +255,25 @@ export default {
       try {
       
       if (this.validateFields(drugStore) === validationOK) {
-          let ds = drugStore;
+        
           drugStore.shortName = drugStore.drugStoreName.match(/^Аптека №\d+|^Аптека№\d+|Аптека №\s\d+|^Аптека №\d+\W\d+/gm)[0];
+          
+          drugStore.drugStoreTotalCount = undefined;
 
           Vue.axios
-            .post(updInsertDrugStoreUrl, ds)
+            .post(updInsertDrugStoreUrl, drugStore)
             .then(function(res) {
               if (res.status === 200) {
                 thisComp.showModal = false;
                 thisComp.showMsgModalWindow(true, ru.attention, ru.drugStoreSavedSuccessfully, 2000);
-                thisComp.drugStores.push(ds);
+                thisComp.drugStores.push(drugStore);
                 thisComp.showModal = false;
                 thisComp.getDrugStores(1, 15);
               } else {
                 thisComp.showMsgModalWindow(true, ru.attention, res.value, null);
               }
             })
-            .catch(function(error) {
+            .catch(function(error, res) {
               thisComp.showMsgModalWindow(true, ru.error, ru.dataNotSavedTryAgain, null);
             });
       } else {

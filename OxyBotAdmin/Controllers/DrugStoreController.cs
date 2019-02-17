@@ -66,7 +66,7 @@ namespace OxyBotAdmin.Controllers
             IActionResult result = StatusCode(400, sharedLocalizer["BadRequest"]);
             try
             {
-                if (drugStore != null && drugStore.Id == 0)
+                if (drugStore != null && drugStore.DrugStoreId > 0)
                 {
                     if (ModelState.IsValid)
                     {
