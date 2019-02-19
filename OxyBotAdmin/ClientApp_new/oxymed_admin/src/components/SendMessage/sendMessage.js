@@ -1,5 +1,6 @@
 /* eslint-disable no-console */
 import NavBar from "../Header/Header.vue";
+import sendMessageService from "../../services/sendMessagesService"
 
 export default {
 
@@ -16,9 +17,9 @@ export default {
         }
     },
     methods: {
-        sendMsg2AllUsers: function () {
-            if (this.message4Send) {
-                console.log("Message sending...");
+        sendMsg2AllUsers: function (message4Send) {
+            if (message4Send) {
+                  (message4Send)
             }else{
                 this.errorMessage = "Введите текст сообщения!";
                 this.showAlert = true;
