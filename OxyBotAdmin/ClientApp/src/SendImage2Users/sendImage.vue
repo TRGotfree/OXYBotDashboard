@@ -14,11 +14,11 @@
             </div>
             <div style="margin-top: 10pt">
               <div class="btn-group">
-                <button class="btn btn-primary" v-on:click="chooseImg">Выбрать изображение</button>
+                <button v-bind:disabled="disableBtn" class="btn btn-primary" v-on:click="chooseImg">Выбрать изображение</button>
               </div>
               <input ref="input_img" type="file" v-on:change="imageSelected" style="display: none">
               <div v-if="showSendBtn" class="btn-group">
-                <button class="btn btn-danger" v-on:click="sendImage">Отправить изображение</button>
+                <button v-bind:disabled="disableBtn" class="btn btn-danger" v-on:click="sendImage">Отправить изображение</button>
               </div>
             </div>
         </div>   
@@ -52,7 +52,8 @@ export default {
       showAlert: false,
       showSuccess: false,
       headerLabel: ru.sendImg2Users,
-      selectedImg: null
+      selectedImg: null,
+      disableBtn: false
     };
   },
   methods: {
@@ -90,7 +91,7 @@ export default {
       var fileName = this.selectedImg.name;
       formData.append("file", this.selectedImg);
       formData.append("message", this.message4Img);
-      this.showSendBtn = false;
+      this.disableBtn = true;
       axios
         .post(url, formData, {
           headers: formDataHeader(sessionStorage.getItem("userToken")),
@@ -110,13 +111,9 @@ export default {
             thisComp.messageFromServer = ru.imgLoadedSuccessfully;
             thisComp.img_src = "https://mdbootstrap.com/img/Photos/Others/placeholder-avatar.jpg";
             thisComp.message4Img = "";
-            thisComp.showSendBtn = false;
+            thisComp.disableBtn = false;
             thisComp.selectedImg = null;
-          } else {
-            thisComp.showAlert = true;
-            thisComp.messageFromServer = ru.imgNotUploaded;
-            thisComp.showSendBtn = true;
-          }   
+          }
         })
         .catch(function(error) {
           if (error.response && error.response.data) {
@@ -126,7 +123,7 @@ export default {
             thisComp.messageFromServer = ru.imgNotUploaded;
             thisComp.showAlert = true;
           }
-          thisComp.showSendBtn = true;
+          thisComp.disableBtn = false;
         });
     }
   },
