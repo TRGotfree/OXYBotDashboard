@@ -32,7 +32,7 @@ namespace OxyBotAdmin
         public IConfiguration Configuration { get; }
 
         public void ConfigureServices(IServiceCollection services)
-        {        
+        {
             services.AddLocalization(options => options.ResourcesPath = "Resources");
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -58,7 +58,7 @@ namespace OxyBotAdmin
                 {
                     options.DataAnnotationLocalizerProvider = (type, factory) =>
                         factory.Create(typeof(AppData.SharedResource));
-                    
+
                 });
 
             services.AddSingleton<ILogger, NLogLogger>();
@@ -72,15 +72,26 @@ namespace OxyBotAdmin
 
             services.Configure<RequestLocalizationOptions>(options =>
             {
-                var supportedCultres = new[] 
+                var supportedCultres = new[]
                 {
                     new CultureInfo("ru"),
-                    new CultureInfo("en") 
+                    new CultureInfo("en")
                 };
                 options.DefaultRequestCulture = new Microsoft.AspNetCore.Localization.RequestCulture("ru");
                 options.SupportedCultures = supportedCultres;
                 options.SupportedUICultures = supportedCultres;
             });
+
+            if (IsDevelopment)
+            {
+                services.AddCors(policy => policy.AddPolicy("DevPolicy", policyBuilder =>
+                {
+                    policyBuilder
+                    .AllowAnyMethod()
+                    .AllowAnyOrigin()
+                    .AllowAnyHeader();
+                }));
+            }
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
@@ -88,6 +99,7 @@ namespace OxyBotAdmin
             if (IsDevelopment)
             {
                 app.UseDeveloperExceptionPage();
+                app.UseCors("DevPolicy");
             }
             else
             {

@@ -4,28 +4,29 @@ let messageFromServer = {
     isSucessfully: false
 };
 
-const sendMessageToAllUsers = function (message, url = "/api/send/msg") {
+export default {
+
+async sendMessageToAllUsers (message, url = "/api/send/msg") {
     try {
         
         if (!message)
             throw new Error("Для отправки сообщения необходимо указать его текст!");
-        if (!url) {
+        if (!url)
             throw new Error("Url required for sending message");
-        }
+        
+        let response = await Vue.axios.post(url, message);
+        messageFromServer.isSucessfully = true;
+        messageFromServer.message = response.data;
 
-        Vue.axios.post(url, message)
-            .then(res => {
-                messageFromServer.message = "Сообщение отправлено!";
-                messageFromServer.isSucessfully = true;
-            }).catch(error => {
-                messageFromServer.message = error.response.data;
-                messageFromServer.isSucessfully = false;
-            });
         return messageFromServer;
-
     } catch (error) {
-        throw error;
+        messageFromServer.isSucessfully = false;
+        if (error.response) {
+            messageFromServer.message = error.response.data;           
+        }else{
+            messageFromServer.message = "Something goes wrong! Please try again later!";
+        }     
     }
 }
-
-module.exports = { sendMessageToAllUsers };
+}
+ 

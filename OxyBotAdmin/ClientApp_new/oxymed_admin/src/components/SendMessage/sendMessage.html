@@ -1,13 +1,16 @@
-<div>
+<div style="margin-top:8%">
 <nav-bar></nav-bar>    
 <h1>{{headerLabel}}</h1>
 <div>
-  <b-container>
+  <b-container style="margin-top:15pt">
     <b-form-group>
         <b-form-textarea :rows="7" :max-rows="10" v-model="message4Send" placeholder="Введите текст для рассылки" style="border-color: #0275D8">
         </b-form-textarea>
     </b-form-group>
     <b-button variant="danger" v-on:click="sendMsg2AllUsers">Отправить сообщение</b-button>
+    <b-alert variant="danger" dismissible fade :show="showDangerAlert" @dismissed="showDangerAlert = !showDangerAlert">{{alertMessage}}</b-alert>
+    <b-alert variant="success" dismissible fade :show="showSuccessAlert" @dismissed="showSuccessAlert = !showSuccessAlert">{{alertMessage}}</b-alert>
+    <b-alert variant="warning" dismissible fade :show="showWarningAlert" @dismissed="showWarningAlert = !showWarningAlert">{{alertMessage}}</b-alert>    
   </b-container>
 </div>
 </div>
