@@ -7,7 +7,7 @@ export default {
   },
   data: function () {
     return {
-      img_src: "https://mdbootstrap.com/img/Photos/Others/placeholder-avatar.jpg",
+      img_src: "",
       alertMessage: "",
       message4Img: "",
       showDangerAlert: false,
@@ -18,7 +18,8 @@ export default {
       fileForSend: null,
       isSendButtonDisabled: false,
       isFileChooseShowing: true,
-      isImageChooseShowing: true
+      isImageChooseShowing: true,
+      isImagePreviewShowing: false
     }
   },
   methods: {
@@ -76,7 +77,7 @@ export default {
         this.alertMessage = sendResult.message;
         if (sendResult.isSucessfully) {
           this.showSuccessAlert = true;
-          this.img_src = "https://mdbootstrap.com/img/Photos/Others/placeholder-avatar.jpg";
+          this.img_src = "";
           this.message4Img = "";
           this.selectedImg = null;
           this.fileForSend = null;
@@ -90,12 +91,26 @@ export default {
       }
 
       this.isSendButtonDisabled = false;
+    },
+
+    cancel: function() {
+      this.selectedImg= null;
+      this.fileForSend= null;
+      this.isSendButtonDisabled= false;
+      this.isFileChooseShowing= true;
+      this.isImageChooseShowing= true;
+      this.isImagePreviewShowing= false;
+      this.$refs.imageInput.reset();
+      this.$refs.fileInput.reset();
     }
+
   },
   computed: {
     showSendBtn: function () {
-      if (this.selectedImg)
+      if (this.selectedImg || this.fileForSend)
         return true;
+      else
+        return false;  
     }
   },
   watch: {
@@ -122,12 +137,24 @@ export default {
         this.selectedImg = null;
         this.isImageChooseShowing = false;
         this.img_src = "";
+      }else{
+        this.isImageChooseShowing = true;
       }
     },
     selectedImg: function (image) {
       if (image) {
         this.fileForSend = null;
         this.isFileChooseShowing = false;
+      }else{
+        this.isFileChooseShowing = true;
+        this.img_src = "";
+      }
+    },
+    img_src: function(imageSrc) {
+      if (imageSrc) {
+         this.isImagePreviewShowing = true;
+      }else{
+        this.isImagePreviewShowing = false;
       }
     }
   },
