@@ -38,7 +38,7 @@ namespace OxyBotAdmin.Controllers
         [Consumes("application/json")]
         public async Task<IActionResult> Msg([FromBody]string message)
         {
-            var res = StatusCode(500);
+            var res = StatusCode(400);
             try
             {
                 if (!string.IsNullOrEmpty(message) && !string.IsNullOrWhiteSpace(message))
@@ -69,7 +69,7 @@ namespace OxyBotAdmin.Controllers
         [Consumes("multipart/form-data")]        
         public async Task<IActionResult> Img([FromForm] IFormCollection data)
         {
-            var res = StatusCode(404);
+            var res = StatusCode(400);
             try
             {
                 if (data != null && data.Files != null && data.Files.Count > 0)
@@ -106,13 +106,49 @@ namespace OxyBotAdmin.Controllers
             }
             return res;
         }
-        
-       
 
-        //[ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        //public IActionResult Error()
-        //{
-        //    return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        //}
-    }
+        [Authorize]
+        [HttpPost]
+        [Route("file")]
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> File([FromForm] IFormCollection data)
+        {
+            var res = StatusCode(400);
+            try
+            {
+                if (data != null && data.Files != null && data.Files.Count > 0)
+                {
+                    var tgUsers = dBController.GetTGUsersConroller().GetTelegramBotUsers();
+                    //var tgUsers = new long[] { 59725585 };
+
+                    string caption4Msg = data.ContainsKey("message") ? data["message"].ToString() : string.Empty;
+
+                    if (tgUsers != null && data.Files[0] != null)
+                    {
+                        var stream = data.Files[0].OpenReadStream();
+                        if (stream.Length <= 25000000)
+                        {
+                            await bot.SendImage2All(tgUsers.Select(u => u.ChatId).ToArray(), stream, data.Files[0].FileName, caption4Msg);
+                            res = Ok();
+                        }
+                    }
+                    else
+                    {
+                        res = StatusCode(400);
+                    }
+                }
+                else
+                {
+                    res = StatusCode(400);
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex);
+                res = StatusCode(500);
+                throw ex;
+            }
+            return res;
+        }
+     }
 }

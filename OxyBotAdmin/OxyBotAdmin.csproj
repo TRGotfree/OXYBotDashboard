@@ -22,8 +22,4 @@
     <Folder Include="ClientApp\css\" />
   </ItemGroup>
 
-  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-    <Exec Command="call npm --prefix ./ClientApp run build" />
-  </Target>
-
 </Project>

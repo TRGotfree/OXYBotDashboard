@@ -9,60 +9,72 @@ import Vue from "vue";
 const url = "/login/auth";
 
 export default {
-    components: {
-        BForm,
-        BFormText,
-        BFormInvalidFeedback,
-        BFormValidFeedback,
-        BFormRow
-      },
-    data: function () {
-        return {
-            login: "",
-            pass: "",
-            showAlert: false,
-            message: "Неверный логин или пароль"
-        }
-    },
-    methods: {
-        onSubmit: function(){
-            
-            console.log("Submiting...");
-            
-            this.showAlert = !this.showAlert;
-            let thisComp = this;
+  components: {
+    BForm,
+    BFormText,
+    BFormInvalidFeedback,
+    BFormValidFeedback,
+    BFormRow
+  },
+  data: function () {
+    return {
+      login: "",
+      pass: "",
+      showAlert: false,
+      message: ""
+    }
+  },
+  methods: {
+    onSubmit: function () {
 
-            const botAdmin = {
-                login: this.login,
-                password: this.pass
-            };
+      let thisComp = this;
 
-            Vue.axios.post(url, botAdmin)
-            .then(function (res) {
-                if (res.status === 200) {
-                   
-                    sessionStorage.setItem("userToken", res.data.token);
+      if (!this.login) {
+        this.message = "Введите логин!"
+        this.showAlert = true;
+        return;
+      }
 
-                    Vue.axios.interceptors.request.use(function(config){
-                      if (res.data.token) {
-                        config.headers["Authorization"] = "Bearer " + res.data.token;
-                        return config;
-                      }
-                    });
-              
-                    thisComp.$router.push({ name: "sendMessageToUsers" });
-                }
-            })
-            .catch(function (err) {
-              if (err.response && err.response.status === 403) {
-                thisComp.error = true;
-                thisComp.messageFromServer = "Неверный логин или пароль!";
-              } else {
-                thisComp.error = true;
-                thisComp.messageFromServer = "Произошла непредвиденная ошибка!";
-              }
-            });
+      if (!this.pass) {
+        this.message = "Введите пароль!"
+        this.showAlert = true;
+        return;
+      }
 
-        }
-    },
+      const botAdmin = {
+        login: this.login,
+        password: this.pass
+      };
+
+      Vue.axios.post(url, botAdmin)
+        .then(function (res) {
+
+          sessionStorage.setItem("userToken", res.data.token);
+
+          Vue.axios.interceptors.request.use(function (config) {
+            if (res.data.token) {
+              config.headers["Authorization"] = "Bearer " + res.data.token;
+              config.headers["Content-Type"] = "application/json";
+              return config;
+            }
+          });
+
+          thisComp.$router.push({
+            name: "sendMessageToUsers"
+          });
+
+        })
+        .catch(function (err) {
+          if (err.response && err.response.status === 403) {
+            thisComp.error = true;
+            thisComp.message = "Неверный логин или пароль!";
+          } else {
+            thisComp.error = true;
+            thisComp.message = "Произошла непредвиденная ошибка!";
+          }
+          thisComp.showAlert = true;
+        });
+
+    }
+  },
 }

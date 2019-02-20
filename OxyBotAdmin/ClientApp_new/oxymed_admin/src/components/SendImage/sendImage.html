@@ -8,16 +8,23 @@
                     <b-img ref="img-4-send" v-bind:src="img_src" fluid alt="Выберите изображение" />
                 </b-col>
             </b-row>
+
+        </b-form-group>
+        <b-form-group>
+
         </b-form-group>
         <b-form-group>
             <b-row>
                 <b-col md="6" offset-md="3">
                     <b-form-textarea :rows="3" :max-rows="5" v-model="message4Img" placeholder="Введите текст к картинке не более 1024 символов"></b-form-textarea>
-                    <b-alert variant="danger" dismissible :show="showAlert" @dismissed="showAlert = !showAlert">
-                        {{messageFromServer}}
+                    <b-alert variant="warning" dismissible :show="showWarningAlert" @dismissed="showWarningAlert = !showWarningAlert">
+                        {{alertMessage}}
                     </b-alert>
-                    <b-alert variant="success" dismissible :show="showSuccess" @dismissed="showSuccess = !showSuccess">
-                        {{messageFromServer}}
+                    <b-alert variant="danger" dismissible :show="showDangerAlert" @dismissed="showDangerAlert = !showDangerAlert">
+                        {{alertMessage}}
+                    </b-alert>
+                    <b-alert variant="success" dismissible :show="showSuccessAlert" @dismissed="showSuccessAlert = !showSuccessAlert">
+                        {{alertMessage}}
                     </b-alert>
                 </b-col>
             </b-row>
@@ -25,12 +32,21 @@
         <b-form-group style="text-align: center">
             <b-row>
                 <b-col md="6" offset-md="3">
-                    <b-btn-group style="margin-right: 5px">
-                        <b-button variant="primary" v-on:click="chooseImg">Выбрать изображение</b-button>
-                    </b-btn-group>
+                    <b-form-group>
+                        <b-form-file v-show="isImageChooseShowing" v-model="selectedImage" :state="Boolean(fileForSend)"
+                            placeholder="Выберите изображение!" drop-placeholder="Перетащите файл сюда!" browse-text="Выберите изображение"
+                            v-on:change="imageSelected" />
+                    </b-form-group>
+                    <b-form-group>
+                        <b-form-file v-show="isFileChooseShowing" v-model="fileForSend" :state="Boolean(fileForSend)"
+                            placeholder="Выберите файл!" drop-placeholder="Перетащите файл сюда!" browse-text="Выберите файл"
+                            v-on:change="fileChoosed" />
+                    </b-form-group>
+                </b-col>
+                <b-col md="6" offset-md="3">
                     <input ref="input_img" type="file" v-on:change="imageSelected" style="display: none">
                     <b-btn-group style="margin-left: 5px">
-                        <b-button v-if="showSendBtn" variant="danger" v-on:click="sendImage">Отправить изображение</b-button>
+                        <b-button v-bind:disabled="isSendButtonDisabled" v-if="showSendBtn" variant="danger" v-on:click="send">Отправить!</b-button>
                     </b-btn-group>
                 </b-col>
             </b-row>

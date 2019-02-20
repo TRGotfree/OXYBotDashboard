@@ -13,8 +13,8 @@
         <b-alert variant="danger" dismissible :show="showAlert" @dismissed="showAlert = !showAlert">
             {{message}} 
         </b-alert>
+        <b-button id="submit-button" type="submit" v-on:click.prevent="onSubmit" variant="primary">Войти</b-button>
     </b-form>
-    <b-button id="submit-button" type="submit" v-on:click="onSubmit" variant="primary">Войти</b-button>
 </div>
 </b-col> 
 </b-row>    
