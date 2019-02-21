@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable no-console */
 "use strict";
 
@@ -10,7 +11,7 @@ import axios from "axios";
 // axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
 
 let config = {
-  baseURL: process.env.VUE_APP_BASE_URL || "",
+  baseURL: process.env.VUE_APP_BASE_URL || process.env.VUE_APP_BASE_URL2,
   timeout: 60 * 1000 * 60 * 3//, // Timeout
  // withCredentials: true // Check cross-site Access-Control
 };

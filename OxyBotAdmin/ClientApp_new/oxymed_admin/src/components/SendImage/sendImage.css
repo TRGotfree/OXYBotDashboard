@@ -2,3 +2,7 @@ h2 {
     margin-top: 10%;
     margin-bottom: 3%;
 }
+
+.custom-file-label::after {
+    content: 'Обзор';
+}

@@ -79,17 +79,17 @@ export default {
             else
                 messageFromServer.message = "Файл успешно отправлен!"
 
-            messageFromServer.isSucessfully = true;
-
-            return messageFromServer;
+            messageFromServer.isSucessfully = true;          
 
         } catch (error) {
             messageFromServer.isSucessfully = false;
             if (error.response && error.response.data) {
                 messageFromServer.message = error.response.data;
             } else {
-                messageFromServer.message = "Файл не загружен!";
+                messageFromServer.message = "Файл не загружен!" + error.toString();
             }
         }
+
+        return messageFromServer;
     }
 }

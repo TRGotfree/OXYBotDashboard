@@ -1,5 +1,6 @@
+/* eslint-disable no-console */
 import NavBar from "../Header/Header.vue";
-import sendImageService from "../../services/sendImageService";
+import sendImageService from "../../services/sendImageOrFileService";
 
 export default {
   components: {
@@ -59,22 +60,29 @@ export default {
         let sendResult = null;
 
         if (this.selectedImg && !this.fileForSend) {
+
           const imageData = {
             image: this.selectedImg,
-            textForImage: this.message4Img
+            textForImage: !this.message4Img ? "" : this.message4Img
           };
+          
           sendResult = await sendImageService.sendImageToAllUsers(imageData);
+
         } else if (!this.selectedImg && this.fileForSend) {
+          
           const fileData = {
-            file: this.selectedImg,
-            textForfile: this.message4Img
+            file: this.fileForSend,
+            textForFile: !this.message4Img ? "" : this.message4Img
           };
+
           sendResult = await sendImageService.sendFileToAllUsers(fileData);
+           
         } else {
           throw new Error("Something goes wrong!");
         }
 
         this.alertMessage = sendResult.message;
+
         if (sendResult.isSucessfully) {
           this.showSuccessAlert = true;
           this.img_src = "";
@@ -87,7 +95,7 @@ export default {
 
       } catch (error) {
         this.showDangerAlert = true;
-        this.alertMessage = error.toString();
+        this.alertMessage = "Произошла непредвиденная ошибка!";
       }
 
       this.isSendButtonDisabled = false;

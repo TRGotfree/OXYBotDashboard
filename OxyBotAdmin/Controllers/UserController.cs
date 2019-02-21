@@ -105,7 +105,7 @@ namespace OxyBotAdmin.Controllers
             {
                 if (chatId > 0 && !string.IsNullOrEmpty(message) && !string.IsNullOrWhiteSpace(message))
                 {
-                    bot.SendMessage(chatId, message);
+                    await bot.SendMessage(chatId, message);
                     result = Ok();
                 }
             }

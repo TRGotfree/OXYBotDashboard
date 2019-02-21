@@ -32,12 +32,12 @@
                 <b-col md="6" offset-md="3">
                     <b-form-group>
                         <b-form-file ref="imageInput" v-show="isImageChooseShowing" v-model="selectedImg" :state="Boolean(selectedImg)" accept="image/jpeg, image/png"
-                            placeholder="Выберите изображение!" drop-placeholder="Перетащите файл сюда!" browse-text="Выберите изображение"
+                            placeholder="Выберите изображение!" drop-placeholder="Перетащите файл сюда!"
                             v-on:change="imageSelected" />
                     </b-form-group>
                     <b-form-group>
                         <b-form-file ref="fileInput" v-show="isFileChooseShowing" v-model="fileForSend" :state="Boolean(fileForSend)"
-                            placeholder="Выберите файл!" drop-placeholder="Перетащите файл сюда!" browse-text="Выберите файл" accept
+                            placeholder="Выберите файл!" drop-placeholder="Перетащите файл сюда!"
                             v-on:change="fileChoosed" />
                     </b-form-group>
                 </b-col>

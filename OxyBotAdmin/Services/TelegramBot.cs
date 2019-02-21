@@ -21,7 +21,7 @@ namespace OxyBotAdmin.Services
             telegramBot = new TelegramBotClient(configuration["BotToken"]);
         }
 
-        public async void SendMessage(long userChatId, string message)
+        public async Task SendMessage(long userChatId, string message)
         {
             if (userChatId > 0 && !string.IsNullOrEmpty(message) && !string.IsNullOrWhiteSpace(message))
             {
@@ -80,6 +80,40 @@ namespace OxyBotAdmin.Services
                         {
                             var inputOnlinePhoto = new Telegram.Bot.Types.InputFiles.InputOnlineFile(sendedImageFileId);
                             await telegramBot.SendPhotoAsync(usersChatId[i], sendedImageFileId, msg, Telegram.Bot.Types.Enums.ParseMode.Html);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        logger.LogError(ex);
+                    }
+                }
+            }
+        }
+
+
+        public async Task SendFileToAll(long[] usersChatId, Stream stream, string fileName, string msg)
+        {
+            string sendedFileId = string.Empty;
+            if (usersChatId != null && stream != null)
+            {
+                for (int i = 0; i < usersChatId.Length; i++)
+                {
+                    try
+                    {
+                        if (string.IsNullOrEmpty(sendedFileId))
+                        {
+                            var inputOnlineFile = new Telegram.Bot.Types.InputFiles.InputOnlineFile(stream, fileName);
+
+                            var sendedFile = await telegramBot.SendDocumentAsync(59725585, inputOnlineFile, msg, Telegram.Bot.Types.Enums.ParseMode.Html);
+
+                            if (sendedFile != null && sendedFile.Document != null && sendedFile.Document.FileId.Length > 0)
+                                sendedFileId = sendedFile.Document.FileId;
+                            
+                        }
+                        else
+                        {
+                            var inputOnlineFile = new Telegram.Bot.Types.InputFiles.InputOnlineFile(sendedFileId);
+                            await telegramBot.SendDocumentAsync(usersChatId[i], inputOnlineFile, msg, Telegram.Bot.Types.Enums.ParseMode.Html);
                         }
                     }
                     catch (Exception ex)
