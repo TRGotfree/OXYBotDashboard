@@ -90,7 +90,6 @@ namespace OxyBotAdmin.Services
             }
         }
 
-
         public async Task SendFileToAll(long[] usersChatId, Stream stream, string fileName, string msg)
         {
             string sendedFileId = string.Empty;

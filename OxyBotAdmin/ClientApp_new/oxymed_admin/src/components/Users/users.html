@@ -1,15 +1,20 @@
 <div>
-    <b-container>
+    <nav-bar></nav-bar>
+    <loading :isLoading="isLoading"></loading>
+    <b-container v-if="!isLoading">
         <b-form-group>
             <b-row>
                 <b-col md="6" offset-md="3">
-                     <b-alert>{{usersTotalCount}}</b-alert>
+                     <b-alert>{{botUsersTotalCount}}</b-alert>
                 </b-col>
             </b-row>
         </b-form-group>
-    <b-table>
-        
-    </b-table>    
-        
+    <b-table primary-key="chatId" bordered hover :fields="tableData.fields" :items="tableData.items" responsive>
+    </b-table>
+    <b-pagination align="center" :total-rows="botUsersTotalCount" v-model="currentPage" :per-page="dataRowsPerPage" limit="8" style="margin-bottom: 5%">
+    </b-pagination>    
+    <b-modal v-model="isModalWindowShowing" :title="modalTitle" centered>
+        <p>{{modalText}}</p>
+    </b-modal>
     </b-container>
 </div>

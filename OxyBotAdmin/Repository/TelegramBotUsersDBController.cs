@@ -46,6 +46,7 @@ namespace OxyBotAdmin.Repository
                                 tgUser.NickName = reader.GetString(2);
                                 tgUser.FirstName = reader.GetString(3);
                                 tgUser.LastName = reader.GetString(4);
+                                tgUser.FirstAndLastName = $"{tgUser.FirstName} {tgUser.LastName}";
 
                                 tgUsers.Add(tgUser);
                             }
@@ -91,6 +92,7 @@ namespace OxyBotAdmin.Repository
                                 tgUser.LastVisitDateTime = reader.GetDateTime(5).ToString("dd.MM.yyyy HH:mm");
                                 tgUser.MsgCount = reader.GetInt32(6);
                                 tgUser.TotalUserCount = reader.GetInt32(7);
+                                tgUser.FirstAndLastName = $"{tgUser.FirstName} {tgUser.LastName}";
 
                                 tgUsers.Add(tgUser);
                             }
