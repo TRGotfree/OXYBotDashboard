@@ -9,61 +9,64 @@ export default {
         Loading
     },
     created: function(){
-        this.loadUsers(1, 15);
+        this.loadActions(1, 15);
     },
     data: function () {
         return {
             tableData: {
                 fields: [
                     {
-                        key: "chatId",
-                        label: "Id в ТГ",
+                        key: "actionId",
+                        label: "Id акции",
                         sortable: true
                     },
                     {
-                        key: "nickName",
-                        label: "Ник",
+                        key: "nameOfAction",
+                        label: "Название акции",
                         sortable: true
                     },
                     {
-                        key: "firstAndLastName",
-                        label: "Имя и фамилия",
+                        key: "advertisingTextShort",
+                        label: "Описание акции",
                         sortable: true
                     },
                     {
-                        key: "lastVisitDateTime",
-                        label: "Последняя дата визита",
+                        key: "formattedDateBegin",
+                        label: "Дата начала акции",
                         sortable: true
                     },
                     {
-                        key: "msgCount",
-                        label: "Кол-во сообщений",
+                        key: "formattedDateEnd",
+                        label: "Дата окончания акции",
                         sortable: true
                     },
                     {
-                        key: "messageForUser",
-                        label: "Написать сообщение"
+                        key: "state",
+                        label: "Активна/Не активна"
+                    },
+                    {
+                        key: "moreInfo",
+                        label: "Подробнее"
                     }
                 ],
                 items: []
             },
-            botUsersTotalCount: 0,
+            actionTotalCount: 0,
             isLoading: false,
             modalTitle: "Внимание!",
             modalText: "",
             isModalWindowShowing: false,
             currentPage: 1,
             dataRowsPerPage: 15,
-            isSendMessageWindowShowing: false,
-            selectedUser: {},
-            messageForSend: "",
+            isActionEditWindowShowing: false,
+            selectedAction: {},
             showDangerAlert: false,
             alertMessage: "",
             showSuccessAlert: false
         }       
     },
     methods: {
-        loadUsers: async function(beginPage=1, endPage=15){
+        loadActions: async function(beginPage=1, endPage=15){
             try {
                 this.isLoading = true;
 
@@ -71,7 +74,7 @@ export default {
                 
                 if (responseFromServer && responseFromServer.isSuccessfully) {
                     this.tableData.items = responseFromServer.data.botUsers;
-                    this.botUsersTotalCount = responseFromServer.data.botUsersCount
+                    this.actionTotalCount = responseFromServer.data.botUsersCount
                 }else{
                     this.modalText = responseFromServer.message;
                     this.isModalWindowShowing = true;
@@ -86,21 +89,18 @@ export default {
             }
             this.isLoading = false;
         },
-        sendMessage: async function(){
+        saveAction: async function(){
             try {
                 
-                if (!this.selectedUser && !this.selectedUser.chatId)
-                    throw new Error("Пользователь не выбран!");
-                
-                if (!this.messageForSend)    
-                    throw new Error("Сообщение для пользователя не может быть пустым!");
+                if (!this.selectedAction && !this.selectedAction.actionId)
+                    throw new Error("Данные по акции пусты!");
 
-                const resultFromServer = await usersService.sendMessageToUser(this.messageForSend, this.selectedUser.chatId);    
+                const resultFromServer = await usersService.sendMessageToUser(this.messageForSend, this.selectedAction.chatId);    
                 if (resultFromServer.isSuccessfully) {
-                    this.alertMessage = resultFromServer.message ? resultFromServer.message : "Сообщение успешно отправлено!";
+                    this.alertMessage = resultFromServer.message ? resultFromServer.message : "Данные по акции успешно сохранены!";
                     this.showSuccessAlert = true;
                 }else{
-                    this.alertMessage = resultFromServer.message ? resultFromServer.message : "Сообщение не отправлено!";
+                    this.alertMessage = resultFromServer.message ? resultFromServer.message : "Данные не сохранены!";
                     this.showDangerAlert = true;
                 }
 
@@ -114,8 +114,8 @@ export default {
         currentPage(pageIndex){
             
             let lastRow = 1;
-            if (this.botUsersTotalCount < pageIndex * this.dataRowsPerPage)
-                lastRow = this.botUsersTotalCount;
+            if (this.actionTotalCount < pageIndex * this.dataRowsPerPage)
+                lastRow = this.actionTotalCount;
             else
                 lastRow = pageIndex * this.dataRowsPerPage;
             
@@ -123,14 +123,12 @@ export default {
             this.loadUsers(firstRow, lastRow);
         },
         showDangerAlert(isShowing){
-            if (isShowing) {
+            if (isShowing)
                 this.showSuccessAlert = false;
-            }
         },
         showSuccessAlert(isShowing){
-            if (isShowing) {
+            if (isShowing)
                 this.showDangerAlert = false;
-            }
         },
         alertMessage(message){
             if (!message) {
@@ -138,10 +136,9 @@ export default {
                 this.showSuccessAlert = false;
             }
         },
-        isSendMessageWindowShowing(isShowing){
+        isActionEditWindowShowing(isShowing){
             if (!isShowing) {
-                this.selectedUser = {};
-                this.messageForSend = "";
+                this.selectedAction = {};
                 this.alertMessage = "";
             }
         }

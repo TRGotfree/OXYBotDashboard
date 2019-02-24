@@ -24,7 +24,7 @@ export default {
     }
   },
   methods: {
-    imageSelected: function (e) {
+    imageSelected(e) {
 
       if (!e.target.files || e.target.files.length === 0 || !e.target.files[0])
         return;
@@ -33,7 +33,7 @@ export default {
       this.img_src = URL.createObjectURL(this.selectedImg);
     },
 
-    fileChoosed: function (e) {
+    fileChoosed(e) {
       if (!e.target.files || e.target.files.length === 0 || !e.target.files[0])
         return;
 
@@ -101,7 +101,7 @@ export default {
       this.isSendButtonDisabled = false;
     },
 
-    cancel: function() {
+    cancel() {
       this.selectedImg= null;
       this.fileForSend= null;
       this.isSendButtonDisabled= false;
@@ -114,7 +114,7 @@ export default {
 
   },
   computed: {
-    showSendBtn: function () {
+    showSendBtn() {
       if (this.selectedImg || this.fileForSend)
         return true;
       else
@@ -122,25 +122,25 @@ export default {
     }
   },
   watch: {
-    showDangerAlert: function (isShow) {
+    showDangerAlert(isShow) {
       if (isShow) {
         this.showWarningAlert = false;
         this.showSuccessAlert = false;
       }
     },
-    showWarningAlert: function (isShow) {
+    showWarningAlert(isShow) {
       if (isShow) {
         this.showDangerAlert = false;
         this.showSuccessAlert = false;
       }
     },
-    showSuccessAlert: function (isShow) {
+    showSuccessAlert(isShow) {
       if (isShow) {
         this.showWarningAlert = false;
         this.showSuccessAlert = false;
       }
     },
-    fileForSend: function (file) {
+    fileForSend(file) {
       if (file) {
         this.selectedImg = null;
         this.isImageChooseShowing = false;
@@ -149,7 +149,7 @@ export default {
         this.isImageChooseShowing = true;
       }
     },
-    selectedImg: function (image) {
+    selectedImg(image) {
       if (image) {
         this.fileForSend = null;
         this.isFileChooseShowing = false;
@@ -158,12 +158,19 @@ export default {
         this.img_src = "";
       }
     },
-    img_src: function(imageSrc) {
+    img_src(imageSrc) {
       if (imageSrc) {
          this.isImagePreviewShowing = true;
       }else{
         this.isImagePreviewShowing = false;
       }
-    }
+    },
+    alertMessage(message){
+      if (!message) {
+          this.showDangerAlert = false;
+          this.showWarningAlert = false;
+          this.showSuccessAlert = false;
+      }
+  }
   },
 }

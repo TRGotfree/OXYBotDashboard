@@ -54,13 +54,13 @@ export default {
 
           Vue.axios.defaults.headers.common["Authorization"] = userToken;
           Vue.axios.defaults.headers.common["Content-Type"] = "application/json";
-          // Vue.axios.interceptors.request.use(function (config) {
-          //   if (res.data.token) {
-          //     config.headers["Authorization"] = userToken;
-          //     config.headers["Content-Type"] = "application/json";
-          //     return config;
-          //   }
-          // });
+          Vue.axios.interceptors.request.use(function (config) {
+            if (res.data.token) {
+              config.headers["Authorization"] = userToken;
+              config.headers["Content-Type"] = "application/json";
+              return config;
+            }
+          });
 
           thisComp.$router.push({
             name: "sendMessageToUsers"

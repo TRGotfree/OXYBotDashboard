@@ -1,0 +1,44 @@
+<div>
+    <nav-bar></nav-bar>
+    <loading :isLoading="isLoading"></loading>
+    <b-container v-if="!isLoading">
+
+        <b-row>
+            <b-col md="3" offset-md="9">
+                <b-button variant="danger" v-on:click="createNewAction">Создать новую</b-button>
+            </b-col>
+        </b-row>
+
+        <b-table primary-key="actionId" bordered hover :fields="tableData.fields" :items="tableData.items" head-variant="light"
+            responsive>
+            <template slot="state" slot-scope="row">
+                <a href="#">
+                    <i v-if="row.item.state" class="material-icons done_all" v-on:click="selectedAction=row.item; selectedAction.state=false; saveAction(selectedAction);">done_all</i>
+                    <i v-else class="material-icons done" v-on:click="selectedAction=row.item; selectedAction.state=true; saveAction(selectedAction);">done</i>
+                </a>
+            </template>
+            <template slot="moreInfo" slot-scope="row">
+                <a href="#" class="material-icons search" v-on:click="selectedAction=row.item;isActionEditWindowShowing=true;">search</a>
+            </template>
+        </b-table>
+        <b-pagination align="center" :total-rows="actionTotalCount" v-model="currentPage" :per-page="dataRowsPerPage"
+            :limit=8 style="margin-bottom: 5%">
+        </b-pagination>
+        <b-modal v-model="isModalWindowShowing" :title="modalTitle" centered cancel-disabled>
+            <p>{{modalText}}</p>
+        </b-modal>
+        <b-modal size="lg" v-model="isActionEditWindowShowing" title="Данные по акции" centered>
+            <b-container>
+                <b-form-textarea :rows="7" :max-rows="10" v-model="messageForSend" placeholder="Введите текст сообщения"
+                    style="border-color: #0275D8">
+                </b-form-textarea>
+                <b-alert variant="danger" dismissible fade :show="showDangerAlert" @dismissed="showDangerAlert = !showDangerAlert">{{alertMessage}}</b-alert>
+                <b-alert variant="success" dismissible fade :show="showSuccessAlert" @dismissed="showSuccessAlert = !showSuccessAlert">{{alertMessage}}</b-alert>
+            </b-container>
+            <div slot="modal-footer" class="w-100 text-right">
+                <b-button size="md" variant="danger" v-on:click="saveAction">Сохранить</b-button>
+                <b-button size="md" v-on:click="isActionEditWindowShowing=false">Отмена</b-button>
+            </div>
+        </b-modal>
+    </b-container>
+</div>

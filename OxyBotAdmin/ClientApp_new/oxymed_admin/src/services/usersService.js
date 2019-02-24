@@ -20,7 +20,7 @@ export default {
 
             let response = await Vue.axios.get(url);
 
-            if (response && response.data && response.data) {
+            if (response && response.data) {
                 responseFromServer.data = response.data ? response.data : [];
                 responseFromServer.message = response.data.message ? response.data.message : "200. Данные успешно получены!"
                 responseFromServer.isSuccessfully = true;
@@ -31,13 +31,40 @@ export default {
             }
         } catch (error) {
             responseFromServer.data = [];
-            if (process.env.VUE_APP_IS_DEV) {
+            if (process.env.VUE_APP_IS_DEV)
                 responseFromServer.message = JSON.stringify(error);
-            } else
+            else
                 responseFromServer.message = error.response.data ? error.response.data : "Данные не получены!"
             responseFromServer.isSuccessfully = false;
         }
 
+        return responseFromServer;
+    },
+
+    async sendMessageToUser(message, chatId, url="/api/user/") {
+        try {
+
+            if (typeof message !== "string")
+                throw new Error("Невозможно отправить пустое сообщение!");
+
+            if (typeof chatId !== "number")
+                throw new Error("Couldn't send message, chatId is required!");
+
+           const response = await Vue.axios.put(url + chatId, JSON.stringify(message)); 
+           
+           responseFromServer.isSuccessfully = true;
+           responseFromServer.message = "Сообщение успешно отправлено!"; 
+
+           if (response && response.data)
+              responseFromServer.message = response.data.message ? response.data.message : "Сообщение успешно отправлено!";           
+
+        } catch (error) {
+            if (process.env.VUE_APP_IS_DEV)
+                responseFromServer.message = JSON.stringify(error);
+            else
+                responseFromServer.message = error.response.data ? error.response.data : "Сообщение не отправлено!"
+            responseFromServer.isSuccessfully = false;
+        }
         return responseFromServer;
     }
 }

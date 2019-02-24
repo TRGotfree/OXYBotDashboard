@@ -69,6 +69,13 @@ export default {
                 this.showWarningAlert = false;
                 this.showSuccessAlert = false;
             }
+        },
+        alertMessage(message){
+            if (!message) {
+                this.showDangerAlert = false;
+                this.showWarningAlert = false;
+                this.showSuccessAlert = false;
+            }
         }
     },
 }

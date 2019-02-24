@@ -2,19 +2,33 @@
     <nav-bar></nav-bar>
     <loading :isLoading="isLoading"></loading>
     <b-container v-if="!isLoading">
-        <b-form-group>
-            <b-row>
-                <b-col md="6" offset-md="3">
-                     <b-alert>{{botUsersTotalCount}}</b-alert>
-                </b-col>
-            </b-row>
-        </b-form-group>
-    <b-table primary-key="chatId" bordered hover :fields="tableData.fields" :items="tableData.items" responsive>
-    </b-table>
-    <b-pagination align="center" :total-rows="botUsersTotalCount" v-model="currentPage" :per-page="dataRowsPerPage" limit="8" style="margin-bottom: 5%">
-    </b-pagination>    
-    <b-modal v-model="isModalWindowShowing" :title="modalTitle" centered>
-        <p>{{modalText}}</p>
-    </b-modal>
+        <b-table primary-key="chatId" bordered hover :fields="tableData.fields" :items="tableData.items" head-variant="light"
+            responsive caption-top>
+            <template slot="table-caption"><strong class="text-danger">Кол-во пользователей бота: {{botUsersTotalCount}}</strong></template>
+            <template slot="messageForUser" slot-scope="row">
+                <a href="#" v-on:click="selectedUser=row.item; isSendMessageWindowShowing=true">
+                    <i class="material-icons">create</i>
+                </a>
+            </template>
+        </b-table>
+        <b-pagination align="center" :total-rows="botUsersTotalCount" v-model="currentPage" :per-page="dataRowsPerPage"
+            :limit=8 style="margin-bottom: 5%">
+        </b-pagination>
+        <b-modal v-model="isModalWindowShowing" :title="modalTitle" centered cancel-disabled>
+            <p>{{modalText}}</p>
+        </b-modal>
+        <b-modal size="lg" v-model="isSendMessageWindowShowing" :title="'Сообщение для: ' + selectedUser.firstAndLastName" centered>
+            <b-container>
+                <b-form-textarea :rows="7" :max-rows="10" v-model="messageForSend" placeholder="Введите текст сообщения"
+                    style="border-color: #0275D8">
+                </b-form-textarea>
+                <b-alert variant="danger" dismissible fade :show="showDangerAlert" @dismissed="showDangerAlert = !showDangerAlert">{{alertMessage}}</b-alert>
+                <b-alert variant="success" dismissible fade :show="showSuccessAlert" @dismissed="showSuccessAlert = !showSuccessAlert">{{alertMessage}}</b-alert>
+            </b-container>
+            <div slot="modal-footer" class="w-100 text-right">
+                <b-button size="md" variant="danger" v-on:click="sendMessage">Отправить сообщение</b-button>
+                <b-button size="md" v-on:click="isSendMessageWindowShowing=false">Отмена</b-button>
+            </div>
+        </b-modal>
     </b-container>
 </div>
