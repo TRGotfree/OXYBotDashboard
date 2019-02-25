@@ -13,8 +13,8 @@
             responsive>
             <template slot="state" slot-scope="row">
                 <a href="#">
-                    <i v-if="row.item.state" class="material-icons done_all" v-on:click="selectedAction=row.item; selectedAction.state=false; saveAction(selectedAction);">done_all</i>
-                    <i v-else class="material-icons done" v-on:click="selectedAction=row.item; selectedAction.state=true; saveAction(selectedAction);">done</i>
+                    <i v-if="row.item.state" class="material-icons done_all" v-on:click="selectedAction=row.item; selectedAction.state=false; saveAction();">done_all</i>
+                    <i v-else class="material-icons done" v-on:click="selectedAction=row.item; selectedAction.state=true; saveAction();">done</i>
                 </a>
             </template>
             <template slot="moreInfo" slot-scope="row">
@@ -29,9 +29,44 @@
         </b-modal>
         <b-modal size="lg" v-model="isActionEditWindowShowing" title="Данные по акции" centered>
             <b-container>
-                <b-form-textarea :rows="7" :max-rows="10" v-model="messageForSend" placeholder="Введите текст сообщения"
-                    style="border-color: #0275D8">
-                </b-form-textarea>
+                <b-form-group label="Название акции" label-cols-md="4">
+                    <b-row>
+                        <b-col md="8">
+                            <b-form-input type="text" v-model="selectedAction.nameOfAction" required/>
+                        </b-col>
+                    </b-row>
+                </b-form-group>
+                <b-form-group label-cols-md="4" label="Команда в телеграме" description="Должна начинаться с '/'' и содержать только английские буквы">
+                    <b-row>
+                        <b-col md="8">
+                            <b-form-input v-model="selectedAction.commandText" required></b-form-input>
+                        </b-col>
+                    </b-row>
+                </b-form-group>
+                <b-form-group label-cols-md="4" label="Описание акции">
+                    <b-row>
+                        <b-col md="8">
+                            <b-form-textarea :rows="3" :max-rows="3" v-model="selectedAction.advertisingText" required>
+                            </b-form-textarea>
+                        </b-col>
+                    </b-row>
+                </b-form-group>
+                <b-form-group>
+                    <b-row>
+                        <b-col md="3">
+                            <label for="beginDate">Дата начала</label>
+                        </b-col>
+                        <b-col md="3">
+                            <b-form-input id="beginDate" type="date" required></b-form-input>
+                        </b-col>
+                        <b-col md="3">
+                            <label for="endData">Дата окончания</label>
+                        </b-col>
+                        <b-col md="3">
+                            <b-form-input id="endData" type="date" required></b-form-input>
+                        </b-col>
+                    </b-row>
+                </b-form-group>
                 <b-alert variant="danger" dismissible fade :show="showDangerAlert" @dismissed="showDangerAlert = !showDangerAlert">{{alertMessage}}</b-alert>
                 <b-alert variant="success" dismissible fade :show="showSuccessAlert" @dismissed="showSuccessAlert = !showSuccessAlert">{{alertMessage}}</b-alert>
             </b-container>
