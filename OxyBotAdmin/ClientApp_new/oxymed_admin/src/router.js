@@ -4,6 +4,7 @@ import Login from './components/Login/Login.vue'
 import SendMessage2Users from './components/SendMessage/SendMessage.vue'
 import SendImageToUsers from './components/SendImage/SendImage.vue';
 import Users from "./components/Users/Users.vue";
+import Actions from "./components/Actions/Actions.vue";
 
 Vue.use(Router)
 
@@ -30,6 +31,11 @@ export default new Router({
       path: "/api/user",
       component: Users,
       name: "users"
+    },
+    {
+      path: "/api/actions",
+      component: Actions,
+      name: "actions"
     },
     {
       path: '/about',

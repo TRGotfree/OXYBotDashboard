@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import Vue from "vue";
 const responseFromServer = {
     data: [],
@@ -23,6 +24,7 @@ export default {
                 responseFromServer.data = response.data ? response.data : [];
                 responseFromServer.message = response.data.message ? response.data.message : "200. Данные успешно получены!"
                 responseFromServer.isSuccessfully = true;
+
             } else {
                 responseFromServer.data = [];
                 responseFromServer.message = response.data.message ? response.data.message : "Данные не получены!"

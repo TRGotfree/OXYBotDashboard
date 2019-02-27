@@ -73,8 +73,8 @@ export default {
                 const responseFromServer = await actionService.getActions(beginPage, endPage);
                 
                 if (responseFromServer && responseFromServer.isSuccessfully) {
-                    this.tableData.items = responseFromServer.data.botUsers;
-                    this.actionTotalCount = responseFromServer.data.botUsersCount
+                    this.tableData.items = responseFromServer.data.actions;
+                    this.actionTotalCount = responseFromServer.data.totalCount;
                 }else{
                     this.modalText = responseFromServer.message;
                     this.isModalWindowShowing = true;
@@ -104,7 +104,7 @@ export default {
                 if (!this.selectedAction.commandText || !this.selectedAction.commandText.match(/^\/[a-zA-Z_0-9]+/gm))
                     throw new Error("Заполните правильно поле \"Команда в телеграме\"");  
 
-                if (!this.selectedAction.dateBegin || !this.selectedAction.dateEnd)
+                if (!this.selectedAction.formattedDateBegin || !this.selectedAction.formattedDateEnd)
                     throw new Error("Укажите дату начала и дату окончания акции!");
             
                 let resultFromServer = null;
@@ -126,6 +126,24 @@ export default {
                 this.showDangerAlert = true;
                 this.alertMessage = error.toString();
             }
+        },
+        createNewAction(){
+            this.selectedAction = {
+                actionId: 0,
+                commandText: "/new_action_123",
+                formattedDateBegin: "2020-01-01",
+                formattedDateEnd: "",
+                nameOfAction: "",
+                advertisingText: ""
+            };
+            this.selectedAction.actionId = 0;
+            this.selectedAction.commandText = "";
+            this.selectedAction.formattedDateBegin = "2020-01-01"
+            this.selectedAction.formattedDateEnd = "2020-01-31"
+            this.selectedAction.dateBegin = null;
+            this.selectedAction.dateEnd = null;
+
+            this.isActionEditWindowShowing = true;
         }   
     },
     watch: {

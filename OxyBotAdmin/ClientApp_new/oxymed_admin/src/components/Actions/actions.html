@@ -3,9 +3,9 @@
     <loading :isLoading="isLoading"></loading>
     <b-container v-if="!isLoading">
 
-        <b-row>
-            <b-col md="3" offset-md="9">
-                <b-button variant="danger" v-on:click="createNewAction">Создать новую</b-button>
+        <b-row class="w-100 text-right create-action">
+            <b-col>
+                <b-button variant="danger" v-on:click="createNewAction">Создать новую акцию</b-button>
             </b-col>
         </b-row>
 
@@ -27,27 +27,26 @@
         <b-modal v-model="isModalWindowShowing" :title="modalTitle" centered cancel-disabled>
             <p>{{modalText}}</p>
         </b-modal>
-        <b-modal size="lg" v-model="isActionEditWindowShowing" title="Данные по акции" centered>
+        <b-modal size="lg" v-model="isActionEditWindowShowing" :title="`Данные по акции ${selectedAction.nameOfAction}`" centered>
             <b-container>
                 <b-form-group label="Название акции" label-cols-md="4">
                     <b-row>
-                        <b-col md="8">
+                        <b-col>
                             <b-form-input type="text" v-model="selectedAction.nameOfAction" required/>
                         </b-col>
                     </b-row>
                 </b-form-group>
-                <b-form-group label-cols-md="4" label="Команда в телеграме" description="Должна начинаться с '/'' и содержать только английские буквы">
+                <b-form-group label-cols-md="4" label="Команда в телеграме" description="Должна начинаться с '/'' и содержать только цифры и английские буквы">
                     <b-row>
-                        <b-col md="8">
-                            <b-form-input v-model="selectedAction.commandText" required></b-form-input>
+                        <b-col>
+                            <b-form-input v-model="selectedAction.commandText" required />
                         </b-col>
                     </b-row>
                 </b-form-group>
                 <b-form-group label-cols-md="4" label="Описание акции">
                     <b-row>
-                        <b-col md="8">
-                            <b-form-textarea :rows="3" :max-rows="3" v-model="selectedAction.advertisingText" required>
-                            </b-form-textarea>
+                        <b-col>
+                            <b-form-textarea v-model="selectedAction.advertisingText"/>
                         </b-col>
                     </b-row>
                 </b-form-group>
@@ -57,13 +56,13 @@
                             <label for="beginDate">Дата начала</label>
                         </b-col>
                         <b-col md="3">
-                            <b-form-input id="beginDate" type="date" required></b-form-input>
+                            <b-form-input id="beginDate" type="date" required :value="selectedAction.formattedDateBegin"/>
                         </b-col>
                         <b-col md="3">
                             <label for="endData">Дата окончания</label>
                         </b-col>
                         <b-col md="3">
-                            <b-form-input id="endData" type="date" required></b-form-input>
+                            <b-form-input id="endData" type="date" required :value="selectedAction.formattedDateEnd"/>
                         </b-col>
                     </b-row>
                 </b-form-group>

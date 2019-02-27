@@ -43,12 +43,12 @@ namespace OxyBotAdmin.Models
 
         public void SetFormattedDateBegin(DateTime dateBegin)
         {
-            this.FormattedDateBegin = dateBegin.ToShortDateString();
+            this.FormattedDateBegin = dateBegin.ToString("yyyy-MM-dd");
         }
 
         public void SetFormattedDateEnd(DateTime dateEnd)
         {
-            this.FormattedDateEnd = dateEnd.ToShortDateString();
+            this.FormattedDateEnd = dateEnd.ToString("yyyy-MM-dd");
         }
 
         public void SetAdvertisingTextShort(string advertFullText)
