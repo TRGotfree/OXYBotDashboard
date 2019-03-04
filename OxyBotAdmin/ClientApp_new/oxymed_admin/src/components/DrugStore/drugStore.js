@@ -67,7 +67,6 @@ export default {
             showDangerAlert: false,
             alertMessage: "",
             showSuccessAlert: false,
-            selectedDistrict: "",
             districts: []
         }
     },
