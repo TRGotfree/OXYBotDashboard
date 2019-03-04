@@ -1,8 +1,8 @@
 <div>
-    <header-navbar></header-navbar>
-    <loading v-bind:isLoading="isLoading"></loading>
+    <nav-bar></nav-bar>
+    <loading :isLoading="isLoading"></loading>
 
-    <main v-if="!isLoading">
+    <b-container v-if="!isLoading">
 
         <b-row class="w-100 text-right create-drugstore">
             <b-col>
@@ -24,7 +24,7 @@
         <b-pagination align="center" :total-rows="drugStoreTotalCount" v-model="currentPage" :per-page="dataRowsPerPage"
             :limit=8 style="margin-bottom: 5%">
         </b-pagination>
-     
+
         <b-modal v-model="isModalWindowShowing" :title="modalTitle" centered cancel-disabled>
             <p>{{modalText}}</p>
         </b-modal>
@@ -74,7 +74,8 @@
                 </b-form-group>
                 <b-form-group label-cols-md="4" label="Город/Район">
                     <b-dropdown :text="selectedDrugStore.district">
-                        <b-dropdown-item v-on:click="selectedDrugStore.district=district" v-for="(district, index) in districts" :key="index" href="#">{{district}}</b-dropdown-item>
+                        <b-dropdown-item v-on:click="selectedDrugStore.district=district" v-for="(district, index) in districts"
+                            :key="index" href="#">{{district}}</b-dropdown-item>
                     </b-dropdown>
                 </b-form-group>
                 <b-alert variant="danger" dismissible fade :show="showDangerAlert" @dismissed="showDangerAlert = !showDangerAlert">{{alertMessage}}</b-alert>
@@ -85,5 +86,5 @@
                 <b-button size="md" v-on:click="isDrugStoreEditWindowShowing=false">Отмена</b-button>
             </div>
         </b-modal>
-    </main>
+    </b-container>
 </div>
