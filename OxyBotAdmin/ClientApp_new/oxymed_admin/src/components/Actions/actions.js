@@ -8,14 +8,13 @@ export default {
         NavBar,
         Loading
     },
-    created: function(){
+    created: function () {
         this.loadActions(1, 15);
     },
     data: function () {
         return {
             tableData: {
-                fields: [
-                    {
+                fields: [{
                         key: "actionId",
                         label: "Id акции",
                         sortable: true
@@ -63,23 +62,23 @@ export default {
             showDangerAlert: false,
             alertMessage: "",
             showSuccessAlert: false
-        }       
+        }
     },
     methods: {
-        loadActions: async function(beginPage=1, endPage=15){
+        async loadActions(beginPage = 1, endPage = 15) {
             try {
                 this.isLoading = true;
 
                 const responseFromServer = await actionService.getActions(beginPage, endPage);
-                
+
                 if (responseFromServer && responseFromServer.isSuccessfully) {
                     this.tableData.items = responseFromServer.data.actions;
                     this.actionTotalCount = responseFromServer.data.totalCount;
-                }else{
+                } else {
                     this.modalText = responseFromServer.message;
                     this.isModalWindowShowing = true;
                 }
-                
+
             } catch (error) {
                 this.modalText = "Ошибка не удалось загрузить данные!";
                 if (process.env.VUE_APP_IS_DEV) {
@@ -89,34 +88,46 @@ export default {
             }
             this.isLoading = false;
         },
-        async saveAction(){
+        async saveAction() {
             try {
-                
+
                 if (!this.selectedAction)
                     throw new Error("Данные по акции пусты!");
 
                 if (!this.selectedAction.nameOfAction)
                     throw new Error("Необходимо указать название акции!");
-                
+
                 if (!this.selectedAction.advertisingText)
                     throw new Error("Необходимо указать описание акции!");
-                
+
                 if (!this.selectedAction.commandText || !this.selectedAction.commandText.match(/^\/[a-zA-Z_0-9]+/gm))
-                    throw new Error("Заполните правильно поле \"Команда в телеграме\"");  
+                    throw new Error("Заполните правильно поле \"Команда в телеграме\"");
 
                 if (!this.selectedAction.formattedDateBegin || !this.selectedAction.formattedDateEnd)
                     throw new Error("Укажите дату начала и дату окончания акции!");
-            
+
                 let resultFromServer = null;
-            
+
                 if (this.selectedAction.actionId <= 0)
-                    resultFromServer = await actionService.saveNewAction(this.selectedAction);  
-                else 
-                    resultFromServer = await actionService.updateAction(this.selectedAction);          
-                  
+                    resultFromServer = await actionService.saveNewAction(this.selectedAction);
+                else
+                    resultFromServer = await actionService.updateAction(this.selectedAction);
+
                 if (resultFromServer.isSuccessfully) {
                     this.alertMessage = resultFromServer.message ? resultFromServer.message : "Данные по акции успешно сохранены!";
                     this.showSuccessAlert = true;
+
+                    if (this.selectedAction <= 0) {
+                        setTimeout(() => {
+                            this.isActionEditWindowShowing = false;
+                            this.loadActions(1, 15);
+                        }, 3000);
+                    } else {
+                        setTimeout(() => {
+                            this.isActionEditWindowShowing = false;
+                        }, 3000);
+                    }
+
                 } else {
                     this.alertMessage = resultFromServer.message ? resultFromServer.message : "Данные не сохранены!";
                     this.showDangerAlert = true;
@@ -127,7 +138,8 @@ export default {
                 this.alertMessage = error.toString();
             }
         },
-        createNewAction(){
+        createNewAction() {
+            this.hideAlerts();
             this.selectedAction = {
                 actionId: 0,
                 commandText: "/new_action_123",
@@ -138,41 +150,43 @@ export default {
             };
             this.selectedAction.actionId = 0;
             this.selectedAction.commandText = "";
-            this.selectedAction.formattedDateBegin = "2020-01-01"
-            this.selectedAction.formattedDateEnd = "2020-01-31"
-            this.selectedAction.dateBegin = null;
-            this.selectedAction.dateEnd = null;
-
+            this.selectedAction.formattedDateBegin = "2020-01-01";
+            this.selectedAction.formattedDateEnd = "2020-01-31";
+            this.selectedAction.state = true;
             this.isActionEditWindowShowing = true;
-        }   
+        },
+        hideAlerts() {
+            this.showDangerAlert = false;
+            this.showSuccessAlert = false;
+        }
     },
     watch: {
-        currentPage(pageIndex){
-            
+        currentPage(pageIndex) {
+
             let lastRow = 1;
             if (this.actionTotalCount < pageIndex * this.dataRowsPerPage)
                 lastRow = this.actionTotalCount;
             else
                 lastRow = pageIndex * this.dataRowsPerPage;
-            
+
             let firstRow = lastRow - this.dataRowsPerPage + 1;
             this.loadUsers(firstRow, lastRow);
         },
-        showDangerAlert(isShowing){
+        showDangerAlert(isShowing) {
             if (isShowing)
                 this.showSuccessAlert = false;
         },
-        showSuccessAlert(isShowing){
+        showSuccessAlert(isShowing) {
             if (isShowing)
                 this.showDangerAlert = false;
         },
-        alertMessage(message){
+        alertMessage(message) {
             if (!message) {
                 this.showDangerAlert = false;
                 this.showSuccessAlert = false;
             }
         },
-        isActionEditWindowShowing(isShowing){
+        isActionEditWindowShowing(isShowing) {
             if (!isShowing) {
                 this.selectedAction = {};
                 this.alertMessage = "";

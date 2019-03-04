@@ -8,7 +8,7 @@ const responseFromServer = {
 
 export default {
 
-    async getActions(beginPage, endPage, url = "/api/advertising?beginPage=") {
+    async getDrugStores(beginPage, endPage, url = "/api/drugstore?beginPage=") {
         try {
 
             if (!beginPage || !endPage)
@@ -43,16 +43,16 @@ export default {
         return responseFromServer;
     },
 
-    async saveNewAction(actionData, url = "/api/advertising") {
+    async saveDrugStore(drugstore, url = "/api/drugstore") {
         try {
 
-            if (!actionData)
+            if (!drugstore)
                 throw new Error("Couldn't save action! Action data is null or undefined!");
 
             if (!url)
                 throw new Error("Could't save action data because url parameter not specified!");
 
-            const response = await Vue.axios.post(url, actionData);
+            const response = await Vue.axios.post(url, drugstore);
             responseFromServer.isSuccessfully = true;
             responseFromServer.message = "Данные успешно сохранены!";
 
@@ -65,39 +65,38 @@ export default {
                 responseFromServer.message = JSON.stringify(error);
             else
                 responseFromServer.message = error.response.data ? error.response.data : "Данные не сохранены!"
-            
+
             responseFromServer.isSuccessfully = false;
         }
 
         return responseFromServer;
     },
 
-    async updateAction(actionData, url = "/api/advertising") {
+    async getDistricts(url = "/api/district") {
         try {
-            if (!actionData)
-                throw new Error("Couldn't save action! Action data is null or undefined!");
-
             if (!url)
-                throw new Error("Couldn't save action data because url parameter not specified!");
+                throw new Error("Could't get users data because url parameter not specified!");
+ 
+            const response = await Vue.axios.get(url);
 
-            const response = Vue.axios.put(url, actionData);
-            responseFromServer.isSuccessfully = true;
-            responseFromServer.message = "Данные успешно обновлены!";
+            if (response && response.data) {
+                responseFromServer.data = response.data ? response.data : [];
+                responseFromServer.message = response.data.message ? response.data.message : "200. Данные успешно получены!"
+                responseFromServer.isSuccessfully = true;
 
-            if (response && response.data)
-                responseFromServer.message = response.data.message ? response.data.message : responseFromServer.message;
-
+            } else {
+                responseFromServer.data = [];
+                responseFromServer.message = response.data.message ? response.data.message : "Данные не получены!"
+                responseFromServer.isSuccessfully = false;
+            }
         } catch (error) {
-
+            responseFromServer.data = [];
             if (process.env.VUE_APP_IS_DEV)
                 responseFromServer.message = JSON.stringify(error);
             else
-                responseFromServer.message = error.response.data ? error.response.data : "Данные не обновлены!"
-            
+                responseFromServer.message = error.response.data ? error.response.data : "Данные не получены!"
             responseFromServer.isSuccessfully = false;
         }
-
-        return responseFromServer;
     }
 
 }

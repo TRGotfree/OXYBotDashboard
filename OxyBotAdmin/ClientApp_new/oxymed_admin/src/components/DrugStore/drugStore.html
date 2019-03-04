@@ -1,0 +1,89 @@
+<div>
+    <header-navbar></header-navbar>
+    <loading v-bind:isLoading="isLoading"></loading>
+
+    <main v-if="!isLoading">
+
+        <b-row class="w-100 text-right create-drugstore">
+            <b-col>
+                <b-button variant="danger" v-on:click="createNewDrugStore">Создать новую аптеку</b-button>
+            </b-col>
+        </b-row>
+        <b-table primary-key="drugStoreId" bordered hover :fields="tableData.fields" :items="tableData.items"
+            head-variant="light" responsive>
+            <template slot="state" slot-scope="row">
+                <a href="#">
+                    <i v-if="row.item.state" class="material-icons done_all" v-on:click="selectedDrugStore=row.item; selectedDrugStore.status=false; saveDrugStore();">done_all</i>
+                    <i v-else class="material-icons done" v-on:click="selectedDrugStore=row.item; selectedDrugStore.status=true; saveDrugStore();">done</i>
+                </a>
+            </template>
+            <template slot="moreInfo" slot-scope="row">
+                <a href="#" class="material-icons search" v-on:click="selectedDrugStore=row.item;isDrugStoreEditWindowShowing=true;">search</a>
+            </template>
+        </b-table>
+        <b-pagination align="center" :total-rows="drugStoreTotalCount" v-model="currentPage" :per-page="dataRowsPerPage"
+            :limit=8 style="margin-bottom: 5%">
+        </b-pagination>
+     
+        <b-modal v-model="isModalWindowShowing" :title="modalTitle" centered cancel-disabled>
+            <p>{{modalText}}</p>
+        </b-modal>
+
+        <b-modal size="lg" v-model="isDrugStoreEditWindowShowing" :title="`Данные по аптеке ${selectedDrugStore.drugStoreName}`"
+            centered>
+            <b-container>
+                <b-form-group label='Id аптеки из "аналитики"' label-cols-md="4" description="Необходим для синхронизации остатков">
+                    <b-row>
+                        <b-col>
+                            <b-form-input type="number" v-model="selectedDrugStore.drugStoreId" required />
+                        </b-col>
+                    </b-row>
+                </b-form-group>
+                <b-form-group label="Название аптеки" label-cols-md="4">
+                    <b-row>
+                        <b-col>
+                            <b-form-input type="text" v-model="selectedDrugStore.drugStoreName" required />
+                        </b-col>
+                    </b-row>
+                </b-form-group>
+                <b-form-group label-cols-md="4" label="Ориентир">
+                    <b-row>
+                        <b-col>
+                            <b-form-input type="text" v-model="selectedDrugStore.orientir" />
+                        </b-col>
+                    </b-row>
+                </b-form-group>
+                <b-form-group>
+                    <b-row>
+                        <b-col>
+                            <b-form-group label-cols-md="4" label="Телефон">
+                                <b-form-textarea type="text" v-model="selectedDrugStore.phone" />
+                            </b-form-group>
+                            <b-form-group label-cols-md="4" label="Режим работы">
+                                <b-form-textarea type="text" v-model="selectedDrugStore.workTime" />
+                            </b-form-group>
+                        </b-col>
+                    </b-row>
+                </b-form-group>
+                <b-form-group label-cols-md="4" label="Адрес">
+                    <b-row>
+                        <b-col>
+                            <b-form-input type="text" v-model="selectedDrugStore.address" required />
+                        </b-col>
+                    </b-row>
+                </b-form-group>
+                <b-form-group label-cols-md="4" label="Город/Район">
+                    <b-dropdown :text="selectedDrugStore.district">
+                        <b-dropdown-item v-on:click="selectedDrugStore.district=district" v-for="(district, index) in districts" :key="index" href="#">{{district}}</b-dropdown-item>
+                    </b-dropdown>
+                </b-form-group>
+                <b-alert variant="danger" dismissible fade :show="showDangerAlert" @dismissed="showDangerAlert = !showDangerAlert">{{alertMessage}}</b-alert>
+                <b-alert variant="success" dismissible fade :show="showSuccessAlert" @dismissed="showSuccessAlert = !showSuccessAlert">{{alertMessage}}</b-alert>
+            </b-container>
+            <div slot="modal-footer" class="w-100 text-right">
+                <b-button size="md" variant="danger" v-on:click="saveDrugStore">Сохранить</b-button>
+                <b-button size="md" v-on:click="isDrugStoreEditWindowShowing=false">Отмена</b-button>
+            </div>
+        </b-modal>
+    </main>
+</div>

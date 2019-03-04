@@ -22,7 +22,6 @@ namespace OxyBotAdmin.Models
         public string NameOfAction { get; set; }
 
         [Required(AllowEmptyStrings = false, ErrorMessage = "CommandTextNotSet")]
-        [RegularExpression(@"^\/\w+\d+$", ErrorMessage = "CommandTextIsNotValid")]
         [MaxLength(30, ErrorMessage = "CommandTextIsTooLong")]
         public string CommandText { get; set; }
        

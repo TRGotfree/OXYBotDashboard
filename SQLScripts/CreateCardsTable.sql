@@ -10,7 +10,7 @@ GO
 
 CREATE TABLE [dbo].[Cards](
 	[ID] [int] NOT NULL,
-	[CARD_ID] [nvarchar](50) NOT NULL,
+	[CARD_ID] [int] NOT NULL,
 	[USER_FIO] [nvarchar](200) NOT NULL,
 	[BIRTH_DATE] [date] NOT NULL,
 	[PHONE] [nvarchar](50) NOT NULL,

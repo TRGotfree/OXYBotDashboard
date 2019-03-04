@@ -60,7 +60,7 @@ namespace OxyBotAdmin.Controllers
             return result;
         }
 
-        // POST: api/Actions
+
         [Authorize]
         [HttpPost]
         public IActionResult Post([FromBody]AdvertAction advertAction)
@@ -75,6 +75,8 @@ namespace OxyBotAdmin.Controllers
                         (DateTime, DateTime) parserResult;
                         if (IsAdvertDateTimesValid(advertAction.FormattedDateBegin, advertAction.FormattedDateEnd, out parserResult))
                         {
+                            advertAction.DateBegin = parserResult.Item1;
+                            advertAction.DateEnd = parserResult.Item2;
                             baseService.DBController.GetAdvertActionsDBController().InsertAction(advertAction);
                             result = Ok();
                         }
@@ -89,7 +91,6 @@ namespace OxyBotAdmin.Controllers
             {
                 logger.LogError(ex);
                 result = StatusCode(500, sharedLocalizer["InternalServerError"]);
-                throw ex;
             }
 
             return result;
@@ -130,11 +131,6 @@ namespace OxyBotAdmin.Controllers
             return result;
         }
 
-        //// DELETE: api/ApiWithActions/5
-        //[HttpDelete("{id}")]
-        //public void Delete(int id)
-        //{
-        //}
 
         private bool IsAdvertDateTimesValid(string beginDateString, string endDateString, out (DateTime, DateTime) parseResult)
         {
