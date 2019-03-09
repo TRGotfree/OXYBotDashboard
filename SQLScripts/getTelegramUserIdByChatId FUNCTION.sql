@@ -12,5 +12,3 @@ BEGIN
 	DECLARE @tgUserId INT = (SELECT TOP 1 tg.Id FROM dbo.TelegramUsers tg WHERE tg.ChatId = @chatId);
 	RETURN @tgUserId;
 END
-
-
