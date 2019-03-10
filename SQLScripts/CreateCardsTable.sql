@@ -1,7 +1,7 @@
 USE [telegramBotOXY]
 GO
 
-/****** Object:  Table [dbo].[Cards]    Script Date: 08.03.2019 22:13:36 ******/
+/****** Object:  Table [dbo].[Cards]    Script Date: 10.03.2019 17:40:44 ******/
 SET ANSI_NULLS ON
 GO
 
@@ -9,7 +9,7 @@ SET QUOTED_IDENTIFIER ON
 GO
 
 CREATE TABLE [dbo].[Cards](
-	[ID] [int] NOT NULL,
+	[ID] [int] IDENTITY(1,1) NOT NULL,
 	[CARD_ID] [int] NOT NULL,
 	[USER_FIO] [nvarchar](200) NOT NULL,
 	[BIRTH_DATE] [date] NOT NULL,
