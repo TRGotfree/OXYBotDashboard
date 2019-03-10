@@ -56,5 +56,10 @@ namespace OxyBotAdmin.Services
         {
             return new GoodAnnotationsDbController(getConnectionString, logger, configuration);
         }
+
+        public DiscountDBController GetDiscountCardsDBController()
+        {
+            return new DiscountDBController(getConnectionString, logger, configuration);
+        }
     }
 }

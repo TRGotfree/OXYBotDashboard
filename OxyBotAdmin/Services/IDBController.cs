@@ -21,5 +21,7 @@ namespace OxyBotAdmin.Services
         UserRequestsDBController GetUserRequestsDBController();
 
         GoodAnnotationsDbController GetGoodAnnotations();
+
+        DiscountDBController GetDiscountCardDBController();
     }
 }

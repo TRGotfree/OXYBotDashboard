@@ -35,5 +35,9 @@
         public static string InsertOrUpdateAnnotation => "dbo.insertOrUpdateAnnotation";
 
         public static string UpdateOrInsertAnnotationImage => "dbo.insertOrUpdateAnnotationImage";
+
+        public static string GetDiscountsCardsData => "dbo.getCardByPage";
+
+        public static string InsertOrUpdateDiscountCardData => "dbo.insertOrUpdateCardData";
     }
 }
