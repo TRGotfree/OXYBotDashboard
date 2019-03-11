@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import annotationService from "../../services/actionService";
+import annotationService from "../../services/annotationService";
 import NavBar from "../Header/Header.vue";
 import Loading from "../../views/Loading.vue";
 
@@ -14,8 +14,7 @@ export default {
     data: function () {
         return {
             tableData: {
-                fields: [
-                    {
+                fields: [{
                         key: "annotationId",
                         label: "Id аннотации",
                         sortable: true
@@ -51,18 +50,20 @@ export default {
                 items: []
             },
             selectedAnnotation: null,
-            showModal: false,
+            isAnnotationEditWindowShowing: false,
             messageFromServer: "",
             isLoading: true,
             currentPage: 1,
             dataRowsPerPage: 15,
             annotationsTotalCount: 0,
+            goodsCountWithImages: 0,
+            goodsCountWithoutImages: 0,
             showAlert: false,
             textForEdit: "",
             editAnnotationPropertyText: "",
             editProperty: {},
             selectedImg: {},
-            img_src: "",    
+            img_src: "",
             modalTitle: "Внимание!",
             modalText: "",
             isModalWindowShowing: false,
@@ -76,14 +77,20 @@ export default {
             try {
                 this.isLoading = true;
 
-                const responseFromServer = await actionService.getActions(beginPage, endPage);
+                const responseFromServer = await annotationService.getAnnotations(beginPage, endPage);
 
                 if (responseFromServer && responseFromServer.isSuccessfully) {
-                    this.tableData.items = responseFromServer.data.actions;
-                    this.actionTotalCount = responseFromServer.data.totalCount;
+
+                    this.tableData.items = responseFromServer.data.annotations;
+                    this.annotationsTotalCount = responseFromServer.data.totalAnnotationCount;
+                    this.goodsCountWithImages = responseFromServer.data.goodsCountWithImages;
+                    this.goodsCountWithoutImages = responseFromServer.data.goodsCountWithoutImages;
+
                 } else {
+
                     this.modalText = responseFromServer.message;
                     this.isModalWindowShowing = true;
+                    
                 }
 
             } catch (error) {
@@ -95,36 +102,80 @@ export default {
             }
             this.isLoading = false;
         },
-        async saveAction() {
+        async saveNewAnnotation() {
             try {
 
-                if (!this.selectedAction)
-                    throw new Error("Данные по акции пусты!");
+                if (!this.selectedAnnotation)
+                    throw new Error("Данные по аннотации пусты!");
 
-                if (!this.selectedAction.nameOfAction)
-                    throw new Error("Необходимо указать название акции!");
+                if (!this.selectedAnnotation.annotationId)
+                    throw new Error("Не указан Id товара для текущей аннотации!");
 
-                if (!this.selectedAction.advertisingText)
-                    throw new Error("Необходимо указать описание акции!");
+                if (!this.selectedAnnotation.drugName)
+                    throw new Error("Необходимо указать название товара!");
 
-                if (!this.selectedAction.commandText || !this.selectedAction.commandText.match(/^\/[a-zA-Z_0-9]+/gm))
-                    throw new Error("Заполните правильно поле \"Команда в телеграме\"");
-
-                if (!this.selectedAction.formattedDateBegin || !this.selectedAction.formattedDateEnd)
-                    throw new Error("Укажите дату начала и дату окончания акции!");
+                if (!this.selectedAnnotation.producer)
+                    throw new Error("Необходимо указать производителя!");
 
                 let resultFromServer = null;
 
-                if (this.selectedAction.actionId <= 0)
-                    resultFromServer = await actionService.saveNewAction(this.selectedAction);
-                else
-                    resultFromServer = await actionService.updateAction(this.selectedAction);
+                resultFromServer = await annotationService.saveNewAnnotation(this.selectedAnnotation);
 
                 if (resultFromServer.isSuccessfully) {
-                    this.alertMessage = resultFromServer.message ? resultFromServer.message : "Данные по акции успешно сохранены!";
+
+                    this.alertMessage = resultFromServer.message ? resultFromServer.message : "Данные по аннотации успешно сохранены!";
                     this.showSuccessAlert = true;
 
-                    if (this.selectedAction <= 0) {
+                    if (this.selectedAnnotation <= 0) {
+                        
+                        setTimeout(() => {
+                            this.isAnnotationEditWindowShowing = false;
+                            this.loadAnnotations(1, 15);
+                        }, 3000);
+
+                    } else {
+                       
+                        setTimeout(() => {
+                            this.isAnnotationEditWindowShowing = false;
+                        }, 3000);
+
+                    }
+
+                } else {
+                    this.alertMessage = resultFromServer.message ? resultFromServer.message : "Данные не сохранены!";
+                    this.showDangerAlert = true;
+                }
+
+            } catch (error) {
+                this.showDangerAlert = true;
+                this.alertMessage = error.toString();
+            }
+        },
+        async updateAnnotation() {
+            try {
+
+                if (!this.selectedAnnotation)
+                    throw new Error("Данные по аннотации пусты!");
+
+                if (!this.selectedAnnotation.annotationId)
+                    throw new Error("Не указан Id товара для текущей аннотации!");
+
+                if (!this.selectedAnnotation.drugName)
+                    throw new Error("Необходимо указать название товара!");
+
+                if (!this.selectedAnnotation.producer)
+                    throw new Error("Необходимо указать производителя!");
+
+                let resultFromServer = null;
+
+                resultFromServer = await annotationService.updateAnnotation(this.selectedAnnotation);
+
+                if (resultFromServer.isSuccessfully) {
+
+                    this.alertMessage = resultFromServer.message ? resultFromServer.message : "Данные по аннотации успешно сохранены!";
+                    this.showSuccessAlert = true;
+
+                    if (this.selectedAnnotation <= 0) {
                         setTimeout(() => {
                             this.isAnnotationEditWindowShowing = false;
                             this.loadAnnotations(1, 15);
@@ -145,26 +196,96 @@ export default {
                 this.alertMessage = error.toString();
             }
         },
-        createNewAction() {
-            this.hideAlerts();
-            this.selectedAction = {
-                actionId: 0,
-                commandText: "/new_action_123",
-                formattedDateBegin: "2020-01-01",
-                formattedDateEnd: "",
-                nameOfAction: "",
-                advertisingText: ""
-            };
-            this.selectedAction.actionId = 0;
-            this.selectedAction.commandText = "";
-            this.selectedAction.formattedDateBegin = "2020-01-01";
-            this.selectedAction.formattedDateEnd = "2020-01-31";
-            this.selectedAction.state = true;
-            this.isAnnotationEditWindowShowing = true;
-        },
         hideAlerts() {
             this.showDangerAlert = false;
             this.showSuccessAlert = false;
+        },
+        editAnnotation(annotationForEdit, annotationPropertyNameForEdit) {
+            switch (annotationPropertyNameForEdit) {
+
+                case "usingWay":
+                    this.selectedAnnotation = annotationForEdit;
+                    this.editAnnotationPropertyText = "Способ применения:";
+                    this.textForEdit = annotationForEdit.usingWay;
+                    this.editProperty = "usingWay";
+                    this.isAnnotationEditWindowShowing = true;
+
+                    break;
+
+                case "forWhatIsUse":
+                    this.selectedAnnotation = annotationForEdit;
+                    this.editAnnotationPropertyText = "Предназначение";
+                    this.textForEdit = annotationForEdit.forWhatIsUse;
+                    this.editProperty = "forWhatIsUse";
+                    this.isAnnotationEditWindowShowing = true;
+
+                    break;
+
+                case "specialInstructions":
+                    this.selectedAnnotation = annotationForEdit;
+                    this.editAnnotationPropertyText = "Спец. указания";
+                    this.textForEdit = annotationForEdit.specialInstructions;
+                    this.editProperty = "specialInstructions";
+                    this.isAnnotationEditWindowShowing = true;
+                    break;
+
+                case "contraIndicators":
+                    this.selectedAnnotation = annotationForEdit;
+                    this.editAnnotationPropertyText = "Противопоказания";
+                    this.textForEdit = annotationForEdit.specialInstructions;
+                    this.editProperty = "contraIndicators";
+                    this.isAnnotationEditWindowShowing = true;
+                    break;
+
+                case "sideEffects":
+                    this.selectedAnnotation = annotationForEdit;
+                    this.editAnnotationPropertyText = "Побочные эффекты";
+                    this.textForEdit = annotationForEdit.sideEffects;
+                    this.editProperty = "sideEffects";
+                    this.isAnnotationEditWindowShowing = true;
+                    break;
+            }
+        },
+        chooseImg() {
+            this.$refs.input_img.click();
+        },
+        async imageSelected(e) {
+            try {
+
+                if (!e.target.files || e.target.files.length === 0 || !e.target.files[0])
+                    return;
+
+                if (!this.selectedAnnotation)
+                    throw new Error("Данные по аннотации пусты!");
+
+                if (!this.selectedAnnotation.annotationId)
+                    throw new Error("Не указан Id товара для текущей аннотации!");
+
+                this.selectedImg = e.target.files[0];
+                this.img_src = URL.createObjectURL(this.selectedImg);
+
+                var formData = new FormData();
+
+                if (this.selectedImg)
+                    formData.append("file", this.selectedImg);
+
+                formData.append("annotationId", this.selectedAnnotation.annotationId);
+
+                this.modalText = "Фото загружается на сервер подождите...";
+                this.isModalWindowShowing = true;
+
+                await annotationService.saveImage(formData);
+
+                this.modalText = "Фото успешно загружено на сервер!";
+
+                setTimeout(() => {
+                    this.isModalWindowShowing = false;
+                }, 3000);
+
+            } catch (error) {
+                this.modalText = "Произошла ошибка во время сохранения изображения товара! Попробуйте ещё раз."
+                this.isModalWindowShowing = true;
+            }
         }
     },
     watch: {
@@ -195,7 +316,7 @@ export default {
         },
         isAnnotationEditWindowShowing(isShowing) {
             if (!isShowing) {
-                this.selectedAction = {};
+                this.selectedAnnotation = {};
                 this.alertMessage = "";
             }
         }

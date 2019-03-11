@@ -132,6 +132,37 @@ export default {
         }
 
         return responseFromServer;
+    },
+
+    async saveImage(formData, url="/api/annotation/image"){
+        try {
+
+            if (!formData)
+                throw new Error("Couldn't save annotation image! Annotation image data is null or undefined!");
+
+            if (!url)
+                throw new Error("Could't save annotation image because url parameter not specified!");
+
+            const response = await Vue.axios.post(url, formData);
+            responseFromServer.isSuccessfully = true;
+            responseFromServer.message = "Изображение успешно сохранено!";
+
+            if (response && response.data)
+                responseFromServer.message = response.data.message ? response.data.message : responseFromServer.message;
+
+        } catch (error) {
+
+            if (process.env.VUE_APP_IS_DEV)
+                responseFromServer.message = JSON.stringify(error);
+            else
+                responseFromServer.message = error.response.data ? error.response.data : "Данные не сохранены!"
+
+            responseFromServer.isSuccessfully = false;
+        }
+
+        return responseFromServer;
     }
+
+
 
 }

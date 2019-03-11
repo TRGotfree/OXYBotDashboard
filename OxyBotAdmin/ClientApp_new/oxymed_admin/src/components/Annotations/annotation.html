@@ -14,44 +14,44 @@
         <b-table primary-key="annotationId" bordered hover :fields="tableData.fields" :items="tableData.items"
             head-variant="light" responsive caption-top>
             <template slot="table-caption">
-                <strong class="text-danger">Кол-во товаров с аннотацией: {{goodsCountWithAnnotation}}</strong>
+                <strong class="text-danger">Кол-во товаров с аннотацией: {{annotationsTotalCount}}</strong>
                 <strong class="text-danger">Кол-во товаров с изображением: {{goodsCountWithImages}}</strong>
                 <strong class="text-danger">Кол-во товаров без изображений: {{goodsCountWithoutImages}}</strong>
             </template>
             <template slot="usingWay" slot-scope="row">
-                <a href="#">
-                    <i v-if="row.item.usingWay.length > 0" class="material-icons done_all" v-on:click="selectedAnnotation=row.item;">done_all</i>
-                    <i v-else class="material-icons done" v-on:click="selectedAnnotation=row.item;">done</i>
+                <a href="#" v-on:click="selectedAnnotation=row.item; editAnnotation(row.item, 'usingWay');">
+                    <i v-if="row.item.usingWay.length > 0" class="material-icons done_all">done_all</i>
+                    <i v-else class="material-icons done">done</i>
                 </a>
             </template>
             <template slot="forWhatIsUse" slot-scope="row">
-                <a href="#">
-                    <i v-if="row.item.forWhatIsUse.length > 0" class="material-icons done_all" v-on:click="selectedAnnotation=row.item;">done_all</i>
-                    <i v-else class="material-icons done" v-on:click="selectedAnnotation=row.item;">done</i>
+                <a href="#" v-on:click="selectedAnnotation=row.item; editAnnotation(row.item, 'forWhatIsUse');">
+                    <i v-if="row.item.forWhatIsUse.length > 0" class="material-icons done_all">done_all</i>
+                    <i v-else class="material-icons done">done</i>
                 </a>
             </template>
             <template slot="specialInstructions" slot-scope="row">
-                <a href="#">
-                    <i v-if="row.item.specialInstructions.length > 0" class="material-icons done_all" v-on:click="selectedAnnotation=row.item;">done_all</i>
-                    <i v-else class="material-icons done" v-on:click="selectedAnnotation=row.item;">done</i>
+                <a href="#"  v-on:click="selectedAnnotation=row.item; editAnnotation(row.item, 'specialInstructions');">
+                    <i v-if="row.item.specialInstructions.length > 0" class="material-icons done_all">done_all</i>
+                    <i v-else class="material-icons done">done</i>
                 </a>
             </template>
             <template slot="сontraIndicators" slot-scope="row">
-                <a href="#">
-                    <i v-if="row.item.сontraIndicators.length > 0" class="material-icons done_all" v-on:click="selectedAnnotation=row.item;">done_all</i>
-                    <i v-else class="material-icons done" v-on:click="selectedAnnotation=row.item;">done</i>
+                <a href="#" v-on:click="selectedAnnotation=row.item; editAnnotation(row.item, 'сontraIndicators');">
+                    <i v-if="row.item.сontraIndicators.length > 0" class="material-icons done_all">done_all</i>
+                    <i v-else class="material-icons done">done</i>
                 </a>
             </template>
             <template slot="sideEffects" slot-scope="row">
-                <a href="#">
-                    <i v-if="row.item.sideEffects.length > 0" class="material-icons done_all" v-on:click="selectedAnnotation=row.item;">done_all</i>
-                    <i v-else class="material-icons done" v-on:click="selectedAnnotation=row.item;">done</i>
+                <a href="#" v-on:click="selectedAnnotation=row.item; editAnnotation(row.item, 'sideEffects');">
+                    <i v-if="row.item.sideEffects.length > 0" class="material-icons done_all">done_all</i>
+                    <i v-else class="material-icons done">done</i>
                 </a>
             </template>
             <template slot="isImageExists" slot-scope="row">
-                <a href="#">
-                    <i v-if="row.item.isImageExists" class="material-icons done_all" v-on:click="selectedAnnotation=row.item;">done_all</i>
-                    <i v-else class="material-icons done" v-on:click="selectedAnnotation=row.item;">done</i>
+                <a href="#" v-on:click="selectedAnnotation=row.item; chooseImg()">
+                    <i v-if="row.item.isImageExists" class="material-icons done_all">done_all</i>
+                    <i v-else class="material-icons done">done</i>
                 </a>
             </template>
         </b-table>
@@ -59,11 +59,11 @@
             :limit=8 style="margin-bottom: 5%">
         </b-pagination>
 
-        <!-- <input ref="input_img" type="file" v-on:change="imageSelected" style="display: none"> -->
+        
 
     </b-container>
 
-    <b-modal size="lg" v-model="isActionEditWindowShowing" :title="`Товар: ${{selectedAnnotation.drugName}}\r\nПроизводитель: ${{selectedAnnotation.producer}}`"
+    <b-modal size="lg" v-model="isAnnotationEditWindowShowing" :title="`Товар: ${{selectedAnnotation.drugName}}\r\nПроизводитель: ${{selectedAnnotation.producer}}`"
         centered>
         <b-container>
             <b-form-group :label="editAnnotationPropertyText" label-cols-md="4">
@@ -77,11 +77,12 @@
             <b-alert variant="success" dismissible fade :show="showSuccessAlert" @dismissed="showSuccessAlert = !showSuccessAlert">{{alertMessage}}</b-alert>
         </b-container>
         <div slot="modal-footer" class="w-100 text-right">
-            <b-button size="md" variant="danger" v-on:click="saveAction">Сохранить</b-button>
+            <b-button size="md" variant="danger" v-on:click="updateAnnotation">Сохранить</b-button>
             <b-button size="md" v-on:click="isAnnotationEditWindowShowing=false">Отмена</b-button>
         </div>
     </b-modal>
     <b-modal v-model="isModalWindowShowing" :title="modalTitle" centered cancel-disabled>
             <p>{{modalText}}</p>
     </b-modal>
+    <input ref="input_img" type="file" v-on:change="imageSelected" style="display: none">
 </div>
