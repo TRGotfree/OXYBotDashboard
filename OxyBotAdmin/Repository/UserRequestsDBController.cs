@@ -53,6 +53,9 @@ namespace OxyBotAdmin.Repository
                                 userRequest.UserLastName = reader.GetString(6);
                                 userRequest.RequestDateTime = reader.GetDateTime(7).ToString("dd.MM.yyyy HH:mm");
                                 userRequest.TotalCount = reader.GetInt32(8);
+                                userRequest.TodayRequestCount = reader.GetInt32(9);
+
+                                userRequest.UserFirstAndLastName = $"{userRequest.UserFirstName} {userRequest.UserLastName}";
 
                                 result.Add(userRequest);
                             }

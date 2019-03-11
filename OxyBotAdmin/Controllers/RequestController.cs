@@ -39,10 +39,12 @@ namespace OxyBotAdmin.Controllers
                     if (userRequests != null)
                     {
                         int totalUserRequest = userRequests.FirstOrDefault() == null ? 0 : userRequests.FirstOrDefault().TotalCount;
+                        int todayRequests = userRequests.FirstOrDefault() == null ? 0 : userRequests.FirstOrDefault().TodayRequestCount;
                         var data = new
                         {
                             requests = userRequests,
-                            requestTotalCount = totalUserRequest
+                            requestTotalCount = totalUserRequest,
+                            todayRequestsCount = todayRequests
                         };
                         result = Ok(data);
                     }
@@ -61,29 +63,5 @@ namespace OxyBotAdmin.Controllers
             return result;
         }
 
-        //// GET: api/Request/5
-        //[HttpGet("{id}", Name = "Get")]
-        //public string Get(int id)
-        //{
-        //    return "value";
-        //}
-
-        //// POST: api/Request
-        //[HttpPost]
-        //public void Post([FromBody] string value)
-        //{
-        //}
-
-        //// PUT: api/Request/5
-        //[HttpPut("{id}")]
-        //public void Put(int id, [FromBody] string value)
-        //{
-        //}
-
-        //// DELETE: api/ApiWithActions/5
-        //[HttpDelete("{id}")]
-        //public void Delete(int id)
-        //{
-        //}
     }
 }

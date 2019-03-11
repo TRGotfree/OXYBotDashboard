@@ -1,0 +1,16 @@
+<div>
+    <nav-bar></nav-bar>
+    <loading :isLoading="isLoading"></loading>
+    <b-container v-if="!isLoading">
+        <b-table primary-key="requestId" bordered hover :fields="tableData.fields" :items="tableData.items" head-variant="light"
+            responsive caption-top>
+            <template slot="table-caption"><strong class="text-danger">Кол-во запросов сегодня: {{todayRequestsCount}}</strong></template>
+        </b-table>
+        <b-pagination align="center" :total-rows="requestsTotalCount" v-model="currentPage" :per-page="dataRowsPerPage"
+            :limit=8 style="margin-bottom: 5%">
+        </b-pagination>
+        <b-modal v-model="isModalWindowShowing" :title="modalTitle" centered cancel-disabled>
+            <p>{{modalText}}</p>
+        </b-modal>
+    </b-container>
+</div>

@@ -153,6 +153,8 @@ export default {
             try {
 
                 if (this.validateFields(this.selectedDrugStore) === validationOK) {
+                    
+                    this.alertMessage = "";
 
                     this.selectedDrugStore.shortName = this.selectedDrugStore.drugStoreName.match(/^Аптека №\d+|^Аптека№\d+|Аптека №\s\d+|^Аптека №\d+\W\d+/gm)[0];
 

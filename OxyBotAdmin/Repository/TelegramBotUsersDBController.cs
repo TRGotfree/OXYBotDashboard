@@ -103,7 +103,7 @@ namespace OxyBotAdmin.Repository
             catch (Exception ex)
             {
                 logger.LogError(ex);
-                tgUsers = new List<TelegramUserData>(0);
+                throw ex;
             }
             return tgUsers;
         }

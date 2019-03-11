@@ -12,10 +12,10 @@ export default {
         try {
 
             if (!beginPage || !endPage)
-                throw new Error("Couldn't load users because begin or end page not specified!");
+                throw new Error("Couldn't load drugStores because begin or end page not specified!");
 
             if (!url)
-                throw new Error("Could't get users data because url parameter not specified!");
+                throw new Error("Could't get drugStores data because url parameter not specified!");
 
             url = url + beginPage + "&endPage=" + endPage;
             const response = await Vue.axios.get(url);
@@ -97,6 +97,8 @@ export default {
                 responseFromServer.message = error.response.data ? error.response.data : "Данные не получены!"
             responseFromServer.isSuccessfully = false;
         }
+
+        return responseFromServer;
     }
 
 }

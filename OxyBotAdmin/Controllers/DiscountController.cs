@@ -37,7 +37,7 @@ namespace OxyBotAdmin.Controllers
             {
                 if (endPage > 0 && beginPage > 0)
                 {
-                    var _discounts = baseService.DBController.GetDiscountCardDBController().GetDiscountCardsData(beginPage, endPage);
+                    var _discounts = baseService.DBController.GetDiscountCardsDBController().GetDiscountCardsData(beginPage, endPage);
 
                     int totalCountOfDiscounts = _discounts.FirstOrDefault() == null ? 0 : _discounts.FirstOrDefault().TotalCountOfCardsData;
 
@@ -78,7 +78,7 @@ namespace OxyBotAdmin.Controllers
                 {
                     if (ModelState.IsValid)
                     {
-                        await baseService.DBController.GetDiscountCardDBController().InsertOrUpdateDiscountCardData(discount);
+                        await baseService.DBController.GetDiscountCardsDBController().InsertOrUpdateDiscountCardData(discount);
                         result = Ok();
                     }
                     else
@@ -105,7 +105,7 @@ namespace OxyBotAdmin.Controllers
                 {
                     if (ModelState.IsValid)
                     {
-                        await baseService.DBController.GetDiscountCardDBController().InsertOrUpdateDiscountCardData(discount);
+                        await baseService.DBController.GetDiscountCardsDBController().InsertOrUpdateDiscountCardData(discount);
                         result = Ok();
                     }
                     else
