@@ -29,28 +29,33 @@ export default {
                         label: "Производитель",
                         sortable: true
                     }
-                    //,
-                    // {
-                    //     key: "usingWay",
-                    //     label: "Способ применения"
-                    // },
-                    // {
-                    //     key: "forWhatIsUse",
-                    //     label: "Способ применения"
-                    // },
-                    // {
-                    //     key: "specialInstructions",
-                    //     label: "Спец. указания"
-                    // },
-                    // {
-                    //     key: "сontraIndicators",
-                    //     label: "Противопоказания"
-                    // }
+                    ,
+                    {
+                        key: "usingWay",
+                        label: "Способ применения"
+                    },
+                    {
+                        key: "forWhatIsUse",
+                        label: "Предназначение"
+                    },
+                    {
+                        key: "specialInstructions",
+                        label: "Спец. указания"
+                    },
+                    {
+                        key: "сontraIndicators",
+                        label: "Противопоказания"
+                    },
+                    {
+                        key: "isImageExists",
+                        label: "Есть изображение"
+                    }
                 ],
                 items: []
             },
-            selectedAnnotation: null,
+            selectedAnnotation: {},
             isAnnotationEditWindowShowing: false,
+            annotationModalHeader: "",
             messageFromServer: "",
             isLoading: true,
             currentPage: 1,
@@ -61,7 +66,7 @@ export default {
             showAlert: false,
             textForEdit: "",
             editAnnotationPropertyText: "",
-            editProperty: {},
+            editProperty: "",
             selectedImg: {},
             img_src: "",
             modalTitle: "Внимание!",
@@ -80,11 +85,11 @@ export default {
                 const responseFromServer = await annotationService.getAnnotations(beginPage, endPage);
 
                 if (responseFromServer && responseFromServer.isSuccessfully) {
-
+                    console.log(JSON.stringify(responseFromServer));
                     this.tableData.items = responseFromServer.data.annotations;
                     this.annotationsTotalCount = responseFromServer.data.totalAnnotationCount;
-                    this.goodsCountWithImages = responseFromServer.data.goodsCountWithImages;
-                    this.goodsCountWithoutImages = responseFromServer.data.goodsCountWithoutImages;
+                    this.goodsCountWithImages = responseFromServer.data.withImages;
+                    this.goodsCountWithoutImages = responseFromServer.data.withoutImages;
 
                 } else {
 
@@ -95,9 +100,9 @@ export default {
 
             } catch (error) {
                 this.modalText = "Ошибка не удалось загрузить данные!";
-                if (process.env.VUE_APP_IS_DEV) {
+                if (process.env.VUE_APP_IS_DEV)
                     console.log(error.toString());
-                }
+    
                 this.isModalWindowShowing = true;
             }
             this.isLoading = false;
@@ -229,7 +234,7 @@ export default {
                     this.isAnnotationEditWindowShowing = true;
                     break;
 
-                case "contraIndicators":
+                case "сontraIndicators":
                     this.selectedAnnotation = annotationForEdit;
                     this.editAnnotationPropertyText = "Противопоказания";
                     this.textForEdit = annotationForEdit.specialInstructions;
@@ -298,7 +303,7 @@ export default {
                 lastRow = pageIndex * this.dataRowsPerPage;
 
             let firstRow = lastRow - this.dataRowsPerPage + 1;
-            this.loadUsers(firstRow, lastRow);
+            this.loadAnnotations(firstRow, lastRow);
         },
         showDangerAlert(isShowing) {
             if (isShowing)
@@ -319,6 +324,10 @@ export default {
                 this.selectedAnnotation = {};
                 this.alertMessage = "";
             }
+        },
+        selectedAnnotation(annotationData) {
+            if (annotationData)
+                this.annotationModalHeader = "Товар: " + annotationData.drugName + "<br>Производитель: " + annotationData.producer;
         }
     }
 }

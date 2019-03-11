@@ -2,8 +2,12 @@
     <nav-bar></nav-bar>
     <loading :isLoading="isLoading"></loading>
     <b-container v-if="!isLoading">
-
         <b-row class="w-100 text-right create-action">
+            <b-col class="text-left text-secondary">
+                Кол-во товаров с аннотацией: {{annotationsTotalCount}}<br>
+                Кол-во товаров с изображением: {{goodsCountWithImages}}<br>
+                Кол-во товаров без изображений: {{goodsCountWithoutImages}}
+            </b-col>
             <b-col>
                 <router-link to="/api/annotation/create">
                     <b-button variant="danger">Создать аннотацию</b-button>
@@ -11,40 +15,35 @@
             </b-col>
         </b-row>
 
-        <b-table primary-key="annotationId" bordered hover :fields="tableData.fields" :items="tableData.items"
-            head-variant="light" responsive caption-top>
-            <template slot="table-caption">
-                <strong class="text-danger">Кол-во товаров с аннотацией: {{annotationsTotalCount}}</strong>
-                <strong class="text-danger">Кол-во товаров с изображением: {{goodsCountWithImages}}</strong>
-                <strong class="text-danger">Кол-во товаров без изображений: {{goodsCountWithoutImages}}</strong>
-            </template>
+        <b-table class="w-100" primary-key="annotationId" bordered hover :fields="tableData.fields" :items="tableData.items"
+            head-variant="light" responsive>
             <template slot="usingWay" slot-scope="row">
                 <a href="#" v-on:click="selectedAnnotation=row.item; editAnnotation(row.item, 'usingWay');">
-                    <i v-if="row.item.usingWay.length > 0" class="material-icons done_all">done_all</i>
+                    <i v-if="row.item.usingWay" class="material-icons done_all">done_all</i>
                     <i v-else class="material-icons done">done</i>
                 </a>
             </template>
             <template slot="forWhatIsUse" slot-scope="row">
                 <a href="#" v-on:click="selectedAnnotation=row.item; editAnnotation(row.item, 'forWhatIsUse');">
-                    <i v-if="row.item.forWhatIsUse.length > 0" class="material-icons done_all">done_all</i>
+                    <i v-if="row.item.forWhatIsUse" class="material-icons done_all">done_all</i>
                     <i v-else class="material-icons done">done</i>
                 </a>
             </template>
             <template slot="specialInstructions" slot-scope="row">
-                <a href="#"  v-on:click="selectedAnnotation=row.item; editAnnotation(row.item, 'specialInstructions');">
-                    <i v-if="row.item.specialInstructions.length > 0" class="material-icons done_all">done_all</i>
+                <a href="#" v-on:click="selectedAnnotation=row.item; editAnnotation(row.item, 'specialInstructions');">
+                    <i v-if="row.item.specialInstructions" class="material-icons done_all">done_all</i>
                     <i v-else class="material-icons done">done</i>
                 </a>
             </template>
             <template slot="сontraIndicators" slot-scope="row">
                 <a href="#" v-on:click="selectedAnnotation=row.item; editAnnotation(row.item, 'сontraIndicators');">
-                    <i v-if="row.item.сontraIndicators.length > 0" class="material-icons done_all">done_all</i>
+                    <i v-if="row.item.сontraIndicators" class="material-icons done_all">done_all</i>
                     <i v-else class="material-icons done">done</i>
                 </a>
             </template>
             <template slot="sideEffects" slot-scope="row">
                 <a href="#" v-on:click="selectedAnnotation=row.item; editAnnotation(row.item, 'sideEffects');">
-                    <i v-if="row.item.sideEffects.length > 0" class="material-icons done_all">done_all</i>
+                    <i v-if="row.item.sideEffects" class="material-icons done_all">done_all</i>
                     <i v-else class="material-icons done">done</i>
                 </a>
             </template>
@@ -59,30 +58,32 @@
             :limit=8 style="margin-bottom: 5%">
         </b-pagination>
 
-        
-
-    </b-container>
-
-    <b-modal size="lg" v-model="isAnnotationEditWindowShowing" :title="`Товар: ${{selectedAnnotation.drugName}}\r\nПроизводитель: ${{selectedAnnotation.producer}}`"
-        centered>
-        <b-container>
-            <b-form-group :label="editAnnotationPropertyText" label-cols-md="4">
-                <b-row>
-                    <b-col>
-                        <b-form-textarea v-model="selectedAnnotation[editProperty]" />
-                    </b-col>
-                </b-row>
-            </b-form-group>
-            <b-alert variant="danger" dismissible fade :show="showDangerAlert" @dismissed="showDangerAlert = !showDangerAlert">{{alertMessage}}</b-alert>
-            <b-alert variant="success" dismissible fade :show="showSuccessAlert" @dismissed="showSuccessAlert = !showSuccessAlert">{{alertMessage}}</b-alert>
-        </b-container>
-        <div slot="modal-footer" class="w-100 text-right">
-            <b-button size="md" variant="danger" v-on:click="updateAnnotation">Сохранить</b-button>
-            <b-button size="md" v-on:click="isAnnotationEditWindowShowing=false">Отмена</b-button>
-        </div>
-    </b-modal>
-    <b-modal v-model="isModalWindowShowing" :title="modalTitle" centered cancel-disabled>
+        <b-modal size="lg" v-model="isAnnotationEditWindowShowing" centered>
+            <template slot="modal-title">
+                <p class="text-left" style="margin-left: 5pt">
+                    <strong>Товар:</strong> {{selectedAnnotation.drugName}}<br>
+                    <strong>Производитель:</strong> {{selectedAnnotation.producer}}
+                </p>
+            </template>
+            <b-container>
+                <b-form-group :label="editAnnotationPropertyText" label-cols-md="4">
+                    <b-row>
+                        <b-col>
+                            <b-form-textarea :rows="7" :max-rows="7" v-model="textForEdit"/>
+                        </b-col>
+                    </b-row>
+                </b-form-group>
+                <b-alert variant="danger" dismissible fade :show="showDangerAlert" @dismissed="showDangerAlert = !showDangerAlert">{{alertMessage}}</b-alert>
+                <b-alert variant="success" dismissible fade :show="showSuccessAlert" @dismissed="showSuccessAlert = !showSuccessAlert">{{alertMessage}}</b-alert>
+            </b-container>
+            <div slot="modal-footer" class="w-100 text-right">
+                <b-button size="md" variant="danger" v-on:click="updateAnnotation">Сохранить</b-button>
+                <b-button size="md" v-on:click="isAnnotationEditWindowShowing=false">Отмена</b-button>
+            </div>
+        </b-modal>
+        <b-modal v-model="isModalWindowShowing" :title="modalTitle" centered cancel-disabled>
             <p>{{modalText}}</p>
-    </b-modal>
-    <input ref="input_img" type="file" v-on:change="imageSelected" style="display: none">
+        </b-modal>
+        <input ref="input_img" type="file" v-on:change="imageSelected" style="display: none">
+    </b-container>
 </div>

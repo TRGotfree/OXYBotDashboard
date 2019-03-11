@@ -42,10 +42,15 @@ namespace OxyBotAdmin.Controllers
                     if (annotationsRes != null)
                     {
                         int annotationCount = annotationsRes.FirstOrDefault() == null ? 0 : annotationsRes.FirstOrDefault().TotalCountOfAnnotations;
+                        int goodsWithImages = annotationsRes.FirstOrDefault() == null ? 0 : annotationsRes.FirstOrDefault().AnnotationsWithImages;
+                        int goodsWithoutImages = annotationsRes.FirstOrDefault() == null ? 0 : annotationsRes.FirstOrDefault().AnnotationsWithoutImages;
+
                         var data = new
                         {
                             annotations = annotationsRes,
-                            totalAnnotationCount = annotationCount
+                            totalAnnotationCount = annotationCount,
+                            withImages = goodsWithImages,
+                            withoutImages = goodsWithoutImages
                         };
                         result = Ok(data);
                     }

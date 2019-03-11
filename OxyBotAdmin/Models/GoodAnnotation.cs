@@ -33,5 +33,9 @@ namespace OxyBotAdmin.Models
         public int TotalCountOfAnnotations { get; set; }
 
         public IFormFile File { get; set; }
+
+        public int AnnotationsWithImages { get; set; }
+
+        public int AnnotationsWithoutImages { get; set; }
     }
 }

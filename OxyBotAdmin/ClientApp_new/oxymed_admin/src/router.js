@@ -7,6 +7,7 @@ import Users from "./components/Users/Users.vue";
 import Actions from "./components/Actions/Actions.vue";
 import DrugStore from "./components/DrugStore/DrugStore.vue";
 import UserRequests from "./components/UserRequests/UserRequest.vue";
+import Annotations from "./components/Annotations/Annotation.vue";
 
 Vue.use(Router)
 
@@ -47,6 +48,11 @@ export default new Router({
       path: "/api/request",
       component: UserRequests,
       name: "userRequests"
+    },
+    {
+      path: "/api/annotation",
+      component: Annotations,
+      name: "annotations"
     },
     {
       path: '/about',

@@ -46,16 +46,18 @@ namespace OxyBotAdmin.Repository
                             {
                                 annotation = new GoodAnnotation();
 
-                                annotation.AnnotationId = reader.GetInt32(0);
-                                annotation.DrugName = reader.GetString(1);
-                                annotation.Producer = reader.GetString(2);
-                                annotation.UsingWay = reader.GetString(3);
-                                annotation.ForWhatIsUse = reader.GetString(4);
-                                annotation.SpecialInstructions = reader.GetString(5);
-                                annotation.ContraIndicators = reader.GetString(6);
-                                annotation.SideEffects = reader.GetString(7);
-                                annotation.IsImageExists = reader.GetInt32(8) > 0;
-                                annotation.TotalCountOfAnnotations = reader.GetInt32(9);
+                                annotation.AnnotationId = reader.GetInt32(1);
+                                annotation.DrugName = reader.GetString(2);
+                                annotation.Producer = reader.GetString(3);
+                                annotation.UsingWay = reader.GetString(4);
+                                annotation.ForWhatIsUse = reader.GetString(5);
+                                annotation.SpecialInstructions = reader.GetString(6);
+                                annotation.ContraIndicators = reader.GetString(7);
+                                annotation.SideEffects = reader.GetString(8);
+                                annotation.IsImageExists = reader.GetInt32(9) > 0;
+                                annotation.TotalCountOfAnnotations = reader.GetInt32(10);
+                                annotation.AnnotationsWithImages = reader.GetInt32(11);
+                                annotation.AnnotationsWithoutImages = reader.GetInt32(12);
 
                                 result.Add(annotation);
                             }
