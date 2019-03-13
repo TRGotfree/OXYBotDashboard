@@ -107,55 +107,7 @@ export default {
             }
             this.isLoading = false;
         },
-        async saveNewAnnotation() {
-            try {
 
-                if (!this.selectedAnnotation)
-                    throw new Error("Данные по аннотации пусты!");
-
-                if (!this.selectedAnnotation.annotationId)
-                    throw new Error("Не указан Id товара для текущей аннотации!");
-
-                if (!this.selectedAnnotation.drugName)
-                    throw new Error("Необходимо указать название товара!");
-
-                if (!this.selectedAnnotation.producer)
-                    throw new Error("Необходимо указать производителя!");
-
-                let resultFromServer = null;
-
-                resultFromServer = await annotationService.saveNewAnnotation(this.selectedAnnotation);
-
-                if (resultFromServer.isSuccessfully) {
-
-                    this.alertMessage = resultFromServer.message ? resultFromServer.message : "Данные по аннотации успешно сохранены!";
-                    this.showSuccessAlert = true;
-
-                    if (this.selectedAnnotation <= 0) {
-                        
-                        setTimeout(() => {
-                            this.isAnnotationEditWindowShowing = false;
-                            this.loadAnnotations(1, 15);
-                        }, 3000);
-
-                    } else {
-                       
-                        setTimeout(() => {
-                            this.isAnnotationEditWindowShowing = false;
-                        }, 3000);
-
-                    }
-
-                } else {
-                    this.alertMessage = resultFromServer.message ? resultFromServer.message : "Данные не сохранены!";
-                    this.showDangerAlert = true;
-                }
-
-            } catch (error) {
-                this.showDangerAlert = true;
-                this.alertMessage = error.toString();
-            }
-        },
         async updateAnnotation() {
             try {
 
@@ -172,6 +124,8 @@ export default {
                     throw new Error("Необходимо указать производителя!");
 
                 let resultFromServer = null;
+
+                this.selectedAnnotation[this.editProperty] = this.textForEdit;
 
                 resultFromServer = await annotationService.updateAnnotation(this.selectedAnnotation);
 
