@@ -1,17 +1,20 @@
-<b-navbar type="dark" variant="primary" toggleable fixed="top">        
+<b-navbar type="dark" variant="primary" toggleable fixed="top">
   <b-navbar-toggle target="nav_dropdown_collapse"></b-navbar-toggle>
   <b-navbar-brand to="/api/send/msg">OxyMed</b-navbar-brand>
   <b-collapse is-nav id="nav_dropdown_collapse">
     <b-navbar-nav>
-    <b-nav-item to="/api/send/msg">
+      <b-nav-item to="/api/send/msg">
         <span>Рассылка сообщения</span>
-    </b-nav-item>
-    <b-nav-item to="/api/send/img">
+      </b-nav-item>
+      <b-nav-item to="/api/send/img">
         <span>Рассылка изображения или файла</span>
-    </b-nav-item>
-    <b-nav-item to="/api/user">
+      </b-nav-item>
+      <b-nav-item to="/api/discount">
+        <span>Клиенты с дисконт картами</span>
+      </b-nav-item>
+      <b-nav-item to="/api/user">
         <span>Список пользователей</span>
-    </b-nav-item>
+      </b-nav-item>
       <b-nav-item-dropdown text="Доп. опции" left>
         <b-dropdown-item to="/api/actions">Акции и скидки</b-dropdown-item>
         <b-dropdown-item to="/api/drugstore">Редактировать данные аптек</b-dropdown-item>

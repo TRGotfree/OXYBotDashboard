@@ -86,7 +86,11 @@ export default {
             if (!url)
                 throw new Error("Could't save annotation data because url parameter not specified!");
 
-            const response = await Vue.axios.post(url, annotationData);
+            const response = await Vue.axios.post(url, annotationData, {
+                headers: {
+                    "Content-Type": "multipart/form-data"
+                }
+            });
             responseFromServer.isSuccessfully = true;
             responseFromServer.message = "Данные успешно сохранены!";
 
@@ -134,7 +138,7 @@ export default {
         return responseFromServer;
     },
 
-    async saveImage(formData, url="/api/annotation/image"){
+    async saveImage(formData, url = "/api/annotation/image") {
         try {
 
             if (!formData)

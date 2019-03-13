@@ -67,8 +67,7 @@ export default {
             textForEdit: "",
             editAnnotationPropertyText: "",
             editProperty: "",
-            selectedImg: {},
-            img_src: "",
+            selectedImg: null,
             modalTitle: "Внимание!",
             modalText: "",
             isModalWindowShowing: false,
@@ -221,7 +220,6 @@ export default {
                     throw new Error("Не указан Id товара для текущей аннотации!");
 
                 this.selectedImg = e.target.files[0];
-                this.img_src = URL.createObjectURL(this.selectedImg);
 
                 var formData = new FormData();
 
@@ -233,12 +231,17 @@ export default {
                 this.modalText = "Фото загружается на сервер подождите...";
                 this.isModalWindowShowing = true;
 
-                await annotationService.saveImage(formData);
+                let resultFromServer = await annotationService.saveImage(formData);
 
-                this.modalText = "Фото успешно загружено на сервер!";
+                if (resultFromServer.isSuccessfully) {
+                    this.modalText = "Фото успешно загружено на сервер!";
+                }else{
+                    this.modalText = "Фото не загружено попробуйте ещё раз!"
+                }
 
                 setTimeout(() => {
                     this.isModalWindowShowing = false;
+                    this.loadAnnotations(1, 15);
                 }, 3000);
 
             } catch (error) {

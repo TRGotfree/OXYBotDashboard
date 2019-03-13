@@ -8,6 +8,8 @@ import Actions from "./components/Actions/Actions.vue";
 import DrugStore from "./components/DrugStore/DrugStore.vue";
 import UserRequests from "./components/UserRequests/UserRequest.vue";
 import Annotations from "./components/Annotations/Annotation.vue";
+import CreateAnnotation from "./components/Annotations/CreateAnnotation.vue";
+import Card from "./components/Card/Card.vue";
 
 Vue.use(Router)
 
@@ -55,13 +57,24 @@ export default new Router({
       name: "annotations"
     },
     {
-      path: '/about',
-      name: 'about',
-      // route level code-splitting
-      // this generates a separate chunk (about.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import( /* webpackChunkName: "about" */ './views/About.vue')
+      path: "/api/annotation/create",
+      component: CreateAnnotation,
+      name: "annotation_create"
+    },
+    {
+      path: "/api/discount",
+      component: Card,
+      name: "discount_card"
     }
+    // ,
+    // {
+    //   path: '/about',
+    //   name: 'about',
+    //   // route level code-splitting
+    //   // this generates a separate chunk (about.[hash].js) for this route
+    //   // which is lazy-loaded when the route is visited.
+    //   component: () => import( /* webpackChunkName: "about" */ './views/About.vue')
+    // }
   ],
   linkActiveClass: "active",
   linkExactActiveClass: "active"

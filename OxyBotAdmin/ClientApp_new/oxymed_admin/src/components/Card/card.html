@@ -1,0 +1,39 @@
+<div>
+    <nav-bar></nav-bar>
+    <loading :isLoading="isLoading"></loading>
+    <b-container v-if="!isLoading">
+        <b-table primary-key="chatId" bordered hover :fields="tableData.fields" :items="tableData.items" head-variant="light"
+            responsive caption-top>
+            <template slot="table-caption"><strong class="text-danger">Кол-во данных по дисконт картам: {{discountCardsTotalCount}}</strong></template>
+            <template slot="isUserWantsToGetUpdates" slot-scope="row">
+                <a href="#" v-on:click="selectedCard=row.item; askAndChangePropValue('Вы уверены что хотите изменить условие получение новостей пользователем?', 'isUserWantsToGetUpdates')">
+                    <i v-if="row.item.isUserWantsToGetUpdates" class="material-icons done_all">done_all</i>
+                    <i v-else class="material-icons done">done</i>
+                </a>
+            </template>
+            <template slot="isUserWantsToGetUpdates" slot-scope="row">
+                <a href="#" v-on:click="selectedCard=row.item; askAndChangePropValue('Вы уверены что хотите активировать карту? Пользователю будет отправлено сообщение!', 'isRegistered')">
+                    <i v-if="row.item.isRegistered" class="material-icons done_all">done_all</i>
+                    <i v-else class="material-icons done">done</i>
+                </a>
+            </template>
+        </b-table>
+        <b-pagination align="center" :total-rows="discountCardsTotalCount" v-model="currentPage" :per-page="dataRowsPerPage"
+            :limit=8 style="margin-bottom: 5%">
+        </b-pagination>
+        <b-modal v-model="isModalWindowShowing" :title="modalTitle" centered cancel-disabled>
+            <p>{{modalText}}</p>
+        </b-modal>
+        <b-modal size="lg" v-model="isQuestionModalWindowShowing" :title="modalTitle" centered>
+            <b-container>
+                 <h3>{{modalText}}</h3>
+                <b-alert variant="danger" dismissible fade :show="showDangerAlert" @dismissed="showDangerAlert = !showDangerAlert">{{alertMessage}}</b-alert>
+                <b-alert variant="success" dismissible fade :show="showSuccessAlert" @dismissed="showSuccessAlert = !showSuccessAlert">{{alertMessage}}</b-alert>
+            </b-container>
+            <div slot="modal-footer" class="w-100 text-right">
+                <b-button size="md" variant="danger" v-on:click="updateCardData">Отправить сообщение</b-button>
+                <b-button size="md" v-on:click="isQuestionModalWindowShowing=false">Отмена</b-button>
+            </div>
+        </b-modal>
+    </b-container>
+</div>
