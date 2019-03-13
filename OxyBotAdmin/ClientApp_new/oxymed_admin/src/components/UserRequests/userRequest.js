@@ -102,7 +102,7 @@ export default {
                 lastRow = pageIndex * this.dataRowsPerPage;
 
             let firstRow = lastRow - this.dataRowsPerPage + 1;
-            this.loadUsers(firstRow, lastRow);
+            this.loadRequests(firstRow, lastRow);
         },
         showDangerAlert(isShowing) {
             if (isShowing)

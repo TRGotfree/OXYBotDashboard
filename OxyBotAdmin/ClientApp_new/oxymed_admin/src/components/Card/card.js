@@ -1,5 +1,6 @@
 /* eslint-disable no-console */
 import cardService from "../../services/cardService";
+import userService from "../../services/usersService";
 import NavBar from "../Header/Header.vue";
 import Loading from "../../views/Loading.vue";
 
@@ -111,12 +112,16 @@ export default {
 
                 this.selectedCard[this.updatedProperty] = !this.selectedCard[this.updatedProperty];
 
-                const resultFromServer = await cardService.updateCard(this.selectedCard);
+                const resultFromServer = await cardService.updateCardData(this.selectedCard);
                
                 if (resultFromServer.isSuccessfully) {
                     this.alertMessage = resultFromServer.message ? resultFromServer.message : "Данные успешно обновлены!";
+                    
+                    await this.sendMessage();
+
                     this.showSuccessAlert = true;
                     this.isQuestionModalWindowShowing = false;
+
                 } else {
                     this.alertMessage = resultFromServer.message ? resultFromServer.message : "Данные не обновлены!";
                     this.showDangerAlert = true;
@@ -133,6 +138,30 @@ export default {
             this.modalText = textToShow;
             this.isQuestionModalWindowShowing = true;
             this.updatedProperty = propNameForChange; 
+        },
+        async sendMessage(){
+            try {
+                let messageForUser = "";
+                if (this.updatedProperty === "isRegistered") {
+                    if (this.selectedCard.isRegistered === true)
+                        messageForUser = "✅✅✅Ваша дисконтная карта успешно зарегистрирована в системе! Теперь Вы можете использовать её в аптеках OXYmed!\n➖➖➖➖➖➖➖➖➖➖➖\n✅✅✅Sizning diskont kartangiz tizimda muvaffaqiyatli ro'yxatdan o'tgan! Endi Siz OXYmed dorixonalarida undan foydalanishingiz mumkin!";
+                    else
+                        messageForUser = "❌Ваша дисконтная карта заблокирована!❌\n➖➖➖➖➖➖➖➖➖➖➖\n❌Sizning diskont kartangiz bekor qilindi!❌";
+                }else if (this.updatedProperty === "isUserWantsToGetUpdates"){
+                    if (this.selectedCard.isUserWantsToGetUpdates === true)
+                        messageForUser = "👍Вы подписаны на получение новостных сообщений!\n➖➖➖➖➖➖➖➖➖➖➖\n👍Yangiliklarni qabul qilish uchun obuna bo'lgansiz!";
+                    else
+                        messageForUser = "❌Вы отписаны от новостных сообщений!❌\n➖➖➖➖➖➖➖➖➖➖➖\n❌Sizning xabar obunangiz bekor qilindi!❌";
+                }else{
+                    throw new Error("This type of property is not recognized!");
+                }
+
+                await userService.sendMessageToUser(messageForUser, this.selectedCard.chatId)
+
+            } catch (error) {
+                this.showDangerAlert = true;
+                this.alertMessage = error.toString();
+            }
         }
     },
     watch: {

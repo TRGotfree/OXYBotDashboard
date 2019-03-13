@@ -7,13 +7,13 @@
             <template slot="table-caption"><strong class="text-danger">Кол-во данных по дисконт картам: {{discountCardsTotalCount}}</strong></template>
             <template slot="isUserWantsToGetUpdates" slot-scope="row">
                 <a href="#" v-on:click="selectedCard=row.item; askAndChangePropValue('Вы уверены что хотите изменить условие получение новостей пользователем?', 'isUserWantsToGetUpdates')">
-                    <i v-if="row.item.isUserWantsToGetUpdates" class="material-icons done_all">done_all</i>
+                    <i v-if="row.item.isUserWantsToGetUpdates === true" class="material-icons done_all">done_all</i>
                     <i v-else class="material-icons done">done</i>
                 </a>
             </template>
-            <template slot="isUserWantsToGetUpdates" slot-scope="row">
+            <template slot="isRegistered" slot-scope="row">
                 <a href="#" v-on:click="selectedCard=row.item; askAndChangePropValue('Вы уверены что хотите активировать карту? Пользователю будет отправлено сообщение!', 'isRegistered')">
-                    <i v-if="row.item.isRegistered" class="material-icons done_all">done_all</i>
+                    <i v-if="row.item.isRegistered === true" class="material-icons done_all">done_all</i>
                     <i v-else class="material-icons done">done</i>
                 </a>
             </template>
@@ -31,7 +31,7 @@
                 <b-alert variant="success" dismissible fade :show="showSuccessAlert" @dismissed="showSuccessAlert = !showSuccessAlert">{{alertMessage}}</b-alert>
             </b-container>
             <div slot="modal-footer" class="w-100 text-right">
-                <b-button size="md" variant="danger" v-on:click="updateCardData">Отправить сообщение</b-button>
+                <b-button size="md" variant="danger" v-on:click="updateCardData">Подтвердить</b-button>
                 <b-button size="md" v-on:click="isQuestionModalWindowShowing=false">Отмена</b-button>
             </div>
         </b-modal>

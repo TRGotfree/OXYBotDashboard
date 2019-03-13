@@ -19,12 +19,14 @@ namespace OxyBotAdmin.Controllers
         private ILogger logger;
         private BaseService baseService;
         private IStringLocalizer<AppData.SharedResource> sharedLocalizer;
+        private ITelegramBot bot;
 
-        public DiscountController(BaseService _baseService, IStringLocalizer<AppData.SharedResource> _localizer)
+        public DiscountController(BaseService _baseService, IStringLocalizer<AppData.SharedResource> _localizer, ITelegramBot telegramBot)
         {
             logger = _baseService.Logger;
             baseService = _baseService;
             sharedLocalizer = _localizer;
+            bot = telegramBot;
         }
 
         // GET: api/Discount
@@ -79,6 +81,7 @@ namespace OxyBotAdmin.Controllers
                     if (ModelState.IsValid)
                     {
                         await baseService.DBController.GetDiscountCardsDBController().InsertOrUpdateDiscountCardData(discount);
+
                         result = Ok();
                     }
                     else
@@ -93,38 +96,56 @@ namespace OxyBotAdmin.Controllers
             return result;
         }
 
-        // PUT: api/Discount
+        //// PUT: api/Discount
+        //[Authorize]
+        //[HttpPut]
+        //public  async Task<IActionResult> Put([FromBody] DiscountCard discount)
+        //{
+        //    IActionResult result = StatusCode(400, sharedLocalizer["BadRequest"]);
+        //    try
+        //    {
+        //        if (discount != null && discount.CardId > 0)
+        //        {
+        //            if (ModelState.IsValid)
+        //            {
+        //                await baseService.DBController.GetDiscountCardsDBController().InsertOrUpdateDiscountCardData(discount);
+        //                result = Ok();
+        //            }
+        //            else
+        //                result = StatusCode(406, sharedLocalizer["NotAcceptableDateTime"]);
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        logger.LogError(ex);
+        //        result = StatusCode(500, sharedLocalizer["InternalServerError"]);
+        //        throw ex;
+        //    }
+        //    return result;
+        //}
+
         [Authorize]
-        [HttpPut]
-        public  async Task<IActionResult> Put([FromBody] DiscountCard discount)
+        [HttpPut("{chatId}")]
+        [Consumes("application/json")]
+        public async Task<IActionResult> Put([FromBody]string message, long chatId)
         {
-            IActionResult result = StatusCode(400, sharedLocalizer["BadRequest"]);
+            IActionResult result = StatusCode(400);
+            var t = Request;
             try
             {
-                if (discount != null && discount.CardId > 0)
+                if (chatId > 0 && !string.IsNullOrEmpty(message) && !string.IsNullOrWhiteSpace(message))
                 {
-                    if (ModelState.IsValid)
-                    {
-                        await baseService.DBController.GetDiscountCardsDBController().InsertOrUpdateDiscountCardData(discount);
-                        result = Ok();
-                    }
-                    else
-                        result = StatusCode(406, sharedLocalizer["NotAcceptableDateTime"]);
+                    await bot.SendMessage(chatId, message);
+                    result = Ok();
                 }
             }
             catch (Exception ex)
             {
                 logger.LogError(ex);
-                result = StatusCode(500, sharedLocalizer["InternalServerError"]);
-                throw ex;
+                result = StatusCode(500);
             }
             return result;
         }
 
-        // DELETE: api/ApiWithActions/5
-        //[HttpDelete("{id}")]
-        //public void Delete(int id)
-        //{
-        //}
     }
 }
