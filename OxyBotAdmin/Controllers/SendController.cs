@@ -126,7 +126,7 @@ namespace OxyBotAdmin.Controllers
                     if (tgUsers != null && data.Files[0] != null)
                     {
                         var stream = data.Files[0].OpenReadStream();
-                        if (stream.Length <= 25000000)
+                        if (stream.Length <= 35000000)
                         {
                             await bot.SendFileToAll(tgUsers.Select(u=>u.ChatId).ToArray(), stream, data.Files[0].FileName, caption4Msg);
                             res = Ok();
@@ -146,9 +146,95 @@ namespace OxyBotAdmin.Controllers
             {
                 logger.LogError(ex);
                 res = StatusCode(500);
-                throw ex;
             }
             return res;
         }
-     }
+
+
+        [Authorize]
+        [HttpPost]
+        [Route("video")]
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> Video([FromForm] IFormCollection data)
+        {
+            var res = StatusCode(400);
+            try
+            {
+                if (data != null && data.Files != null && data.Files.Count > 0)
+                {
+                    var tgUsers = dBController.GetTGUsersConroller().GetTelegramBotUsers();
+                    //var tgUsers = new long[] { 59725585 };
+
+                    string caption4Msg = data.ContainsKey("message") ? data["message"].ToString() : string.Empty;
+
+                    if (tgUsers != null && data.Files[0] != null)
+                    {
+                        var stream = data.Files[0].OpenReadStream();
+                        if (stream.Length <= 35000000)
+                        {
+                            await bot.SendVideoToAll(tgUsers.Select(u => u.ChatId).ToArray(), stream, data.Files[0].FileName, caption4Msg);
+                            res = Ok();
+                        }
+                    }
+                    else
+                    {
+                        res = StatusCode(400);
+                    }
+                }
+                else
+                {
+                    res = StatusCode(400);
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex);
+                res = StatusCode(500);
+            }
+            return res;
+        }
+
+        [Authorize]
+        [HttpPost]
+        [Route("audio")]
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> Audio([FromForm] IFormCollection data)
+        {
+            var res = StatusCode(400);
+            try
+            {
+                if (data != null && data.Files != null && data.Files.Count > 0)
+                {
+                    var tgUsers = dBController.GetTGUsersConroller().GetTelegramBotUsers();
+                    //var tgUsers = new long[] { 59725585 };
+
+                    string caption4Msg = data.ContainsKey("message") ? data["message"].ToString() : string.Empty;
+
+                    if (tgUsers != null && data.Files[0] != null)
+                    {
+                        var stream = data.Files[0].OpenReadStream();
+                        if (stream.Length <= 35000000)
+                        {
+                            await bot.SendAudioToAll(tgUsers.Select(u => u.ChatId).ToArray(), stream, data.Files[0].FileName, caption4Msg);
+                            res = Ok();
+                        }
+                    }
+                    else
+                    {
+                        res = StatusCode(400);
+                    }
+                }
+                else
+                {
+                    res = StatusCode(400);
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex);
+                res = StatusCode(500);
+            }
+            return res;
+        }
+    }
 }

@@ -15,5 +15,10 @@ namespace OxyBotAdmin.Services
         Task SendImage2All(long[] usersChatId, Stream stream, string fileName, string msg);
 
         Task SendFileToAll(long[] usersChatId, Stream stream, string fileName, string msg);
+
+        Task SendVideoToAll(long[] usersChatId, Stream stream, string fileName, string msg);
+
+        Task SendAudioToAll(long[] usersChatId, Stream stream, string fileName, string msg);
+
     }
 }

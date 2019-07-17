@@ -104,7 +104,7 @@ namespace OxyBotAdmin.Services
                             var inputOnlineFile = new Telegram.Bot.Types.InputFiles.InputOnlineFile(stream, fileName);
 
                             var sendedFile = await telegramBot.SendDocumentAsync(59725585, inputOnlineFile, msg, Telegram.Bot.Types.Enums.ParseMode.Html);
-
+                          
                             if (sendedFile != null && sendedFile.Document != null && sendedFile.Document.FileId.Length > 0)
                                 sendedFileId = sendedFile.Document.FileId;
                             
@@ -113,6 +113,72 @@ namespace OxyBotAdmin.Services
                         {
                             var inputOnlineFile = new Telegram.Bot.Types.InputFiles.InputOnlineFile(sendedFileId);
                             await telegramBot.SendDocumentAsync(usersChatId[i], inputOnlineFile, msg, Telegram.Bot.Types.Enums.ParseMode.Html);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        logger.LogError(ex);
+                    }
+                }
+            }
+        }
+
+        public async Task SendVideoToAll(long[] usersChatId, Stream stream, string fileName, string msg)
+        {
+            string sendedFileId = string.Empty;
+            if (usersChatId != null && stream != null)
+            {
+                for (int i = 0; i < usersChatId.Length; i++)
+                {
+                    try
+                    {
+                        if (string.IsNullOrEmpty(sendedFileId))
+                        {
+                            var inputOnlineFile = new Telegram.Bot.Types.InputFiles.InputOnlineFile(stream, fileName);
+
+                            var sendedFile = await telegramBot.SendVideoAsync(59725585, inputOnlineFile, 0, 0, 0, msg, Telegram.Bot.Types.Enums.ParseMode.Html);
+
+                            if (sendedFile != null && sendedFile.Document != null && sendedFile.Document.FileId.Length > 0)
+                                sendedFileId = sendedFile.Document.FileId;
+
+                        }
+                        else
+                        {
+                            var inputOnlineFile = new Telegram.Bot.Types.InputFiles.InputOnlineFile(sendedFileId);
+                            await telegramBot.SendVideoAsync(usersChatId[i], inputOnlineFile, 0, 0, 0, msg, Telegram.Bot.Types.Enums.ParseMode.Html);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        logger.LogError(ex);
+                    }
+                }
+            }
+        }
+
+        public async Task SendAudioToAll(long[] usersChatId, Stream stream, string fileName, string msg)
+        {
+            string sendedFileId = string.Empty;
+            if (usersChatId != null && stream != null)
+            {
+                for (int i = 0; i < usersChatId.Length; i++)
+                {
+                    try
+                    {
+                        if (string.IsNullOrEmpty(sendedFileId))
+                        {
+                            var inputOnlineFile = new Telegram.Bot.Types.InputFiles.InputOnlineFile(stream, fileName);
+
+                            var sendedFile = await telegramBot.SendAudioAsync(59725585, inputOnlineFile, msg, Telegram.Bot.Types.Enums.ParseMode.Html);
+
+                            if (sendedFile != null && sendedFile.Document != null && sendedFile.Document.FileId.Length > 0)
+                                sendedFileId = sendedFile.Document.FileId;
+
+                        }
+                        else
+                        {
+                            var inputOnlineFile = new Telegram.Bot.Types.InputFiles.InputOnlineFile(sendedFileId);
+                            await telegramBot.SendAudioAsync(usersChatId[i], inputOnlineFile, msg, Telegram.Bot.Types.Enums.ParseMode.Html);
                         }
                     }
                     catch (Exception ex)
