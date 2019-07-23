@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Login from './components/Login/Login.vue'
+import Login from './components/login/Login.vue'
 import SendMessage2Users from './components/SendMessage/SendMessage.vue'
 import SendImageToUsers from './components/SendImage/SendImage.vue';
 import Users from "./components/Users/Users.vue";
