@@ -23,8 +23,6 @@ namespace OxyBotAdmin.Controllers
         private readonly ILogger logger;
         private readonly IHostingEnvironment env;
 
-
-
         public LoginController(BaseService baseService, ICheckUser _checkUser, IWorkWithHash _workWithHash, IHostingEnvironment env)
         {
             checkUser = _checkUser;
@@ -80,13 +78,9 @@ namespace OxyBotAdmin.Controllers
             {
                 logger.LogError(ex);
                 res = StatusCode(500);
-                throw ex;
             }
 
             return res;
         }
-
-
-
     }
 }

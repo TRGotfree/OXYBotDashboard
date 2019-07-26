@@ -18,8 +18,16 @@ namespace OxyBotAdmin.Repository
 
         public UserRequestsDBController(IGetConnectionString getConnectionString, ILogger _logger, IConfiguration configuration)
         {
+            if (getConnectionString == null)
+                throw new ArgumentNullException(nameof(getConnectionString));
+
+            if (configuration == null)
+                throw new ArgumentNullException(nameof(configuration));
+
             connectionString = getConnectionString.GetConnString();
-            logger = _logger;
+
+            logger = _logger ?? throw new ArgumentNullException(nameof(_logger));
+
             CommandTimeout = configuration.GetValue<int>("CommandTimeOut");
         }
 
@@ -66,7 +74,7 @@ namespace OxyBotAdmin.Repository
             catch (Exception ex)
             {
                 logger.LogError(ex);
-                throw ex;
+                throw;
             }
             return result;
         }

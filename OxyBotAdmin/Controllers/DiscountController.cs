@@ -56,17 +56,9 @@ namespace OxyBotAdmin.Controllers
             {
                 result = StatusCode(500, sharedLocalizer["InternalServerError"]);
                 logger.LogError(ex);
-                throw ex;
             }
             return result;
         }
-
-        //// GET: api/Discount/5
-        //[HttpGet("{id}", Name = "Get")]
-        //public string Get(int id)
-        //{
-        //    return "value";
-        //}
 
         // POST: api/Discount
         [Authorize]
@@ -95,34 +87,6 @@ namespace OxyBotAdmin.Controllers
             }
             return result;
         }
-
-        //// PUT: api/Discount
-        //[Authorize]
-        //[HttpPut]
-        //public  async Task<IActionResult> Put([FromBody] DiscountCard discount)
-        //{
-        //    IActionResult result = StatusCode(400, sharedLocalizer["BadRequest"]);
-        //    try
-        //    {
-        //        if (discount != null && discount.CardId > 0)
-        //        {
-        //            if (ModelState.IsValid)
-        //            {
-        //                await baseService.DBController.GetDiscountCardsDBController().InsertOrUpdateDiscountCardData(discount);
-        //                result = Ok();
-        //            }
-        //            else
-        //                result = StatusCode(406, sharedLocalizer["NotAcceptableDateTime"]);
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        logger.LogError(ex);
-        //        result = StatusCode(500, sharedLocalizer["InternalServerError"]);
-        //        throw ex;
-        //    }
-        //    return result;
-        //}
 
         [Authorize]
         [HttpPut("{chatId}")]

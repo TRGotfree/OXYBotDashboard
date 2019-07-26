@@ -57,7 +57,6 @@ namespace OxyBotAdmin.Controllers
             {
                 logger.LogError(ex);
                 res = StatusCode(500);
-                throw ex;
             }
             return res;
         }
@@ -102,7 +101,6 @@ namespace OxyBotAdmin.Controllers
             {
                 logger.LogError(ex);
                 res = StatusCode(500);
-                throw ex;
             }
             return res;
         }
@@ -163,7 +161,6 @@ namespace OxyBotAdmin.Controllers
                 if (data != null && data.Files != null && data.Files.Count > 0)
                 {
                     var tgUsers = dBController.GetTGUsersConroller().GetTelegramBotUsers();
-                    //var tgUsers = new long[] { 59725585 };
 
                     string caption4Msg = data.ContainsKey("message") ? data["message"].ToString() : string.Empty;
 
@@ -206,7 +203,6 @@ namespace OxyBotAdmin.Controllers
                 if (data != null && data.Files != null && data.Files.Count > 0)
                 {
                     var tgUsers = dBController.GetTGUsersConroller().GetTelegramBotUsers();
-                    //var tgUsers = new long[] { 59725585 };
 
                     string caption4Msg = data.ContainsKey("message") ? data["message"].ToString() : string.Empty;
 

@@ -19,8 +19,15 @@ namespace OxyBotAdmin.Repository
 
         public GoodAnnotationsDbController(IGetConnectionString getConnectionString, ILogger _logger, IConfiguration configuration)
         {
+            if (getConnectionString == null)
+                throw new ArgumentNullException(nameof(getConnectionString));
+
+            if (configuration == null)
+                throw new ArgumentNullException(nameof(configuration));
+
+            logger = _logger ?? throw new ArgumentNullException(nameof(_logger));
+
             connectionString = getConnectionString.GetConnString();
-            logger = _logger;
             CommandTimeout = configuration.GetValue<int>("CommandTimeOut");
         }
 
@@ -68,7 +75,7 @@ namespace OxyBotAdmin.Repository
             catch (Exception ex)
             {
                 logger.LogError(ex);
-                throw ex;
+                throw;
             }
             return result;
         }
@@ -109,7 +116,7 @@ namespace OxyBotAdmin.Repository
             catch (Exception ex)
             {
                 logger.LogError(ex);
-                throw ex;
+                throw;
             }
         }
 
@@ -143,7 +150,7 @@ namespace OxyBotAdmin.Repository
                             {
                                 transaction.Rollback();
                                 logger.LogError(ex);
-                                throw ex;
+                                throw;
                             }
                         }
                     }
@@ -152,7 +159,7 @@ namespace OxyBotAdmin.Repository
             catch (Exception ex)
             {
                 logger.LogError(ex);
-                throw ex;
+                throw;
             }
         }
 
@@ -188,7 +195,7 @@ namespace OxyBotAdmin.Repository
                             {
                                 transaction.Rollback();
                                 logger.LogError(ex);
-                                throw ex;
+                                throw;
                             }
                         }
                     }
@@ -197,7 +204,7 @@ namespace OxyBotAdmin.Repository
             catch (Exception ex)
             {
                 logger.LogError(ex);
-                throw ex;
+                throw;
             }
         }
 
@@ -228,7 +235,7 @@ namespace OxyBotAdmin.Repository
                             {
                                 transaction.Rollback();
                                 logger.LogError(ex);
-                                throw ex;
+                                throw;
                             }
                         }
                     }
@@ -237,7 +244,7 @@ namespace OxyBotAdmin.Repository
             catch (Exception ex)
             {
                 logger.LogError(ex);
-                throw ex;
+                throw;
             }
         }
 

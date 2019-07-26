@@ -55,7 +55,6 @@ namespace OxyBotAdmin.Controllers
             {
                 logger.LogError(ex);
                 result = StatusCode(500, sharedLocalizer["InternalServerError"]);
-                throw ex;
             }
             return result;
         }
@@ -125,7 +124,6 @@ namespace OxyBotAdmin.Controllers
             {
                 logger.LogError(ex);
                 result = StatusCode(500, sharedLocalizer["InternalServerError"]);
-                throw ex;
             }
 
             return result;
@@ -149,7 +147,6 @@ namespace OxyBotAdmin.Controllers
             catch (Exception ex)
             {
                 logger.LogError(ex);
-                throw ex;
             }
             parseResult = dateTimeTuple;
             return result;

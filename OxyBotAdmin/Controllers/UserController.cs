@@ -56,7 +56,6 @@ namespace OxyBotAdmin.Controllers
             {
                 logger.LogError(ex);
                 result = StatusCode(500);
-                throw ex;
             }
 
             return result;
@@ -100,7 +99,6 @@ namespace OxyBotAdmin.Controllers
         public async Task<IActionResult> Put([FromBody]string message, long chatId)
         {
             IActionResult result = StatusCode(400);
-            var t = Request;
             try
             {
                 if (chatId > 0 && !string.IsNullOrEmpty(message) && !string.IsNullOrWhiteSpace(message))

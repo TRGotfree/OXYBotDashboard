@@ -9,15 +9,19 @@ using System.Data;
 
 namespace OxyBotAdmin.Repository
 {
-    public class LoginDbController :IDataBaseDomenController
+    public class LoginDbController
     {
         private readonly string connectionString;
         private  ILogger logger;
 
-        public LoginDbController(IGetConnectionString getConnectiontring, ILogger _logger)
+        public LoginDbController(IGetConnectionString getConnectionString, ILogger _logger)
         {
-            connectionString = getConnectiontring.GetConnString();
-            logger = _logger;
+            if (getConnectionString == null)
+                throw new ArgumentNullException(nameof(getConnectionString));
+
+            logger = _logger ?? throw new ArgumentNullException(nameof(_logger));
+
+            connectionString = getConnectionString.GetConnString();
         }
 
         public BotAdmin GetBotAdmin(string login, string pass)
@@ -51,7 +55,7 @@ namespace OxyBotAdmin.Repository
             catch (Exception ex)
             {
                 logger.LogError(ex);
-                throw ex;
+                throw;
             }
             return botAdmin;
         }
@@ -77,7 +81,7 @@ namespace OxyBotAdmin.Repository
             catch (Exception ex)
             {
                 logger.LogError(ex);
-                throw ex;
+                throw;
             }
             return checkResult;
         }
