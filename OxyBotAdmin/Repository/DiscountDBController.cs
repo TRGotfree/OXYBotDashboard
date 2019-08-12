@@ -101,7 +101,10 @@ namespace OxyBotAdmin.Repository
                                 command.Parameters.Add("@cardId", SqlDbType.Int).Value = cardData.CardId;
                                 command.Parameters.Add("@chatId", SqlDbType.BigInt).Value = cardData.ChatId;
                                 command.Parameters.Add("@userFIO", SqlDbType.NVarChar, 200).Value = cardData.UserFIO;
-                                command.Parameters.Add("@birthDate", SqlDbType.Date).Value = cardData.BirthDate;
+
+                                DateTime birthDate = DateTime.ParseExact(cardData.BirthDate, "dd.MM.yyyy", null);
+                                command.Parameters.Add("@birthDate", SqlDbType.Date).Value = birthDate;
+
                                 command.Parameters.Add("@phone", SqlDbType.NVarChar, 50).Value = cardData.Phone;
 
                                 var emailParam = command.Parameters.Add("@email", SqlDbType.NVarChar, 50);
