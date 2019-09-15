@@ -50,7 +50,7 @@ export default {
             if (!url)
                 throw new Error("Couldn't save discount card data because url parameter not specified!");
 
-            const response = Vue.axios.put(url, cardData);
+            const response = Vue.axios.post(url, cardData);
             responseFromServer.isSuccessfully = true;
             responseFromServer.message = "Данные успешно обновлены!";
 
