@@ -115,5 +115,29 @@ namespace OxyBotAdmin.Repository
             }
             return tgUsers;
         }
+
+        public async Task UpdateUserStat(long userId, bool isUserActive)
+        {
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
+                    await connection.OpenAsync();
+                    using (SqlCommand command = new SqlCommand(SqlScripts.UpdateUserState, connection))
+                    {
+                        command.CommandType = CommandType.StoredProcedure;
+                        command.Parameters.Add("@userId", SqlDbType.BigInt).Value = userId;
+                        command.Parameters.Add("@isActive", SqlDbType.Bit).Value = isUserActive;
+
+                        await command.ExecuteNonQueryAsync();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex);
+                throw;
+            }
+        }
     }
 }

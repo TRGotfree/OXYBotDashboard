@@ -39,5 +39,7 @@
         public static string GetDiscountsCardsData => "dbo.getCardByPage";
 
         public static string InsertOrUpdateDiscountCardData => "dbo.insertOrUpdateCardData";
+
+        public static string UpdateUserState => "dbo.updateIsActiveUserState";
     }
 }

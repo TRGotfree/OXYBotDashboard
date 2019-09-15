@@ -64,11 +64,11 @@ namespace OxyBotAdmin
             services.AddSingleton<ILogger, NLogLogger>();
 
             services.AddTransient<IGetConnectionString, GetConnectionString>();
+            services.AddTransient<BaseService>();
             services.AddTransient<ICheckUser, CheckUser>();
             services.AddTransient<IWorkWithHash, WorkWithHash>();
             services.AddSingleton<IDBController, DBController>();
             services.AddTransient<ITelegramBot, TelegramBot>();
-            services.AddTransient<BaseService>();
 
             services.Configure<RequestLocalizationOptions>(options =>
             {

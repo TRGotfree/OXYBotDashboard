@@ -13,12 +13,13 @@ namespace OxyBotAdmin.Services
 
         private ILogger logger;
         private TelegramBotClient telegramBot;
-         
+        private BaseService baseService; 
 
-        public TelegramBot(ILogger _logger, IConfiguration configuration)
+        public TelegramBot(ILogger _logger, IConfiguration configuration, BaseService baseService)
         {
             logger = _logger;
             telegramBot = new TelegramBotClient(configuration["BotToken"]);
+            this.baseService = baseService;
         }
 
         public async Task SendMessage(long userChatId, string message)
@@ -46,9 +47,11 @@ namespace OxyBotAdmin.Services
                     try
                     {
                         await telegramBot.SendTextMessageAsync(usersChatId[i], message, Telegram.Bot.Types.Enums.ParseMode.Html);
+                        await UpdateUserState(usersChatId[i], true);
                     }
                     catch (Exception ex)
                     {
+                        await UpdateUserState(usersChatId[i], false);
                         logger.LogError(ex);
                     }
                 }
@@ -75,15 +78,19 @@ namespace OxyBotAdmin.Services
                                 var maxSized = sendedImage.Photo.OrderBy(p => p.FileSize).FirstOrDefault();
                                 sendedImageFileId = maxSized.FileId;
                             }
+
+                            await UpdateUserState(usersChatId[i], true);
                         }
                         else
                         {
                             var inputOnlinePhoto = new Telegram.Bot.Types.InputFiles.InputOnlineFile(sendedImageFileId);
                             await telegramBot.SendPhotoAsync(usersChatId[i], sendedImageFileId, msg, Telegram.Bot.Types.Enums.ParseMode.Html);
+                            await UpdateUserState(usersChatId[i], true);
                         }
                     }
                     catch (Exception ex)
                     {
+                        await UpdateUserState(usersChatId[i], false);
                         logger.LogError(ex);
                     }
                 }
@@ -107,16 +114,20 @@ namespace OxyBotAdmin.Services
                           
                             if (sendedFile != null && sendedFile.Document != null && sendedFile.Document.FileId.Length > 0)
                                 sendedFileId = sendedFile.Document.FileId;
-                            
+
+                            await UpdateUserState(usersChatId[i], true);
                         }
                         else
                         {
                             var inputOnlineFile = new Telegram.Bot.Types.InputFiles.InputOnlineFile(sendedFileId);
                             await telegramBot.SendDocumentAsync(usersChatId[i], inputOnlineFile, msg, Telegram.Bot.Types.Enums.ParseMode.Html);
+                            await UpdateUserState(usersChatId[i], true);
+
                         }
                     }
                     catch (Exception ex)
                     {
+                        await UpdateUserState(usersChatId[i], false);
                         logger.LogError(ex);
                     }
                 }
@@ -141,15 +152,19 @@ namespace OxyBotAdmin.Services
                             if (sendedFile != null && sendedFile.Document != null && sendedFile.Document.FileId.Length > 0)
                                 sendedFileId = sendedFile.Document.FileId;
 
+                            await UpdateUserState(usersChatId[i], true);
                         }
                         else
                         {
                             var inputOnlineFile = new Telegram.Bot.Types.InputFiles.InputOnlineFile(sendedFileId);
                             await telegramBot.SendVideoAsync(usersChatId[i], inputOnlineFile, 0, 0, 0, msg, Telegram.Bot.Types.Enums.ParseMode.Html);
+
+                            await UpdateUserState(usersChatId[i], true);
                         }
                     }
                     catch (Exception ex)
                     {
+                        await UpdateUserState(usersChatId[i], false);
                         logger.LogError(ex);
                     }
                 }
@@ -174,18 +189,36 @@ namespace OxyBotAdmin.Services
                             if (sendedFile != null && sendedFile.Document != null && sendedFile.Document.FileId.Length > 0)
                                 sendedFileId = sendedFile.Document.FileId;
 
+                            await UpdateUserState(usersChatId[i], true);
                         }
                         else
                         {
                             var inputOnlineFile = new Telegram.Bot.Types.InputFiles.InputOnlineFile(sendedFileId);
                             await telegramBot.SendAudioAsync(usersChatId[i], inputOnlineFile, msg, Telegram.Bot.Types.Enums.ParseMode.Html);
+
+                            await UpdateUserState(usersChatId[i], true);
                         }
                     }
                     catch (Exception ex)
                     {
+                        await UpdateUserState(usersChatId[i], false);
+
                         logger.LogError(ex);
                     }
                 }
+            }
+        }
+
+
+        private async Task UpdateUserState(long userId, bool isActive)
+        {
+            try
+            {
+                await baseService.DBController.GetTGUsersConroller().UpdateUserStat(userId, isActive);
+            }
+            catch (Exception)
+            {
+                throw;
             }
         }
     }
