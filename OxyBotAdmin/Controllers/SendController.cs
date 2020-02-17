@@ -11,6 +11,7 @@ using Microsoft.Extensions.Configuration;
 using OxyBotAdmin.AppData;
 using OxyBotAdmin.Models;
 using OxyBotAdmin.Services;
+using System.Net;
 
 namespace OxyBotAdmin.Controllers
 {

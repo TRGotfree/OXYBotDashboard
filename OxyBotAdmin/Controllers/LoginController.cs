@@ -43,8 +43,7 @@ namespace OxyBotAdmin.Controllers
             catch (Exception ex)
             {
                 logger.LogError(ex);
-            }
-           
+            }          
         }
 
         [AllowAnonymous]

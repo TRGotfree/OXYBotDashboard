@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Telegram.Bot;
+using System.Net;
 
 namespace OxyBotAdmin.Services
 {
@@ -18,6 +19,9 @@ namespace OxyBotAdmin.Services
         public TelegramBot(ILogger _logger, IConfiguration configuration, BaseService baseService)
         {
             logger = _logger;
+
+            ServicePointManager.Expect100Continue = true;
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
             telegramBot = new TelegramBotClient(configuration["BotToken"]);
             this.baseService = baseService;
         }

@@ -58,7 +58,6 @@ namespace OxyBotAdmin
                 {
                     options.DataAnnotationLocalizerProvider = (type, factory) =>
                         factory.Create(typeof(AppData.SharedResource));
-
                 });
 
             services.AddSingleton<ILogger, NLogLogger>();
@@ -117,9 +116,10 @@ namespace OxyBotAdmin
 
             app.UseMvc(routes =>
             {
-                routes.MapRoute(name: "default", template: "{controller=Login}/{action=Auth}/{id?}");
+                routes.MapRoute("default", "{controller=Login}/{action=Auth}/{id?}");
                 routes.MapRoute("default_api", "api/{controller}/{action}/{id?}");
                 routes.MapRoute("api", "api/{controller}/{id?}");
+                routes.MapSpaFallbackRoute("fallback", "api/Login/Auth");
             });
 
             app.Run(async (context) =>
