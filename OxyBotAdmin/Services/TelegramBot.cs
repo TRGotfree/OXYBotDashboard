@@ -12,9 +12,9 @@ namespace OxyBotAdmin.Services
     public class TelegramBot : ITelegramBot
     {
 
-        private ILogger logger;
-        private TelegramBotClient telegramBot;
-        private BaseService baseService; 
+        private readonly ILogger logger;
+        private readonly TelegramBotClient telegramBot;
+        private readonly BaseService baseService; 
 
         public TelegramBot(ILogger _logger, IConfiguration configuration, BaseService baseService)
         {
