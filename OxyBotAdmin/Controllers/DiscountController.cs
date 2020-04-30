@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -16,17 +17,17 @@ namespace OxyBotAdmin.Controllers
     public class DiscountController : ControllerBase
     {
 
-        private ILogger logger;
-        private BaseService baseService;
-        private IStringLocalizer<AppData.SharedResource> sharedLocalizer;
-        private ITelegramBot bot;
+        private readonly ILogger logger;
+        private readonly BaseService baseService;
+        private readonly IStringLocalizer<AppData.SharedResource> sharedLocalizer;
+        private readonly ITelegramBot telegramBot;
 
-        public DiscountController(BaseService _baseService, IStringLocalizer<AppData.SharedResource> _localizer, ITelegramBot telegramBot)
+        public DiscountController(BaseService baseService, IStringLocalizer<AppData.SharedResource> localizer, ITelegramBot telegramBot)
         {
-            logger = _baseService.Logger;
-            baseService = _baseService;
-            sharedLocalizer = _localizer;
-            bot = telegramBot;
+            logger = baseService.Logger;
+            this.baseService = baseService;
+            sharedLocalizer = localizer;
+            this.telegramBot = telegramBot;
         }
 
         // GET: api/Discount
@@ -34,30 +35,26 @@ namespace OxyBotAdmin.Controllers
         [HttpGet]
         public IActionResult Get([FromQuery] int beginPage, [FromQuery] int endPage)
         {
-            IActionResult result = StatusCode(400, sharedLocalizer["BadRequest"]);
             try
             {
-                if (endPage > 0 && beginPage > 0)
+                if (endPage <= 0 || beginPage <= 0)
+                    return BadRequest(sharedLocalizer["BadRequest"]);
+
+                var _discounts = baseService.RepositoryProvider.GetDiscountCardsDBController().GetDiscountCardsData(beginPage, endPage);
+
+                int totalCountOfDiscounts = _discounts.FirstOrDefault() == null ? 0 : _discounts.FirstOrDefault().TotalCountOfCardsData;
+
+                return Ok(new
                 {
-                    var _discounts = baseService.RepositoryProvider.GetDiscountCardsDBController().GetDiscountCardsData(beginPage, endPage);
-
-                    int totalCountOfDiscounts = _discounts.FirstOrDefault() == null ? 0 : _discounts.FirstOrDefault().TotalCountOfCardsData;
-
-                    var data = new
-                    {
-                        discounts = _discounts,
-                        totalCount = totalCountOfDiscounts
-                    };
-
-                    result = Ok(data);
-                }
+                    discounts = _discounts,
+                    totalCount = totalCountOfDiscounts
+                });
             }
             catch (Exception ex)
             {
-                result = StatusCode(500, sharedLocalizer["InternalServerError"]);
                 logger.LogError(ex);
+                return StatusCode((int)HttpStatusCode.InternalServerError, sharedLocalizer["InternalServerError"]);
             }
-            return result;
         }
 
         // POST: api/Discount
@@ -65,27 +62,20 @@ namespace OxyBotAdmin.Controllers
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] DiscountCard discount)
         {
-            IActionResult result = StatusCode(400, sharedLocalizer["BadRequest"]);
             try
             {
-                if (discount != null && discount.CardId > 0)
-                {
-                    if (ModelState.IsValid)
-                    {
-                        await baseService.RepositoryProvider.GetDiscountCardsDBController().InsertOrUpdateDiscountCardData(discount);
+                if (!ModelState.IsValid)
+                    return BadRequest(sharedLocalizer["BadRequest"]);
 
-                        result = Ok();
-                    }
-                    else
-                        result = StatusCode(406, sharedLocalizer["NotAcceptableDateTime"]);
-                }
+                await baseService.RepositoryProvider.GetDiscountCardsDBController().InsertOrUpdateDiscountCardData(discount);
+
+                return Ok();
             }
             catch (Exception ex)
             {
                 logger.LogError(ex);
-                result = StatusCode(500, sharedLocalizer["InternalServerError"]);
+                return StatusCode((int)HttpStatusCode.InternalServerError, sharedLocalizer["InternalServerError"]);
             }
-            return result;
         }
 
         [Authorize]
@@ -93,21 +83,20 @@ namespace OxyBotAdmin.Controllers
         [Consumes("application/json")]
         public async Task<IActionResult> Put([FromBody]string message, long chatId)
         {
-            IActionResult result = StatusCode(400);
             try
             {
-                if (chatId > 0 && !string.IsNullOrEmpty(message) && !string.IsNullOrWhiteSpace(message))
-                {
-                    await bot.SendMessage(chatId, message);
-                    result = Ok();
-                }
+                if (chatId <= 0 || string.IsNullOrWhiteSpace(message))
+                    return BadRequest(sharedLocalizer["BadRequest"]);
+
+                await telegramBot.SendMessage(chatId, message);
+                return Ok();
             }
             catch (Exception ex)
             {
                 logger.LogError(ex);
-                result = StatusCode(500);
+                return StatusCode((int)HttpStatusCode.InternalServerError, sharedLocalizer["InternalServerError"]);
             }
-            return result;
+
         }
 
     }

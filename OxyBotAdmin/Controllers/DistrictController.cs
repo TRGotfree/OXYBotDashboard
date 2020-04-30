@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -14,41 +15,35 @@ namespace OxyBotAdmin.Controllers
     [ApiController]
     public class DistrictController : ControllerBase
     {
+        private readonly ILogger logger;
+        private readonly BaseService baseService;
+        private readonly IStringLocalizer<AppData.SharedResource> sharedLocalizer;
 
-        private ILogger logger;
-        private BaseService baseService;
-        private IStringLocalizer<AppData.SharedResource> sharedLocalizer;
-
-        public DistrictController(BaseService _baseService, IStringLocalizer<AppData.SharedResource> _localizer)
+        public DistrictController(BaseService baseService, IStringLocalizer<AppData.SharedResource> localizer)
         {
-            logger = _baseService.Logger;
-            baseService = _baseService;
-            sharedLocalizer = _localizer;
+            logger = baseService.Logger;
+            this.baseService = baseService;
+            sharedLocalizer = localizer;
         }
 
-        // GET: api/District
         [Authorize]
         [HttpGet]
         public IActionResult Get()
         {
-            IActionResult result = StatusCode(400, sharedLocalizer["BadRequest"]);
             try
             {
                 var _districts = baseService.RepositoryProvider.GetDistrictDBController().GetDistricts();
 
-                var data = new
+                return Ok(new
                 {
                     districts = _districts.Select(d => d.Name).ToArray()
-                };
-
-                result = Ok(data);
+                });
             }
             catch (Exception ex)
             {
-                result = StatusCode(500, sharedLocalizer["InternalServerError"]);
                 logger.LogError(ex);
+                return StatusCode((int)HttpStatusCode.InternalServerError, sharedLocalizer["InternalServerError"]);
             }
-            return result;
         }
 
     }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -15,15 +16,15 @@ namespace OxyBotAdmin.Controllers
     [ApiController]
     public class DrugStoreController : ControllerBase
     {
-        private ILogger logger;
-        private BaseService baseService;
-        private IStringLocalizer<AppData.SharedResource> sharedLocalizer;
+        private readonly ILogger logger;
+        private readonly BaseService baseService;
+        private readonly IStringLocalizer<AppData.SharedResource> sharedLocalizer;
 
-        public DrugStoreController(BaseService _baseService, IStringLocalizer<AppData.SharedResource> _localizer)
+        public DrugStoreController(BaseService baseService, IStringLocalizer<AppData.SharedResource> localizer)
         {
-            logger = _baseService.Logger;
-            baseService = _baseService;
-            sharedLocalizer = _localizer;
+            logger = baseService.Logger;
+            this.baseService = baseService;
+            sharedLocalizer = localizer;
         }
 
         // GET: api/DrugStore
@@ -31,30 +32,26 @@ namespace OxyBotAdmin.Controllers
         [HttpGet]
         public IActionResult Get([FromQuery] int beginPage, [FromQuery] int endPage)
         {
-            IActionResult result = StatusCode(400, sharedLocalizer["BadRequest"]);
             try
             {
-                if (endPage > 0 && beginPage > 0)
+                if (endPage <= 0 || beginPage <= 0)
+                    return BadRequest(sharedLocalizer["BadRequest"]);
+
+                var _drugStores = baseService.RepositoryProvider.GetDrugStoreDBController().GetDrugStores(beginPage, endPage);
+
+                int totalCountOfDs = _drugStores.FirstOrDefault() == null ? 0 : _drugStores.FirstOrDefault().DrugStoreTotalCount;
+
+                return Ok(new
                 {
-                    var _drugStores = baseService.RepositoryProvider.GetDrugStoreDBController().GetDrugStores(beginPage, endPage);
-
-                    int totalCountOfDs = _drugStores.FirstOrDefault() == null ? 0 : _drugStores.FirstOrDefault().DrugStoreTotalCount;
-
-                    var data = new
-                    {
-                        drugStores = _drugStores,
-                        totalCount = totalCountOfDs
-                    };
-
-                    result = Ok(data);
-                }
+                    drugStores = _drugStores,
+                    totalCount = totalCountOfDs
+                });
             }
             catch (Exception ex)
             {
-                result = StatusCode(500, sharedLocalizer["InternalServerError"]);
                 logger.LogError(ex);
+                return StatusCode((int)HttpStatusCode.InternalServerError, sharedLocalizer["InternalServerError"]);
             }
-            return result;
         }
 
         //POST: api/DrugStore
@@ -62,26 +59,19 @@ namespace OxyBotAdmin.Controllers
         [HttpPost]
         public IActionResult Post([FromBody] DrugStore drugStore)
         {
-            IActionResult result = StatusCode(400, sharedLocalizer["BadRequest"]);
             try
             {
-                if (drugStore != null && drugStore.DrugStoreId > 0)
-                {
-                    if (ModelState.IsValid)
-                    {
-                        baseService.RepositoryProvider.GetDrugStoreDBController().InsertOrUpdateDrugStore(drugStore);
-                        result = Ok();
-                    }
-                    else
-                        result = StatusCode(406, sharedLocalizer["NotAcceptableDateTime"]);
-                }
+                if (!ModelState.IsValid)
+                    return BadRequest(sharedLocalizer["BadRequest"]);
+
+                baseService.RepositoryProvider.GetDrugStoreDBController().InsertOrUpdateDrugStore(drugStore);
+                return Ok();
             }
             catch (Exception ex)
             {
                 logger.LogError(ex);
-                result = StatusCode(500, sharedLocalizer["InternalServerError"]);
+                return StatusCode((int)HttpStatusCode.InternalServerError, sharedLocalizer["InternalServerError"]);
             }
-            return result;
         }
 
         //PUT: api/DrugStore
@@ -89,26 +79,19 @@ namespace OxyBotAdmin.Controllers
         [HttpPut]
         public IActionResult Put([FromBody] DrugStore drugStore)
         {
-            IActionResult result = StatusCode(400, sharedLocalizer["BadRequest"]);
             try
             {
-                if (drugStore != null && drugStore.Id > 0)
-                {
-                    if (ModelState.IsValid)
-                    {
-                        baseService.RepositoryProvider.GetDrugStoreDBController().UpdateDrugStore(drugStore);
-                        result = Ok();
-                    }
-                    else
-                        result = StatusCode(406, sharedLocalizer["NotAcceptableDateTime"]);                   
-                }
+                if (!ModelState.IsValid)
+                    return BadRequest(sharedLocalizer["BadRequest"]);
+
+                baseService.RepositoryProvider.GetDrugStoreDBController().UpdateDrugStore(drugStore);
+                return Ok();
             }
             catch (Exception ex)
             {
                 logger.LogError(ex);
-                result = StatusCode(500, sharedLocalizer["InternalServerError"]);
+                return StatusCode((int)HttpStatusCode.InternalServerError, sharedLocalizer["InternalServerError"]);
             }
-            return result;
         }
     }
 }

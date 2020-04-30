@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -14,15 +15,15 @@ namespace OxyBotAdmin.Controllers
     [ApiController]
     public class RequestController : ControllerBase
     {
-        private ILogger logger;
-        private BaseService baseService;
-        private IStringLocalizer<AppData.SharedResource> sharedLocalizer;
+        private readonly ILogger logger;
+        private readonly BaseService baseService;
+        private readonly IStringLocalizer<AppData.SharedResource> sharedLocalizer;
 
-        public RequestController(BaseService _baseService, IStringLocalizer<AppData.SharedResource> _localizer)
+        public RequestController(BaseService baseService, IStringLocalizer<AppData.SharedResource> localizer)
         {
-            logger = _baseService.Logger;
-            baseService = _baseService;
-            sharedLocalizer = _localizer;
+            logger = baseService.Logger;
+            this.baseService = baseService;
+            sharedLocalizer = localizer;
         }
 
         // GET: api/Request
@@ -30,37 +31,30 @@ namespace OxyBotAdmin.Controllers
         [HttpGet]
         public IActionResult Get([FromQuery]int beginPage, [FromQuery]int endPage)
         {
-            IActionResult result = StatusCode(400);
             try
             {
-                if (beginPage > 0 && endPage > 0)
+                if (beginPage <= 0 || endPage <= 0)
+                    return BadRequest(sharedLocalizer["BadRequest"]);
+
+                var userRequests = baseService.RepositoryProvider.GetUserRequestsDBController().GetRequests(beginPage, endPage);
+                if (userRequests == null)
+                    return StatusCode((int)HttpStatusCode.InternalServerError, sharedLocalizer["InternalServerError"]);
+
+                int totalUserRequest = userRequests.FirstOrDefault() == null ? 0 : userRequests.FirstOrDefault().TotalCount;
+                int todayRequests = userRequests.FirstOrDefault() == null ? 0 : userRequests.FirstOrDefault().TodayRequestCount;
+                var data = new
                 {
-                    var userRequests = baseService.RepositoryProvider.GetUserRequestsDBController().GetRequests(beginPage, endPage);
-                    if (userRequests != null)
-                    {
-                        int totalUserRequest = userRequests.FirstOrDefault() == null ? 0 : userRequests.FirstOrDefault().TotalCount;
-                        int todayRequests = userRequests.FirstOrDefault() == null ? 0 : userRequests.FirstOrDefault().TodayRequestCount;
-                        var data = new
-                        {
-                            requests = userRequests,
-                            requestTotalCount = totalUserRequest,
-                            todayRequestsCount = todayRequests
-                        };
-                        result = Ok(data);
-                    }
-                    else
-                    {
-                        result = StatusCode(500);
-                    }
-                }
+                    requests = userRequests,
+                    requestTotalCount = totalUserRequest,
+                    todayRequestsCount = todayRequests
+                };
+                return Ok(data);
             }
             catch (Exception ex)
             {
                 logger.LogError(ex);
-                result = StatusCode(500);
+                return StatusCode((int)HttpStatusCode.InternalServerError, sharedLocalizer["InternalServerError"]);
             }
-
-            return result;
         }
 
     }

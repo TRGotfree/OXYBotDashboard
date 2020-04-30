@@ -11,14 +11,14 @@ namespace OxyBotAdmin.Services
 {
     public class DBController : IDBController
     {
-        private IGetConnectionString getConnectionString;
-        private ILogger logger;
-        private IConfiguration configuration;
+        private readonly IGetConnectionString getConnectionString;
+        private readonly ILogger logger;
+        private readonly IConfiguration configuration;
 
-        public DBController(IGetConnectionString _getConnectionString, ILogger _logger, IConfiguration configuration)
+        public DBController(IGetConnectionString getConnectionString, ILogger logger, IConfiguration configuration)
         {
-            getConnectionString = _getConnectionString;
-            logger = _logger;
+            this.getConnectionString = getConnectionString;
+            this.logger = logger;
             this.configuration = configuration;
         }
 

@@ -20,11 +20,11 @@ namespace OxyBotAdmin.Controllers
         private readonly BaseService baseService;
         private readonly IStringLocalizer<AppData.SharedResource> sharedLocalizer;
 
-        public AnnotationController(BaseService _baseService, IStringLocalizer<AppData.SharedResource> _localizer)
+        public AnnotationController(BaseService baseService, IStringLocalizer<AppData.SharedResource> localizer)
         {
-            logger = _baseService.Logger;
-            baseService = _baseService;
-            sharedLocalizer = _localizer;
+            logger = baseService.Logger;
+            this.baseService = baseService;
+            sharedLocalizer = localizer;
         }
 
         // GET: api/Annotation
@@ -32,40 +32,33 @@ namespace OxyBotAdmin.Controllers
         [HttpGet]
         public IActionResult Get([FromQuery]int beginPage, [FromQuery]int endPage)
         {
-            IActionResult result = StatusCode(400);
             try
             {
-                if (beginPage > 0 && endPage > 0)
-                {
-                    var annotationsRes = baseService.RepositoryProvider.GetGoodAnnotations().GetAnnotations(beginPage, endPage);
-                    if (annotationsRes != null)
-                    {
-                        int annotationCount = annotationsRes.FirstOrDefault() == null ? 0 : annotationsRes.FirstOrDefault().TotalCountOfAnnotations;
-                        int goodsWithImages = annotationsRes.FirstOrDefault() == null ? 0 : annotationsRes.FirstOrDefault().AnnotationsWithImages;
-                        int goodsWithoutImages = annotationsRes.FirstOrDefault() == null ? 0 : annotationsRes.FirstOrDefault().AnnotationsWithoutImages;
+                if (beginPage <= 0 || endPage <= 0)
+                    return BadRequest(sharedLocalizer["BadRequest"]);
 
-                        var data = new
-                        {
-                            annotations = annotationsRes,
-                            totalAnnotationCount = annotationCount,
-                            withImages = goodsWithImages,
-                            withoutImages = goodsWithoutImages
-                        };
-                        result = Ok(data);
-                    }
-                    else
-                    {
-                        result = StatusCode(500);
-                    }
-                }
+                var annotationsRes = baseService.RepositoryProvider.GetGoodAnnotations().GetAnnotations(beginPage, endPage);
+                if (annotationsRes == null)
+                    return StatusCode((int)HttpStatusCode.InternalServerError, sharedLocalizer["InternalServerError"]);
+
+                int annotationCount = annotationsRes.FirstOrDefault() == null ? 0 : annotationsRes.FirstOrDefault().TotalCountOfAnnotations;
+                int goodsWithImages = annotationsRes.FirstOrDefault() == null ? 0 : annotationsRes.FirstOrDefault().AnnotationsWithImages;
+                int goodsWithoutImages = annotationsRes.FirstOrDefault() == null ? 0 : annotationsRes.FirstOrDefault().AnnotationsWithoutImages;
+
+                return Ok(new
+                {
+                    annotations = annotationsRes,
+                    totalAnnotationCount = annotationCount,
+                    withImages = goodsWithImages,
+                    withoutImages = goodsWithoutImages
+                });
+
             }
             catch (Exception ex)
             {
                 logger.LogError(ex);
-                result = StatusCode(500);
+                return StatusCode((int)HttpStatusCode.InternalServerError, sharedLocalizer["InternalServerError"]);
             }
-
-            return result;
         }
 
         // GET: api/Annotation/5
@@ -73,26 +66,22 @@ namespace OxyBotAdmin.Controllers
         [HttpGet("{id}", Name = "Get")]
         public IActionResult Get(int id)
         {
-            IActionResult result = StatusCode(400);
             try
             {
-                if (id > 0)
-                {
-                    var annot = baseService.RepositoryProvider.GetGoodAnnotations().GetAnnotation(id);
-                    var data = new
-                    {
-                        annotation = annot
-                    };
+                if (id <= 0)
+                    return BadRequest(sharedLocalizer["BadRequest"]);
 
-                    result = Ok(data);
-                }
+                var requestedAnnotation = baseService.RepositoryProvider.GetGoodAnnotations().GetAnnotation(id);
+                return Ok(new
+                {
+                    annotation = requestedAnnotation
+                });
             }
             catch (Exception ex)
             {
                 logger.LogError(ex);
-                result = StatusCode(500);
+                return StatusCode((int)HttpStatusCode.InternalServerError, sharedLocalizer["InternalServerError"]);
             }
-            return result;
         }
 
         // POST: api/Annotation
@@ -101,10 +90,9 @@ namespace OxyBotAdmin.Controllers
         [Consumes("multipart/form-data")]
         public async Task<IActionResult> Post([FromForm] IFormCollection goodAnnotation)
         {
-            var res = StatusCode(404);
             try
             {
-                if (goodAnnotation != null || goodAnnotation.Keys.Count <= 0)
+                if (goodAnnotation == null || goodAnnotation.Keys.Count <= 0)
                     return BadRequest(sharedLocalizer["BadRequest"]);
 
                 var newAnnotation = new GoodAnnotation();
@@ -122,7 +110,7 @@ namespace OxyBotAdmin.Controllers
                     }
                 }
 
-                if (newAnnotation.AnnotationId <= 0 || !string.IsNullOrEmpty(goodAnnotation["drugName"]))
+                if (newAnnotation.AnnotationId <= 0 || string.IsNullOrWhiteSpace(goodAnnotation["drugName"]))
                     return BadRequest(sharedLocalizer["BadRequest"]);
 
                 newAnnotation.DrugName = goodAnnotation["drugName"];
@@ -166,7 +154,7 @@ namespace OxyBotAdmin.Controllers
         {
             try
             {
-                if (goodAnnotation != null || goodAnnotation.Keys.Count <= 0 || goodAnnotation.Files.Count <= 0)
+                if (goodAnnotation == null || goodAnnotation.Keys.Count <= 0 || goodAnnotation.Files.Count <= 0)
                     return BadRequest(sharedLocalizer["BadRequest"]);
 
                 var newAnnotation = new GoodAnnotation();
@@ -204,7 +192,7 @@ namespace OxyBotAdmin.Controllers
         {
             try
             {
-                if (!ModelState.IsValid || annotation.AnnotationId < 0)
+                if (!ModelState.IsValid || annotation.AnnotationId <= 0)
                     return BadRequest(sharedLocalizer["BadRequest"]);
 
                 baseService.RepositoryProvider.GetGoodAnnotations().UpdateAnnotation(annotation);

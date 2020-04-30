@@ -20,17 +20,14 @@ namespace OxyBotAdmin.Controllers
     public class SendController : ControllerBase
     {
         private readonly ILogger logger;
-        private readonly IConfiguration configuration;
-         
-        private IDBController dBController;
-        private ITelegramBot bot;
+        private readonly IDBController dBController;
+        private readonly ITelegramBot telegramBot;
 
         public SendController(BaseService baseService, ITelegramBot telegramBot)
         {
             logger = baseService.Logger;
-            configuration = baseService.Configuration;
             this.dBController = baseService.RepositoryProvider;
-            bot = telegramBot;
+            this.telegramBot = telegramBot;
         }
 
         [Authorize]
@@ -42,68 +39,53 @@ namespace OxyBotAdmin.Controllers
             var res = StatusCode(400);
             try
             {
-                if (!string.IsNullOrEmpty(message) && !string.IsNullOrWhiteSpace(message))
-                {
-                    var tgUsers = dBController.GetTGUsersConroller().GetTelegramBotUsers();
+                if (string.IsNullOrWhiteSpace(message))
+                    return BadRequest();
 
-                    //var tgUsers = new long[] { 59725585 };
+                var tgUsers = dBController.GetTGUsersConroller().GetTelegramBotUsers();
 
-                    if (tgUsers != null)
-                        await bot.SendMessage2All(tgUsers.Select(chat=>chat.ChatId).ToArray(), message);
+                if (tgUsers != null)
+                    await telegramBot.SendMessage2All(tgUsers.Select(chat => chat.ChatId).ToArray(), message);
 
-                    res = Ok();
-                }
+                return Ok();
             }
             catch (Exception ex)
             {
                 logger.LogError(ex);
-                res = StatusCode(500);
+                return StatusCode(500);
             }
-            return res;
         }
 
 
         [Authorize]
         [HttpPost]
         [Route("img")]
-        [Consumes("multipart/form-data")]        
+        [Consumes("multipart/form-data")]
         public async Task<IActionResult> Img([FromForm] IFormCollection data)
         {
-            var res = StatusCode(400);
             try
             {
-                if (data != null && data.Files != null && data.Files.Count > 0)
-                {
-                    var tgUsers = dBController.GetTGUsersConroller().GetTelegramBotUsers();
-                    //var tgUsers = new long[] { 59725585 };
+                if (data == null || data.Files == null || data.Files.Count <= 0)
+                    return BadRequest();
 
-                    string caption4Msg = data.ContainsKey("message") ? data["message"].ToString() : string.Empty;
+                var tgUsers = dBController.GetTGUsersConroller().GetTelegramBotUsers();
+                if (tgUsers == null)
+                    return StatusCode((int)HttpStatusCode.InternalServerError);
 
-                    if (tgUsers != null && data.Files[0] != null)
-                    {
-                        var stream = data.Files[0].OpenReadStream();
-                        if (stream.Length <= 25000000)
-                        {
-                            await bot.SendImage2All(tgUsers.Select(u=>u.ChatId).ToArray(), stream, data.Files[0].FileName, caption4Msg);
-                            res = Ok();
-                        }
-                    }
-                    else
-                    {
-                        res = StatusCode(400);
-                    }
-                }
-                else
-                {
-                    res = StatusCode(400);
-                }
+                string caption4Msg = data.ContainsKey("message") ? data["message"].ToString() : string.Empty;
+
+                var stream = data.Files[0].OpenReadStream();
+                if (stream.Length > 25000000)
+                    return BadRequest();
+
+                await telegramBot.SendImage2All(tgUsers.Select(u => u.ChatId).ToArray(), stream, data.Files[0].FileName, caption4Msg);
+                return Ok();
             }
             catch (Exception ex)
             {
                 logger.LogError(ex);
-                res = StatusCode(500);
+                return StatusCode((int)HttpStatusCode.InternalServerError);
             }
-            return res;
         }
 
         [Authorize]
@@ -112,41 +94,29 @@ namespace OxyBotAdmin.Controllers
         [Consumes("multipart/form-data")]
         public async Task<IActionResult> File([FromForm] IFormCollection data)
         {
-            var res = StatusCode(400);
             try
             {
-                if (data != null && data.Files != null && data.Files.Count > 0)
-                {
-                    var tgUsers = dBController.GetTGUsersConroller().GetTelegramBotUsers();
-                    //var tgUsers = new long[] { 59725585 };
+                if (data == null || data.Files == null || data.Files.Count <= 0)
+                    return BadRequest();
 
-                    string caption4Msg = data.ContainsKey("message") ? data["message"].ToString() : string.Empty;
+                var tgUsers = dBController.GetTGUsersConroller().GetTelegramBotUsers();
+                if (tgUsers == null)
+                    return StatusCode((int)HttpStatusCode.InternalServerError);
 
-                    if (tgUsers != null && data.Files[0] != null)
-                    {
-                        var stream = data.Files[0].OpenReadStream();
-                        if (stream.Length <= 35000000)
-                        {
-                            await bot.SendFileToAll(tgUsers.Select(u=>u.ChatId).ToArray(), stream, data.Files[0].FileName, caption4Msg);
-                            res = Ok();
-                        }
-                    }
-                    else
-                    {
-                        res = StatusCode(400);
-                    }
-                }
-                else
-                {
-                    res = StatusCode(400);
-                }
+                string caption4Msg = data.ContainsKey("message") ? data["message"].ToString() : string.Empty;
+
+                var stream = data.Files[0].OpenReadStream();
+                if (stream.Length > 35000000)
+                    return BadRequest();
+
+                await telegramBot.SendFileToAll(tgUsers.Select(u => u.ChatId).ToArray(), stream, data.Files[0].FileName, caption4Msg);
+                return Ok();
             }
             catch (Exception ex)
             {
                 logger.LogError(ex);
-                res = StatusCode(500);
+                return StatusCode((int)HttpStatusCode.InternalServerError);
             }
-            return res;
         }
 
 
@@ -156,40 +126,29 @@ namespace OxyBotAdmin.Controllers
         [Consumes("multipart/form-data")]
         public async Task<IActionResult> Video([FromForm] IFormCollection data)
         {
-            var res = StatusCode(400);
             try
             {
-                if (data != null && data.Files != null && data.Files.Count > 0)
-                {
-                    var tgUsers = dBController.GetTGUsersConroller().GetTelegramBotUsers();
+                if (data == null || data.Files == null || data.Files.Count <= 0)
+                    return BadRequest();
 
-                    string caption4Msg = data.ContainsKey("message") ? data["message"].ToString() : string.Empty;
+                var tgUsers = dBController.GetTGUsersConroller().GetTelegramBotUsers();
+                if (tgUsers == null)
+                    return StatusCode((int)HttpStatusCode.InternalServerError);
 
-                    if (tgUsers != null && data.Files[0] != null)
-                    {
-                        var stream = data.Files[0].OpenReadStream();
-                        if (stream.Length <= 35000000)
-                        {
-                            await bot.SendVideoToAll(tgUsers.Select(u => u.ChatId).ToArray(), stream, data.Files[0].FileName, caption4Msg);
-                            res = Ok();
-                        }
-                    }
-                    else
-                    {
-                        res = StatusCode(400);
-                    }
-                }
-                else
-                {
-                    res = StatusCode(400);
-                }
+                string caption4Msg = data.ContainsKey("message") ? data["message"].ToString() : string.Empty;
+
+                var stream = data.Files[0].OpenReadStream();
+                if (stream.Length > 35000000)
+                    return BadRequest();
+
+                await telegramBot.SendVideoToAll(tgUsers.Select(u => u.ChatId).ToArray(), stream, data.Files[0].FileName, caption4Msg);
+                return Ok();
             }
             catch (Exception ex)
             {
                 logger.LogError(ex);
-                res = StatusCode(500);
+                return StatusCode((int)HttpStatusCode.InternalServerError);
             }
-            return res;
         }
 
         [Authorize]
@@ -201,37 +160,27 @@ namespace OxyBotAdmin.Controllers
             var res = StatusCode(400);
             try
             {
-                if (data != null && data.Files != null && data.Files.Count > 0)
-                {
-                    var tgUsers = dBController.GetTGUsersConroller().GetTelegramBotUsers();
+                if (data == null || data.Files == null || data.Files.Count <= 0)
+                    return BadRequest();
 
-                    string caption4Msg = data.ContainsKey("message") ? data["message"].ToString() : string.Empty;
+                var tgUsers = dBController.GetTGUsersConroller().GetTelegramBotUsers();
+                if (tgUsers == null)
+                    return StatusCode((int)HttpStatusCode.InternalServerError);
 
-                    if (tgUsers != null && data.Files[0] != null)
-                    {
-                        var stream = data.Files[0].OpenReadStream();
-                        if (stream.Length <= 35000000)
-                        {
-                            await bot.SendAudioToAll(tgUsers.Select(u => u.ChatId).ToArray(), stream, data.Files[0].FileName, caption4Msg);
-                            res = Ok();
-                        }
-                    }
-                    else
-                    {
-                        res = StatusCode(400);
-                    }
-                }
-                else
-                {
-                    res = StatusCode(400);
-                }
+                string caption4Msg = data.ContainsKey("message") ? data["message"].ToString() : string.Empty;
+
+                var stream = data.Files[0].OpenReadStream();
+                if (stream.Length > 35000000)
+                    return BadRequest();
+
+                await telegramBot.SendAudioToAll(tgUsers.Select(u => u.ChatId).ToArray(), stream, data.Files[0].FileName, caption4Msg);
+                return Ok();
             }
             catch (Exception ex)
             {
                 logger.LogError(ex);
-                res = StatusCode(500);
+                return StatusCode((int)HttpStatusCode.InternalServerError);
             }
-            return res;
         }
     }
 }

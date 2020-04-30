@@ -8,7 +8,7 @@ namespace OxyBotAdmin.Services
 {
     public class GetConnectionString : IGetConnectionString
     {
-        private string connectionString;
+        private readonly string connectionString;
 
         public GetConnectionString(IConfiguration configuration)
         {

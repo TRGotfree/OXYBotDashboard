@@ -12,6 +12,8 @@ using Microsoft.AspNetCore.Authorization;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Hosting;
 using System.IO;
+using System.Net;
+using Microsoft.Extensions.Localization;
 
 namespace OxyBotAdmin.Controllers
 {
@@ -21,14 +23,14 @@ namespace OxyBotAdmin.Controllers
         private readonly ICheckUser checkUser;
         private readonly IWorkWithHash workWithHash;
         private readonly ILogger logger;
-        private readonly IHostingEnvironment env;
+        private readonly IStringLocalizer<SharedResource> sharedLocalizer;
 
-        public LoginController(BaseService baseService, ICheckUser _checkUser, IWorkWithHash _workWithHash, IHostingEnvironment env)
+        public LoginController(BaseService baseService, ICheckUser checkUser, IWorkWithHash workWithHash, IStringLocalizer<SharedResource> sharedLocalizer)
         {
-            checkUser = _checkUser;
-            workWithHash = _workWithHash;
+            this.checkUser = checkUser;
+            this.workWithHash = workWithHash;
             logger = baseService.Logger;
-            this.env = env;
+            this.sharedLocalizer = sharedLocalizer;
         }
 
         [AllowAnonymous]
@@ -43,43 +45,42 @@ namespace OxyBotAdmin.Controllers
             catch (Exception ex)
             {
                 logger.LogError(ex);
-            }          
+                Response.StatusCode = 500;
+                await Response.WriteAsync(sharedLocalizer["InternalServerError"]);
+            }
         }
 
         [AllowAnonymous]
         [HttpPost]
         public IActionResult Auth([FromBody]BotAdmin botAdmin)
         {
-            IActionResult res = Forbid();
             try
             {
-                if (botAdmin != null && !Helper.IsUserLoginPassEmpty(botAdmin.Login, botAdmin.Password))
+                if (botAdmin == null || Helper.IsUserLoginPassEmpty(botAdmin.Login, botAdmin.Password))
+                    return Forbid();
+
+                botAdmin.Password = workWithHash.CalculateHash(botAdmin.Password);
+
+                var checkResult = checkUser.CheckUserLoginPass(botAdmin);
+                if (!checkResult)
+                    return Forbid();
+
+                botAdmin = checkUser.GetBotAdmin(botAdmin.Login, botAdmin.Password);
+
+                var userIdentityClaim = new GetUserIdentity().GetIdentity(botAdmin);
+                var jwtoken = new GetNewJWToken().GetToken(userIdentityClaim);
+
+                return Ok(new
                 {
-                    botAdmin.Password = workWithHash.CalculateHash(botAdmin.Password);
-
-                    var checkResult = checkUser.CheckUserLoginPass(botAdmin);
-                    if (checkResult)
-                    {
-                        botAdmin = checkUser.GetBotAdmin(botAdmin.Login, botAdmin.Password);
-
-                        var userIdentityClaim = new GetUserIdentity().GetIdentity(botAdmin);
-                        var jwtoken = new GetNewJWToken().GetToken(userIdentityClaim);
-
-                        var responseData = new
-                        {
-                            token = new JwtSecurityTokenHandler().WriteToken(jwtoken)
-                        };
-                        res = Ok(responseData);
-                    }
-                }
+                    token = new JwtSecurityTokenHandler().WriteToken(jwtoken)
+                });
             }
             catch (Exception ex)
             {
                 logger.LogError(ex);
-                res = StatusCode(500);
+                return StatusCode((int)HttpStatusCode.InternalServerError);
             }
 
-            return res;
         }
     }
 }

@@ -105,24 +105,24 @@ namespace OxyBotAdmin.Controllers
 
         private bool IsAdvertDateTimesValid(string beginDateString, string endDateString, out (DateTime, DateTime) parseResult)
         {
-            bool result = false;
-            (DateTime, DateTime) dateTimeTuple = (DateTime.MinValue, DateTime.MinValue);
             try
             {
                 DateTime beginDate = DateTime.TryParse(beginDateString, out beginDate) ? beginDate : DateTime.MinValue;
                 DateTime endDate = DateTime.TryParse(endDateString, out endDate) ? endDate : DateTime.MinValue;
 
-                dateTimeTuple = (beginDate, endDate);
+                if (beginDate == DateTime.MinValue || endDate == DateTime.MinValue)
+                {
+                    parseResult = (beginDate, endDate);
+                    return false;
+                }
 
-                if (beginDate != DateTime.MinValue && endDate != DateTime.MinValue)
-                    result = true;
+                parseResult = (beginDate, endDate);
+                return true;
             }
             catch (Exception ex)
             {
                 throw ex;
             }
-            parseResult = dateTimeTuple;
-            return result;
         }
     }
 }

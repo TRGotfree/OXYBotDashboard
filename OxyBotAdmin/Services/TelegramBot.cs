@@ -14,11 +14,11 @@ namespace OxyBotAdmin.Services
 
         private readonly ILogger logger;
         private readonly TelegramBotClient telegramBot;
-        private readonly BaseService baseService; 
+        private readonly BaseService baseService;
 
-        public TelegramBot(ILogger _logger, IConfiguration configuration, BaseService baseService)
+        public TelegramBot(ILogger logger, IConfiguration configuration, BaseService baseService)
         {
-            logger = _logger;
+            this.logger = logger;
 
             ServicePointManager.Expect100Continue = true;
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
@@ -28,75 +28,71 @@ namespace OxyBotAdmin.Services
 
         public async Task SendMessage(long userChatId, string message)
         {
-            if (userChatId > 0 && !string.IsNullOrEmpty(message) && !string.IsNullOrWhiteSpace(message))
-            {
-                try
-                {
-                    await telegramBot.SendTextMessageAsync(userChatId, message, Telegram.Bot.Types.Enums.ParseMode.Html);
-                }
-                catch (Exception ex)
-                {
-                    logger.LogError(ex);
-                    throw ex;
-                }
-            }
+            await telegramBot.SendTextMessageAsync(userChatId, message, Telegram.Bot.Types.Enums.ParseMode.Html);
         }
 
         public async Task SendMessage2All(long[] usersChatId, string message)
         {
-            if (usersChatId != null && !string.IsNullOrEmpty(message) && !string.IsNullOrWhiteSpace(message))
+            if (usersChatId == null)
+                throw new ArgumentNullException(nameof(usersChatId));
+
+            if (string.IsNullOrWhiteSpace(message))
+                throw new ArgumentNullException(nameof(message));
+
+            for (int i = 0; i < usersChatId.Length; i++)
             {
-                for (int i = 0; i < usersChatId.Length; i++)
+                try
                 {
-                    try
-                    {
-                        await telegramBot.SendTextMessageAsync(usersChatId[i], message, Telegram.Bot.Types.Enums.ParseMode.Html);
-                        await UpdateUserState(usersChatId[i], true);
-                    }
-                    catch (Exception ex)
-                    {
-                        await UpdateUserState(usersChatId[i], false);
-                        logger.LogError(ex);
-                    }
+                    await telegramBot.SendTextMessageAsync(usersChatId[i], message, Telegram.Bot.Types.Enums.ParseMode.Html);
+                    await UpdateUserState(usersChatId[i], true);
+                }
+                catch (Exception ex)
+                {
+                    await UpdateUserState(usersChatId[i], false);
+                    logger.LogError(ex);
                 }
             }
         }
 
         public async Task SendImage2All(long[] usersChatId, Stream stream, string fileName, string msg)
         {
+            if (usersChatId == null)
+                throw new ArgumentNullException(nameof(usersChatId));
+
+            if (stream == null)
+                throw new ArgumentNullException(nameof(usersChatId));
+
             string sendedImageFileId = string.Empty;
-            if (usersChatId != null && stream != null)
+
+            for (int i = 0; i < usersChatId.Length; i++)
             {
-                for (int i = 0; i < usersChatId.Length; i++)
+                try
                 {
-                    try
+                    if (string.IsNullOrEmpty(sendedImageFileId))
                     {
-                        if (string.IsNullOrEmpty(sendedImageFileId))
+                        var inputOnlineFile = new Telegram.Bot.Types.InputFiles.InputOnlineFile(stream, fileName);
+
+                        var sendedImage = await telegramBot.SendPhotoAsync(59725585, inputOnlineFile, msg, Telegram.Bot.Types.Enums.ParseMode.Html);
+
+                        if (sendedImage != null && sendedImage.Photo != null && sendedImage.Photo.Length > 0)
                         {
-                            var inputOnlineFile = new Telegram.Bot.Types.InputFiles.InputOnlineFile(stream, fileName);
-
-                            var sendedImage = await telegramBot.SendPhotoAsync(59725585, inputOnlineFile, msg, Telegram.Bot.Types.Enums.ParseMode.Html);
-
-                            if (sendedImage != null && sendedImage.Photo != null && sendedImage.Photo.Length > 0)
-                            {
-                                var maxSized = sendedImage.Photo.OrderBy(p => p.FileSize).FirstOrDefault();
-                                sendedImageFileId = maxSized.FileId;
-                            }
-
-                            await UpdateUserState(usersChatId[i], true);
+                            var maxSized = sendedImage.Photo.OrderBy(p => p.FileSize).FirstOrDefault();
+                            sendedImageFileId = maxSized.FileId;
                         }
-                        else
-                        {
-                            var inputOnlinePhoto = new Telegram.Bot.Types.InputFiles.InputOnlineFile(sendedImageFileId);
-                            await telegramBot.SendPhotoAsync(usersChatId[i], sendedImageFileId, msg, Telegram.Bot.Types.Enums.ParseMode.Html);
-                            await UpdateUserState(usersChatId[i], true);
-                        }
+
+                        await UpdateUserState(usersChatId[i], true);
                     }
-                    catch (Exception ex)
+                    else
                     {
-                        await UpdateUserState(usersChatId[i], false);
-                        logger.LogError(ex);
+                        var inputOnlinePhoto = new Telegram.Bot.Types.InputFiles.InputOnlineFile(sendedImageFileId);
+                        await telegramBot.SendPhotoAsync(usersChatId[i], sendedImageFileId, msg, Telegram.Bot.Types.Enums.ParseMode.Html);
+                        await UpdateUserState(usersChatId[i], true);
                     }
+                }
+                catch (Exception ex)
+                {
+                    await UpdateUserState(usersChatId[i], false);
+                    logger.LogError(ex);
                 }
             }
         }
@@ -104,73 +100,80 @@ namespace OxyBotAdmin.Services
         public async Task SendFileToAll(long[] usersChatId, Stream stream, string fileName, string msg)
         {
             string sendedFileId = string.Empty;
-            if (usersChatId != null && stream != null)
+            if (usersChatId == null)
+                throw new ArgumentNullException(nameof(usersChatId));
+
+            if (stream == null)
+                throw new ArgumentNullException(nameof(usersChatId));
+
+            for (int i = 0; i < usersChatId.Length; i++)
             {
-                for (int i = 0; i < usersChatId.Length; i++)
+                try
                 {
-                    try
+                    if (string.IsNullOrEmpty(sendedFileId))
                     {
-                        if (string.IsNullOrEmpty(sendedFileId))
-                        {
-                            var inputOnlineFile = new Telegram.Bot.Types.InputFiles.InputOnlineFile(stream, fileName);
+                        var inputOnlineFile = new Telegram.Bot.Types.InputFiles.InputOnlineFile(stream, fileName);
 
-                            var sendedFile = await telegramBot.SendDocumentAsync(59725585, inputOnlineFile, msg, Telegram.Bot.Types.Enums.ParseMode.Html);
-                          
-                            if (sendedFile != null && sendedFile.Document != null && sendedFile.Document.FileId.Length > 0)
-                                sendedFileId = sendedFile.Document.FileId;
+                        var sendedFile = await telegramBot.SendDocumentAsync(59725585, inputOnlineFile, msg, Telegram.Bot.Types.Enums.ParseMode.Html);
 
-                            await UpdateUserState(usersChatId[i], true);
-                        }
-                        else
-                        {
-                            var inputOnlineFile = new Telegram.Bot.Types.InputFiles.InputOnlineFile(sendedFileId);
-                            await telegramBot.SendDocumentAsync(usersChatId[i], inputOnlineFile, msg, Telegram.Bot.Types.Enums.ParseMode.Html);
-                            await UpdateUserState(usersChatId[i], true);
+                        if (sendedFile != null && sendedFile.Document != null && sendedFile.Document.FileId.Length > 0)
+                            sendedFileId = sendedFile.Document.FileId;
 
-                        }
+                        await UpdateUserState(usersChatId[i], true);
                     }
-                    catch (Exception ex)
+                    else
                     {
-                        await UpdateUserState(usersChatId[i], false);
-                        logger.LogError(ex);
+                        var inputOnlineFile = new Telegram.Bot.Types.InputFiles.InputOnlineFile(sendedFileId);
+                        await telegramBot.SendDocumentAsync(usersChatId[i], inputOnlineFile, msg, Telegram.Bot.Types.Enums.ParseMode.Html);
+                        await UpdateUserState(usersChatId[i], true);
+
                     }
                 }
+                catch (Exception ex)
+                {
+                    await UpdateUserState(usersChatId[i], false);
+                    logger.LogError(ex);
+                }
             }
+
         }
 
         public async Task SendVideoToAll(long[] usersChatId, Stream stream, string fileName, string msg)
         {
             string sendedFileId = string.Empty;
-            if (usersChatId != null && stream != null)
+            if (usersChatId == null)
+                throw new ArgumentNullException(nameof(usersChatId));
+
+            if (stream == null)
+                throw new ArgumentNullException(nameof(usersChatId));
+
+            for (int i = 0; i < usersChatId.Length; i++)
             {
-                for (int i = 0; i < usersChatId.Length; i++)
+                try
                 {
-                    try
+                    if (string.IsNullOrEmpty(sendedFileId))
                     {
-                        if (string.IsNullOrEmpty(sendedFileId))
-                        {
-                            var inputOnlineFile = new Telegram.Bot.Types.InputFiles.InputOnlineFile(stream, fileName);
+                        var inputOnlineFile = new Telegram.Bot.Types.InputFiles.InputOnlineFile(stream, fileName);
 
-                            var sendedFile = await telegramBot.SendVideoAsync(59725585, inputOnlineFile, 0, 0, 0, msg, Telegram.Bot.Types.Enums.ParseMode.Html);
+                        var sendedFile = await telegramBot.SendVideoAsync(59725585, inputOnlineFile, 0, 0, 0, msg, Telegram.Bot.Types.Enums.ParseMode.Html);
 
-                            if (sendedFile != null && sendedFile.Document != null && sendedFile.Document.FileId.Length > 0)
-                                sendedFileId = sendedFile.Document.FileId;
+                        if (sendedFile != null && sendedFile.Document != null && sendedFile.Document.FileId.Length > 0)
+                            sendedFileId = sendedFile.Document.FileId;
 
-                            await UpdateUserState(usersChatId[i], true);
-                        }
-                        else
-                        {
-                            var inputOnlineFile = new Telegram.Bot.Types.InputFiles.InputOnlineFile(sendedFileId);
-                            await telegramBot.SendVideoAsync(usersChatId[i], inputOnlineFile, 0, 0, 0, msg, Telegram.Bot.Types.Enums.ParseMode.Html);
-
-                            await UpdateUserState(usersChatId[i], true);
-                        }
+                        await UpdateUserState(usersChatId[i], true);
                     }
-                    catch (Exception ex)
+                    else
                     {
-                        await UpdateUserState(usersChatId[i], false);
-                        logger.LogError(ex);
+                        var inputOnlineFile = new Telegram.Bot.Types.InputFiles.InputOnlineFile(sendedFileId);
+                        await telegramBot.SendVideoAsync(usersChatId[i], inputOnlineFile, 0, 0, 0, msg, Telegram.Bot.Types.Enums.ParseMode.Html);
+
+                        await UpdateUserState(usersChatId[i], true);
                     }
+                }
+                catch (Exception ex)
+                {
+                    await UpdateUserState(usersChatId[i], false);
+                    logger.LogError(ex);
                 }
             }
         }
@@ -178,37 +181,40 @@ namespace OxyBotAdmin.Services
         public async Task SendAudioToAll(long[] usersChatId, Stream stream, string fileName, string msg)
         {
             string sendedFileId = string.Empty;
-            if (usersChatId != null && stream != null)
+
+            if (usersChatId == null)
+                throw new ArgumentNullException(nameof(usersChatId));
+
+            if (stream == null)
+                throw new ArgumentNullException(nameof(usersChatId));
+
+            for (int i = 0; i < usersChatId.Length; i++)
             {
-                for (int i = 0; i < usersChatId.Length; i++)
+                try
                 {
-                    try
+                    if (string.IsNullOrEmpty(sendedFileId))
                     {
-                        if (string.IsNullOrEmpty(sendedFileId))
-                        {
-                            var inputOnlineFile = new Telegram.Bot.Types.InputFiles.InputOnlineFile(stream, fileName);
+                        var inputOnlineFile = new Telegram.Bot.Types.InputFiles.InputOnlineFile(stream, fileName);
 
-                            var sendedFile = await telegramBot.SendAudioAsync(59725585, inputOnlineFile, msg, Telegram.Bot.Types.Enums.ParseMode.Html);
+                        var sendedFile = await telegramBot.SendAudioAsync(59725585, inputOnlineFile, msg, Telegram.Bot.Types.Enums.ParseMode.Html);
 
-                            if (sendedFile != null && sendedFile.Document != null && sendedFile.Document.FileId.Length > 0)
-                                sendedFileId = sendedFile.Document.FileId;
+                        if (sendedFile != null && sendedFile.Document != null && sendedFile.Document.FileId.Length > 0)
+                            sendedFileId = sendedFile.Document.FileId;
 
-                            await UpdateUserState(usersChatId[i], true);
-                        }
-                        else
-                        {
-                            var inputOnlineFile = new Telegram.Bot.Types.InputFiles.InputOnlineFile(sendedFileId);
-                            await telegramBot.SendAudioAsync(usersChatId[i], inputOnlineFile, msg, Telegram.Bot.Types.Enums.ParseMode.Html);
-
-                            await UpdateUserState(usersChatId[i], true);
-                        }
+                        await UpdateUserState(usersChatId[i], true);
                     }
-                    catch (Exception ex)
+                    else
                     {
-                        await UpdateUserState(usersChatId[i], false);
+                        var inputOnlineFile = new Telegram.Bot.Types.InputFiles.InputOnlineFile(sendedFileId);
+                        await telegramBot.SendAudioAsync(usersChatId[i], inputOnlineFile, msg, Telegram.Bot.Types.Enums.ParseMode.Html);
 
-                        logger.LogError(ex);
+                        await UpdateUserState(usersChatId[i], true);
                     }
+                }
+                catch (Exception ex)
+                {
+                    await UpdateUserState(usersChatId[i], false);
+                    logger.LogError(ex);
                 }
             }
         }
@@ -216,14 +222,7 @@ namespace OxyBotAdmin.Services
 
         private async Task UpdateUserState(long userId, bool isActive)
         {
-            try
-            {
-                await baseService.RepositoryProvider.GetTGUsersConroller().UpdateUserStat(userId, isActive);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            await baseService.RepositoryProvider.GetTGUsersConroller().UpdateUserStat(userId, isActive);
         }
     }
 }

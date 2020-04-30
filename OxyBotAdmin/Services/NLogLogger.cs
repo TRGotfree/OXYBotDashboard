@@ -8,7 +8,7 @@ namespace OxyBotAdmin.Services
 {
     public class NLogLogger : ILogger
     {
-        private Logger logger = LogManager.GetCurrentClassLogger();
+        private readonly Logger logger = LogManager.GetCurrentClassLogger();
 
         public void LogError(Exception ex)
         {

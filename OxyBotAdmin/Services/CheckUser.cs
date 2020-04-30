@@ -11,48 +11,25 @@ namespace OxyBotAdmin.Services
 {
     public class CheckUser : ICheckUser
     {
-        private ILogger logger;
-        private IDBController dBController;
+        private readonly IDBController dBController;
 
         public CheckUser(BaseService baseService)
         {
-           logger = baseService.Logger;
             dBController = baseService.RepositoryProvider;
         }
 
         public bool CheckUserLoginPass(BotAdmin botAdmin)
         {
-            bool checkResult = false;
-            try
-            {
-                if (!string.IsNullOrEmpty(botAdmin.Password) &&
-                    !string.IsNullOrEmpty(botAdmin.Login) &&
-                    !string.IsNullOrWhiteSpace(botAdmin.Password) &&
-                    !string.IsNullOrWhiteSpace(botAdmin.Login))
-                {
-                    checkResult = dBController.GetLoginDbController().CheckAdmin(botAdmin);
-                }
-            }
-            catch (Exception ex)
-            {
-                logger.LogError(ex);
-            }
+            if (string.IsNullOrWhiteSpace(botAdmin.Password) ||
+                string.IsNullOrWhiteSpace(botAdmin.Login))
+                return false;
 
-            return checkResult;
+            return dBController.GetLoginDbController().CheckAdmin(botAdmin);
         }
 
         public BotAdmin GetBotAdmin(string login, string hashedPass)
         {
-            BotAdmin botAdmin = new BotAdmin();
-            try
-            {
-                botAdmin = dBController.GetLoginDbController().GetBotAdmin(login, hashedPass);
-            }
-            catch (Exception ex)
-            {
-                logger.LogError(ex);
-            }
-            return botAdmin;
+            return dBController.GetLoginDbController().GetBotAdmin(login, hashedPass);
         }
     }
 }
