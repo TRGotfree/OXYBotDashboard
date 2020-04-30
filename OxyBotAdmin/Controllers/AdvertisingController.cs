@@ -62,8 +62,7 @@ namespace OxyBotAdmin.Controllers
                 if (!ModelState.IsValid)
                     return BadRequest(sharedLocalizer["BadRequest"]);
 
-                (DateTime, DateTime) parserResult;
-                if (!IsAdvertDateTimesValid(advertAction.FormattedDateBegin, advertAction.FormattedDateEnd, out parserResult))
+                if (!IsAdvertDateTimesValid(advertAction.FormattedDateBegin, advertAction.FormattedDateEnd, out (DateTime, DateTime) parserResult))
                     return StatusCode((int)HttpStatusCode.NotAcceptable, sharedLocalizer["NotAcceptableDateTime"]);
 
                 advertAction.DateBegin = parserResult.Item1;
@@ -88,8 +87,7 @@ namespace OxyBotAdmin.Controllers
                 if (!ModelState.IsValid)
                     return BadRequest(sharedLocalizer["BadRequest"]);
 
-                (DateTime, DateTime) parserResult;
-                if (!IsAdvertDateTimesValid(advertAction.FormattedDateBegin, advertAction.FormattedDateEnd, out parserResult))
+                if (!IsAdvertDateTimesValid(advertAction.FormattedDateBegin, advertAction.FormattedDateEnd, out (DateTime, DateTime) parserResult))
                     return StatusCode((int)HttpStatusCode.NotAcceptable, sharedLocalizer["NotAcceptableDateTime"]);
 
                 baseService.RepositoryProvider.GetAdvertActionsDBController().UpdateAction(advertAction);

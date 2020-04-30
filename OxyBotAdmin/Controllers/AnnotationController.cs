@@ -96,8 +96,7 @@ namespace OxyBotAdmin.Controllers
                     return BadRequest(sharedLocalizer["BadRequest"]);
 
                 var newAnnotation = new GoodAnnotation();
-                int annotationId = 0;
-                newAnnotation.AnnotationId = int.TryParse(goodAnnotation["annotationId"], out annotationId) ? annotationId : 0;
+                newAnnotation.AnnotationId = int.TryParse(goodAnnotation["annotationId"], out int annotationId) ? annotationId : 0;
 
                 foreach (var item in goodAnnotation.Keys)
                 {
@@ -158,9 +157,7 @@ namespace OxyBotAdmin.Controllers
                     return BadRequest(sharedLocalizer["BadRequest"]);
 
                 var newAnnotation = new GoodAnnotation();
-
-                int annotationId = 0;
-                newAnnotation.AnnotationId = int.TryParse(goodAnnotation["annotationId"], out annotationId) ? annotationId : 0;
+                newAnnotation.AnnotationId = int.TryParse(goodAnnotation["annotationId"], out int annotationId) ? annotationId : 0;
 
                 if (newAnnotation.AnnotationId <= 0)
                     return BadRequest(sharedLocalizer["BadRequest"]);
