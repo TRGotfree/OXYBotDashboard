@@ -29,7 +29,7 @@ namespace OxyBotAdmin.Controllers
         {
             logger = baseService.Logger;
             configuration = baseService.Configuration;
-            this.dBController = baseService.DBController;
+            this.dBController = baseService.RepositoryProvider;
             bot = telegramBot;
         }
 

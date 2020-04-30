@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -15,118 +16,90 @@ namespace OxyBotAdmin.Controllers
     [ApiController]
     public class AdvertisingController : ControllerBase
     {
-        private ILogger logger;
-        private BaseService baseService;
-        private IStringLocalizer<AppData.SharedResource> sharedLocalizer;
+        private readonly ILogger logger;
+        private readonly BaseService baseService;
+        private readonly IStringLocalizer<AppData.SharedResource> sharedLocalizer;
 
-        public AdvertisingController(BaseService _baseService, IStringLocalizer<AppData.SharedResource> _localizer)
+        public AdvertisingController(BaseService baseService, IStringLocalizer<AppData.SharedResource> localizer)
         {
-            logger = _baseService.Logger;
-            baseService = _baseService;
-            sharedLocalizer = _localizer;
+            this.baseService = baseService;
+            logger = baseService.Logger;
+            sharedLocalizer = localizer;
         }
 
         [Authorize]
         [HttpGet]
         public IActionResult Get([FromQuery] int beginPage, [FromQuery] int endPage)
         {
-            IActionResult result = StatusCode(400, sharedLocalizer["BadRequest"]);
             try
             {
-                if (beginPage > 0 && endPage > 0)
+                if (beginPage <= 0 || endPage <= 0)
+                    return BadRequest(sharedLocalizer["BadRequest"]);
+
+                var actionsItems = baseService.RepositoryProvider.GetAdvertActionsDBController().GetActions(beginPage, endPage);
+
+                int totalCountOfAdvert = actionsItems.FirstOrDefault() == null ? 0 : actionsItems.FirstOrDefault().TotalCountOfAdvertActions;
+
+                return Ok(new
                 {
-                    if (baseService != null)
-                    {
-                        var actionsItems = baseService.DBController.GetAdvertActionsDBController().GetActions(beginPage, endPage);
-
-                        int totalCountOfAdvert = actionsItems.FirstOrDefault() == null ? 0 : actionsItems.FirstOrDefault().TotalCountOfAdvertActions;
-
-                        var data = new
-                        {
-                            actions = actionsItems,
-                            totalCount = totalCountOfAdvert
-                        };
-
-                        result = Ok(data);
-                    }
-                }
+                    actions = actionsItems,
+                    totalCount = totalCountOfAdvert
+                });
             }
             catch (Exception ex)
             {
                 logger.LogError(ex);
-                result = StatusCode(500, sharedLocalizer["InternalServerError"]);
+                return StatusCode(500, sharedLocalizer["InternalServerError"]);
             }
-            return result;
         }
-
 
         [Authorize]
         [HttpPost]
         public IActionResult Post([FromBody]AdvertAction advertAction)
         {
-            IActionResult result = StatusCode(400, sharedLocalizer["BadRequest"]);
             try
             {
-                if (advertAction != null && advertAction.ActionId == 0)
-                {
-                    if (ModelState.IsValid)
-                    {
-                        (DateTime, DateTime) parserResult;
-                        if (IsAdvertDateTimesValid(advertAction.FormattedDateBegin, advertAction.FormattedDateEnd, out parserResult))
-                        {
-                            advertAction.DateBegin = parserResult.Item1;
-                            advertAction.DateEnd = parserResult.Item2;
-                            baseService.DBController.GetAdvertActionsDBController().InsertAction(advertAction);
-                            result = Ok();
-                        }
-                        else
-                        {
-                            result = StatusCode(406, sharedLocalizer["NotAcceptableDateTime"]);
-                        }
-                    }
-                }
+                if (!ModelState.IsValid)
+                    return BadRequest(sharedLocalizer["BadRequest"]);
+
+                (DateTime, DateTime) parserResult;
+                if (!IsAdvertDateTimesValid(advertAction.FormattedDateBegin, advertAction.FormattedDateEnd, out parserResult))
+                    return StatusCode((int)HttpStatusCode.NotAcceptable, sharedLocalizer["NotAcceptableDateTime"]);
+
+                advertAction.DateBegin = parserResult.Item1;
+                advertAction.DateEnd = parserResult.Item2;
+                baseService.RepositoryProvider.GetAdvertActionsDBController().InsertAction(advertAction);
+
+                return Ok();
             }
             catch (Exception ex)
             {
                 logger.LogError(ex);
-                result = StatusCode(500, sharedLocalizer["InternalServerError"]);
+                return StatusCode((int)HttpStatusCode.InternalServerError, sharedLocalizer["InternalServerError"]);
             }
-
-            return result;
         }
 
-    
         [Authorize]
         [HttpPut]
         public IActionResult Put([FromBody]AdvertAction advertAction)
         {
-            IActionResult result = StatusCode(400, sharedLocalizer["BadRequest"]);
             try
             {
-                if (advertAction != null && advertAction.ActionId > 0)
-                {
-                    if (ModelState.IsValid)
-                    {
-                        (DateTime, DateTime) parserResult;
-                        if (IsAdvertDateTimesValid(advertAction.FormattedDateBegin, advertAction.FormattedDateEnd, out parserResult))
-                        {                      
-                            baseService.DBController.GetAdvertActionsDBController().UpdateAction(advertAction);
-                            result = Ok();
-                        }
-                        else
-                        {
-                            result = StatusCode(406, sharedLocalizer["NotAcceptableDateTime"]);
-                        }
-                    }
-                }
+                if (!ModelState.IsValid)
+                    return BadRequest(sharedLocalizer["BadRequest"]);
+
+                (DateTime, DateTime) parserResult;
+                if (!IsAdvertDateTimesValid(advertAction.FormattedDateBegin, advertAction.FormattedDateEnd, out parserResult))
+                    return StatusCode((int)HttpStatusCode.NotAcceptable, sharedLocalizer["NotAcceptableDateTime"]);
+
+                baseService.RepositoryProvider.GetAdvertActionsDBController().UpdateAction(advertAction);
+                return Ok();
             }
             catch (Exception ex)
             {
                 logger.LogError(ex);
-                result = StatusCode(500, sharedLocalizer["InternalServerError"]);
+                return StatusCode((int)HttpStatusCode.InternalServerError, sharedLocalizer["InternalServerError"]);
             }
-
-            return result;
         }
 
 
@@ -146,7 +119,7 @@ namespace OxyBotAdmin.Controllers
             }
             catch (Exception ex)
             {
-                logger.LogError(ex);
+                throw ex;
             }
             parseResult = dateTimeTuple;
             return result;

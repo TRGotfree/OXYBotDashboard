@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -13,14 +14,14 @@ namespace OxyBotAdmin.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        private ILogger logger;
-        private IDBController dBController;
-        private ITelegramBot bot;
+        private readonly ILogger logger;
+        private readonly IDBController dBController;
+        private readonly ITelegramBot bot;
 
         public UserController(BaseService baseService, ITelegramBot telegramBot)
         {
             logger = baseService.Logger;
-            dBController = baseService.DBController;
+            dBController = baseService.RepositoryProvider;
             bot = telegramBot;
         }
 
@@ -29,68 +30,45 @@ namespace OxyBotAdmin.Controllers
         [Route("all")]
         public IActionResult Get([FromQuery]int beginPage, [FromQuery]int endPage)
         {
-            IActionResult result = StatusCode(400);
-
             try
             {
-                if (beginPage > 0 && endPage > 0)
-                {
-                    var tgUsers = dBController.GetTGUsersConroller().GetTelegramBotUsers(beginPage, endPage);
-                    if (tgUsers != null)
-                    {
-                        int totalUsersCount = tgUsers.FirstOrDefault() == null ? 0 : tgUsers.FirstOrDefault().TotalUserCount;
-                        var data = new
-                        {
-                            botUsers = tgUsers,
-                            botUsersCount = totalUsersCount
-                        };
-                        result = Ok(data);
-                    }
-                    else
-                    {
-                        result = StatusCode(500);
-                    }
-                }
+                if (beginPage <= 0 && endPage <= 0)
+                    return BadRequest();
+
+                var tgUsers = dBController.GetTGUsersConroller().GetTelegramBotUsers(beginPage, endPage);
+                if (tgUsers == null)
+                    return StatusCode((int)HttpStatusCode.InternalServerError);
+
+                int totalUsersCount = tgUsers.FirstOrDefault() == null ? 0 : tgUsers.FirstOrDefault().TotalUserCount;
+
+                return Ok(new { botUsers = tgUsers, botUsersCount = totalUsersCount });
             }
             catch (Exception ex)
             {
                 logger.LogError(ex);
-                result = StatusCode(500);
+                return StatusCode((int)HttpStatusCode.InternalServerError);
             }
-
-            return result;
         }
 
         [Authorize]
         [HttpGet]
         public IActionResult Get()
         {
-            IActionResult result = StatusCode(400);
             try
             {
                 var tgUsers = dBController.GetTGUsersConroller().GetTelegramBotUsers(1, 15);
-                if (tgUsers != null)
-                {
-                    int totalUsersCount = tgUsers.FirstOrDefault() == null ? 0 : tgUsers.FirstOrDefault().TotalUserCount;
-                    var data = new
-                    {
-                        botUsers = tgUsers,
-                        botUsersCount = totalUsersCount
-                    };
-                    result = Ok(data);
-                }
-                else
-                {
-                    result = StatusCode(500);
-                }
+                if (tgUsers == null)
+                    return StatusCode((int)HttpStatusCode.InternalServerError);
+
+                int totalUsersCount = tgUsers.FirstOrDefault() == null ? 0 : tgUsers.FirstOrDefault().TotalUserCount;
+
+                return Ok(new { botUsers = tgUsers, botUsersCount = totalUsersCount });
             }
             catch (Exception ex)
             {
                 logger.LogError(ex);
-                result = StatusCode(500);
+                return StatusCode((int)HttpStatusCode.InternalServerError);
             }
-
-            return result;
         }
 
         [Authorize]
@@ -98,23 +76,19 @@ namespace OxyBotAdmin.Controllers
         [Consumes("application/json")]
         public async Task<IActionResult> Put([FromBody]string message, long chatId)
         {
-            IActionResult result = StatusCode(400);
             try
             {
-                if (chatId > 0 && !string.IsNullOrEmpty(message) && !string.IsNullOrWhiteSpace(message))
-                {
-                    await bot.SendMessage(chatId, message);
-                    result = Ok();
-                }
+                if (chatId <= 0 || !string.IsNullOrWhiteSpace(message))
+                    return BadRequest();
+
+                await bot.SendMessage(chatId, message);
+                return Ok();
             }
             catch (Exception ex)
             {
                 logger.LogError(ex);
-                result = StatusCode(500);
+                return StatusCode((int)HttpStatusCode.InternalServerError);
             }
-            return result;
         }
-
-
     }
 }

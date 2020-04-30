@@ -35,7 +35,7 @@ namespace OxyBotAdmin.Controllers
             {
                 if (beginPage > 0 && endPage > 0)
                 {
-                    var userRequests = baseService.DBController.GetUserRequestsDBController().GetRequests(beginPage, endPage);
+                    var userRequests = baseService.RepositoryProvider.GetUserRequestsDBController().GetRequests(beginPage, endPage);
                     if (userRequests != null)
                     {
                         int totalUserRequest = userRequests.FirstOrDefault() == null ? 0 : userRequests.FirstOrDefault().TotalCount;

@@ -39,7 +39,7 @@ namespace OxyBotAdmin.Controllers
             {
                 if (endPage > 0 && beginPage > 0)
                 {
-                    var _discounts = baseService.DBController.GetDiscountCardsDBController().GetDiscountCardsData(beginPage, endPage);
+                    var _discounts = baseService.RepositoryProvider.GetDiscountCardsDBController().GetDiscountCardsData(beginPage, endPage);
 
                     int totalCountOfDiscounts = _discounts.FirstOrDefault() == null ? 0 : _discounts.FirstOrDefault().TotalCountOfCardsData;
 
@@ -72,7 +72,7 @@ namespace OxyBotAdmin.Controllers
                 {
                     if (ModelState.IsValid)
                     {
-                        await baseService.DBController.GetDiscountCardsDBController().InsertOrUpdateDiscountCardData(discount);
+                        await baseService.RepositoryProvider.GetDiscountCardsDBController().InsertOrUpdateDiscountCardData(discount);
 
                         result = Ok();
                     }
@@ -94,7 +94,6 @@ namespace OxyBotAdmin.Controllers
         public async Task<IActionResult> Put([FromBody]string message, long chatId)
         {
             IActionResult result = StatusCode(400);
-            var t = Request;
             try
             {
                 if (chatId > 0 && !string.IsNullOrEmpty(message) && !string.IsNullOrWhiteSpace(message))

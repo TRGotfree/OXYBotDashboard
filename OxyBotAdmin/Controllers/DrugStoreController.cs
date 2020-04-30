@@ -36,7 +36,7 @@ namespace OxyBotAdmin.Controllers
             {
                 if (endPage > 0 && beginPage > 0)
                 {
-                    var _drugStores = baseService.DBController.GetDrugStoreDBController().GetDrugStores(beginPage, endPage);
+                    var _drugStores = baseService.RepositoryProvider.GetDrugStoreDBController().GetDrugStores(beginPage, endPage);
 
                     int totalCountOfDs = _drugStores.FirstOrDefault() == null ? 0 : _drugStores.FirstOrDefault().DrugStoreTotalCount;
 
@@ -69,7 +69,7 @@ namespace OxyBotAdmin.Controllers
                 {
                     if (ModelState.IsValid)
                     {
-                        baseService.DBController.GetDrugStoreDBController().InsertOrUpdateDrugStore(drugStore);
+                        baseService.RepositoryProvider.GetDrugStoreDBController().InsertOrUpdateDrugStore(drugStore);
                         result = Ok();
                     }
                     else
@@ -96,7 +96,7 @@ namespace OxyBotAdmin.Controllers
                 {
                     if (ModelState.IsValid)
                     {
-                        baseService.DBController.GetDrugStoreDBController().UpdateDrugStore(drugStore);
+                        baseService.RepositoryProvider.GetDrugStoreDBController().UpdateDrugStore(drugStore);
                         result = Ok();
                     }
                     else

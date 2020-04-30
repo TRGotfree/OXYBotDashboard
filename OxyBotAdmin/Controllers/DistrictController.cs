@@ -34,7 +34,7 @@ namespace OxyBotAdmin.Controllers
             IActionResult result = StatusCode(400, sharedLocalizer["BadRequest"]);
             try
             {
-                var _districts = baseService.DBController.GetDistrictDBController().GetDistricts();
+                var _districts = baseService.RepositoryProvider.GetDistrictDBController().GetDistricts();
 
                 var data = new
                 {

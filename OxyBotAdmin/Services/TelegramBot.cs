@@ -218,7 +218,7 @@ namespace OxyBotAdmin.Services
         {
             try
             {
-                await baseService.DBController.GetTGUsersConroller().UpdateUserStat(userId, isActive);
+                await baseService.RepositoryProvider.GetTGUsersConroller().UpdateUserStat(userId, isActive);
             }
             catch (Exception)
             {

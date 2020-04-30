@@ -17,7 +17,7 @@ namespace OxyBotAdmin.Services
         public CheckUser(BaseService baseService)
         {
            logger = baseService.Logger;
-            dBController = baseService.DBController;
+            dBController = baseService.RepositoryProvider;
         }
 
         public bool CheckUserLoginPass(BotAdmin botAdmin)
